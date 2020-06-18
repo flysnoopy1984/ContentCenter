@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\IQBLib\IQB.Util\IQB.Util.csproj" />
+    <ProjectReference Include="..\ContentCenter.IRepository\ContentCenter.IRepository.csproj" />
+    <ProjectReference Include="..\ContentCenter.IServices\ContentCenter.IServices.csproj" />
+    <ProjectReference Include="..\ContentCenter.Model\ContentCenter.Model.csproj" />
+  </ItemGroup>
+
+</Project>

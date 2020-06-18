@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ContentCenter.Model</name>
+    </assembly>
+    <members>
+        <member name="F:ContentCenter.Model.Commons.CConstants.JWTIssuer">
+            <summary>
+            JWT发布者
+            </summary>
+        </member>
+        <member name="F:ContentCenter.Model.Commons.CConstants.JWTAud">
+            <summary>
+            JWT消费者
+            </summary>
+        </member>
+        <member name="F:ContentCenter.Model.Commons.CConstants.JWTIssSerKey">
+            <summary>
+            JWT证书Key 
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EBookInfo.Publisher">
+            <summary>
+            出版社
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EBookInfo.PageCount">
+            <summary>
+            页数
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EBookInfo.Pricing">
+            <summary>
+            定价
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EBookInfo.Catalog">
+            <summary>
+            目录
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EBookInfo.Summery">
+            <summary>
+            简介
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.ESection.Code">
+            <summary>
+            Code 
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.ESection.Title">
+            <summary>
+            显示名
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.ESection.SectionType">
+            <summary>
+            栏目分网站主栏目，分栏目
+            </summary>   
+        </member>
+    </members>
+</doc>

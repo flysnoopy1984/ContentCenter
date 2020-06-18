@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="sqlSugarCore" Version="5.0.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\IQBLib\IQB.Util\IQB.Util.csproj" />
+    <ProjectReference Include="..\ContentCenter.IRepository\ContentCenter.IRepository.csproj" />
+    <ProjectReference Include="..\ContentCenter.Model\ContentCenter.Model.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ContentCenter</name>
+    </assembly>
+    <members>
+        <member name="M:ContentCenter.Controllers.AdminController.GetSectionTagRelation(System.String,System.Int32)">
+            <summary>
+            获取Section 和Tag关系
+            </summary>
+            <param name="secCode"></param>
+            <param name="tagCount"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.BookController.GetSection(ContentCenter.Model.BaseEnum.SectionType)">
+            <summary>
+            获取网站的Section
+            </summary>
+            <param name="sectionType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.BookController.GetTags(System.Int32,SqlSugar.OrderByType)">
+            <summary>
+            获取Tag列表
+            </summary>
+            <param name="number"></param>
+            <param name="orderByType"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
