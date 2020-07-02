@@ -15,6 +15,10 @@ namespace ContentCenter.Model
                     _pageData = new ModelPager<T>();
                 return _pageData;
             }
+            set
+            {
+                _pageData = value;
+            }
         }
     }
 }

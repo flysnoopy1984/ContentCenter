@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ContentCenter.Model
 {
-    public class RBookSimple
+    public class RBookList
     {
         public string Code { get; set; }
 

@@ -8,5 +8,9 @@ namespace ContentCenter.Model
     public class QBookList:QueryPager
     {
         public QBookList_Type QueryType { get; set; }
+
+        public  string Code { get; set; }
+
+        public int HighScoreTop { get; set; } = 500;
     }
 }

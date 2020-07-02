@@ -7,6 +7,6 @@ namespace ContentCenter.Repository
     public class CCDBConfig
     {
         public const string MainDbKey = "MainDb";
-        public const string BookDbKey = "MasterDb";
+        public const string MasterDb = "MasterDb";
     }
 }

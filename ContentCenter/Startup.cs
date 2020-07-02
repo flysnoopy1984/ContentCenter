@@ -59,6 +59,9 @@ namespace ContentCenter
 
             #endregion
 
+            //services.AddScoped<IUserRepository, UserRepository>();
+            //services.AddScoped<IUserServices, UserServices>();
+
             #region Id4(replaced JWT)
             //   services.AddJWTAuth(Configuration);
             services.ConfigId4Auth(Configuration);

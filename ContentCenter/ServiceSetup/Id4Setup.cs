@@ -19,6 +19,7 @@ namespace ContentCenter.ServiceSetup
                     o.Authority = ad4Url;
                     o.RequireHttpsMetadata = false;
                     o.Audience = apiName_ContentCenter;
+                   
                 });
         }
     }

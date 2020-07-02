@@ -1,7 +1,6 @@
 ﻿using Autofac.Extras.DynamicProxy;
 using ContentCenter.AOP;
 using ContentCenter.Model;
-using ContentCenter.Model.Users;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -18,9 +17,8 @@ namespace ContentCenter.DBManager
         public static void InitDb(ISqlSugarClient db)
         {
             Console.WriteLine("Start InitDb");
-            db.DbMaintenance.CreateDatabase(databaseName: "MasterCrawlerData");
-           
-            db.CodeFirst.InitTables<ESectionTag>();
+            db.DbMaintenance.CreateDatabase(databaseName: "ContentCenter");
+            db.CodeFirst.InitTables<EUserInfo>();
             Console.WriteLine("End InitDb");
         }
     }

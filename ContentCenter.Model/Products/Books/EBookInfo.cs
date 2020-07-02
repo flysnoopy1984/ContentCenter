@@ -14,8 +14,26 @@ namespace ContentCenter.Model
         [SugarColumn(Length = 100)]
         public string Title { get; set; }
 
+        /// <summary>
+        /// 原作书名
+        /// </summary>
+        [SugarColumn(Length = 200, IsNullable = true, ColumnDataType = "nvarchar")]
+        public string OrigTitle { get; set; }
+
+        /// <summary>
+        /// 副标题
+        /// </summary>
+        [SugarColumn(Length = 200, IsNullable = true, ColumnDataType = "nvarchar")]
+        public string SubTitle { get; set; }
+
         [SugarColumn(Length = 50)]
         public string AuthorCode { get; set; }
+
+        /// <summary>
+        /// 译者
+        /// </summary>
+        [SugarColumn(Length = 20, IsNullable = true, ColumnDataType = "nvarchar")]
+        public string Translater { get; set; }
 
 
         /// <summary>
@@ -23,6 +41,12 @@ namespace ContentCenter.Model
         /// </summary>
         [SugarColumn(Length = 50, IsNullable = true, ColumnDataType = "nvarchar")]
         public string Publisher { get; set; }
+
+        /// <summary>
+        /// 出版日期
+        /// </summary>
+        [SugarColumn(Length = 20, IsNullable = true, ColumnDataType = "nvarchar")]
+        public string PublishDate { get; set; }
 
         /// <summary>
         /// 页数
@@ -40,6 +64,18 @@ namespace ContentCenter.Model
         public string CoverUrl { get; set; }
 
         /// <summary>
+        /// 装帧
+        /// </summary>
+        [SugarColumn(Length = 30, IsNullable = true, ColumnDataType = "nvarchar")]
+        public string Makeup { get; set; }
+
+        /// <summary>
+        /// 丛书
+        /// </summary>
+        [SugarColumn(Length = 100, IsNullable = true, ColumnDataType = "nvarchar")]
+        public string Series { get; set; }
+
+        /// <summary>
         /// 目录
         /// </summary>
         [SugarColumn(ColumnDataType = "text", IsNullable = true)]
@@ -52,6 +88,9 @@ namespace ContentCenter.Model
         public string Summery { get; set; }
 
         public Double Score { get; set; }
+
+        [SugarColumn(Length = 20, IsNullable = true)]
+        public string ISBN { get; set; }
 
     }
 }

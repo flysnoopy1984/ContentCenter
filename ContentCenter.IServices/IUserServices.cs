@@ -1,4 +1,4 @@
-﻿using ContentCenter.Model.Users;
+﻿using ContentCenter.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,7 +8,9 @@ namespace ContentCenter.IServices
 {
     public interface IUserServices:IBaseServices<EUserInfo>
     {
-        Task<EUserInfo> Login(string userAccount, string pwd);
+        EUserInfo Login(LoginUser loginUser);
+
+        long Register(RegUser regUser);
 
     }
 }

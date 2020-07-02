@@ -4,8 +4,11 @@ using System.Text;
 
 namespace ContentCenter.Model
 {
-    public class ResultEntity<T> : ResultNormal where T : class
+    public class CCException:Exception
     {
-        public T Entity { get; set; }
+        public CCException(string msg) : base(msg)
+        {
+
+        }
     }
 }

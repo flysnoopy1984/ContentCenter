@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ContentCenter.IServices;
 using ContentCenter.Model;
 using ContentCenter.Model.BaseEnum;
+using IQB.Util.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,15 +24,17 @@ namespace ContentCenter.Controllers
             _bookServices = bookServices;
         }
 
-        [HttpGet]
-        public ResultPager<RBookSimple> getSimplePager(QBookList query)
+        [HttpPost]
+        public ResultPager<RBookList> getBookListPager(QBookList query)
         {
-            ResultPager<RBookSimple> result = new ResultPager<RBookSimple>();
+            ResultPager<RBookList> result = new ResultPager<RBookList>();
             try
             {
+               
+                var pd = _bookServices.GetBookListPager(query);
+                result.PageData = pd;
                 result.PageData.pageIndex = query.pageIndex;
                 result.PageData.pageSize = query.pageSize;
-                result.PageData.datas = _bookServices.GetSimpleBookPager(query);
             }
             catch (Exception ex)
             {
@@ -45,6 +48,7 @@ namespace ContentCenter.Controllers
         [Authorize]
         public ResultNormal getNoAuth()
         {
+            var a = HttpContext.User;
             ResultNormal r = new ResultNormal();
             r.Message = "获取Token.Pass Auth";
             return r;
@@ -52,7 +56,7 @@ namespace ContentCenter.Controllers
 
         [HttpGet]
         [Authorize]
-        public ResultEntity<EBookInfo> Get(string code)
+        public ResultEntity<EBookInfo> Info(string code)
         {
             ResultEntity<EBookInfo> result = new ResultEntity<EBookInfo>();
             try
@@ -73,9 +77,9 @@ namespace ContentCenter.Controllers
         /// <param name="sectionType"></param>
         /// <returns></returns>
         [HttpGet]
-        public ResultEntity<Dictionary<SectionType,List<ESection>>> GetSection(SectionType sectionType=  SectionType.All)
+        public ResultEntity<Dictionary<string,List<ESection>>> GetSection(SectionType sectionType=  SectionType.All)
         {
-            ResultEntity<Dictionary<SectionType, List<ESection>>> result = new ResultEntity<Dictionary<SectionType, List<ESection>>>();
+            ResultEntity<Dictionary<string, List<ESection>>> result = new ResultEntity<Dictionary<string, List<ESection>>>();
 
             try
             {

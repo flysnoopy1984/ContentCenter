@@ -14,4 +14,17 @@ namespace ContentCenter.Model.BaseEnum
     {
         book = 0,
     }
+
+    /// <summary>
+    ///网站主Section.
+    /// </summary>
+    public class WebSection
+    {
+
+        public const string NewExpress = "NewExpress";
+        public const string Popular = "Popular";
+        public const string HighScore = "HighScore";
+
+
+    }
 }

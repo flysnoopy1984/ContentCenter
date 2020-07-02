@@ -4,6 +4,11 @@
         <name>ContentCenter.Model</name>
     </assembly>
     <members>
+        <member name="T:ContentCenter.Model.BaseEnum.WebSection">
+             <summary>
+            网站主Section.
+             </summary>
+        </member>
         <member name="F:ContentCenter.Model.Commons.CConstants.JWTIssuer">
             <summary>
             JWT发布者
@@ -19,9 +24,29 @@
             JWT证书Key 
             </summary>
         </member>
+        <member name="P:ContentCenter.Model.EBookInfo.OrigTitle">
+            <summary>
+            原作书名
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EBookInfo.SubTitle">
+            <summary>
+            副标题
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EBookInfo.Translater">
+            <summary>
+            译者
+            </summary>
+        </member>
         <member name="P:ContentCenter.Model.EBookInfo.Publisher">
             <summary>
             出版社
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EBookInfo.PublishDate">
+            <summary>
+            出版日期
             </summary>
         </member>
         <member name="P:ContentCenter.Model.EBookInfo.PageCount">
@@ -32,6 +57,16 @@
         <member name="P:ContentCenter.Model.EBookInfo.Pricing">
             <summary>
             定价
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EBookInfo.Makeup">
+            <summary>
+            装帧
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EBookInfo.Series">
+            <summary>
+            丛书
             </summary>
         </member>
         <member name="P:ContentCenter.Model.EBookInfo.Catalog">

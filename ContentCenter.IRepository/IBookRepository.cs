@@ -10,9 +10,23 @@ namespace ContentCenter.IRepository
 {
     public  interface IBookRepository: IBaseRepository<EBookInfo>
     {
-        Task<List<RBookSimple>> GetSimpleBookByTag(int pageIndex, int pageSize,string tagCode);
+        Task<List<RBookList>> GetBookListByTag(int pageIndex, int pageSize,string tagCode, RefAsync<int> totalNumber);
 
-        Task<List<RBookSimple>> GetSimpleBookBySection(int pageIndex, int pageSize, string secCode);
+        /// <summary>
+        /// 通过SectionTag 获取Tab.再通过BookTag获取对应的Book
+        /// </summary>
+       
+        Task<List<RBookList>> GetBookListBySection_ST(int pageIndex, int pageSize, string secCode, RefAsync<int> totalNumber);
+
+        /// <summary>
+        /// 通过DataSection表直接获取Section和Book关系
+        /// </summary>
+        Task<List<RBookList>> GetBookListBySection_DT(int pageIndex, int pageSize, string secCode, RefAsync<int> totalNumber);
+
+        /// <summary>
+        /// 高分榜(默认前500)
+        /// </summary>
+        Task<List<RBookList>> GetBookListBySection_HighScroe(int pageIndex, int pageSize, RefAsync<int> totalNumber,int defaultTop);
 
         Task<List<ESection>> GetWebSection(SectionType sectionType);
 
@@ -24,9 +38,9 @@ namespace ContentCenter.IRepository
         /// <returns></returns>
         Task<List<RTag>> GetTagList(int number=0, OrderByType orderByType= OrderByType.Desc);
 
-       
 
 
+        Task<string> TestSql();
 
 
 

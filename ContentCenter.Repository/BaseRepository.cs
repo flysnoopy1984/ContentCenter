@@ -2,6 +2,7 @@
 using ContentCenter.Model;
 using ContentCenter.Model.BaseEnum;
 using IQB.Util;
+using IQB.Util.Models;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,11 @@ namespace ContentCenter.Repository
           
         }
 
+        public async Task<int> AddNoIdentity(T newEntity)
+        {
+            var insertable = _db.Insertable<T>(newEntity);
+            return await insertable.ExecuteCommandAsync();
+        }
         public async Task<long> Add(T newEntity)
         {
             var insertable = _db.Insertable<T>(newEntity);
@@ -71,6 +77,17 @@ namespace ContentCenter.Repository
         {
             var op = _db.Queryable<T>().InSingleAsync(key);
             return await op;
+        }
+
+        public async Task<T> GetByExpSingle(Expression<Func<T, bool>> whereExp)
+        {
+            var op = _db.Queryable<T>().Where(whereExp).FirstAsync();
+            return await op;
+        }
+
+        public async Task<int> GetCount(object key)
+        {
+           return await _db.Queryable<T>().CountAsync();
         }
 
         public async Task<List<T>> QueryList(Expression<Func<T, bool>> whereExp, Expression<Func<T, object>> orderByExp, bool desc = true)

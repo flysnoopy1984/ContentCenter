@@ -11,7 +11,7 @@ namespace ContentCenter.Repository
     public class SectionRepository : BaseRepository<ESection>, ISectionRepository
     {
         public SectionRepository(ISqlSugarClient[] sugarClient)
-           : base(sugarClient.FirstOrDefault(a => a.CurrentConnectionConfig.ConfigId == CCDBConfig.BookDbKey))
+           : base(sugarClient.FirstOrDefault(a => a.CurrentConnectionConfig.ConfigId == CCDBConfig.MainDbKey))
         {
 
         }

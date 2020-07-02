@@ -1,5 +1,6 @@
 ﻿using ContentCenter.Model;
 using ContentCenter.Model.BaseEnum;
+using IQB.Util.Models;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -14,24 +15,20 @@ namespace ContentCenter.IServices
         /// </summary>
         /// <param name="bookCode"></param>
         /// <returns></returns>
-        EBookInfo Info(string bookCode);
-        List<EBookInfo> GetBookPager(int pageIndex, int pageSize);
-
+        EBookInfo Info(string bookCode,bool withCommit=false);
+  
         /// <summary>
-        /// 根据Section 获取书列表
+        /// 根据Section TagCode 获取书列表
         /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="bookSection"></param>
         /// <returns></returns>
-        List<RBookSimple> GetSimpleBookPager(QBookList query);
+        ModelPager<RBookList> GetBookListPager(QBookList query);
 
         /// <summary>
         /// /获取网站的Section
         /// </summary>
         /// <param name="sectionType"></param>
         /// <returns></returns>
-        Dictionary<SectionType, List<ESection>> GetWebSection(SectionType sectionType);
+        Dictionary<string, List<ESection>> GetWebSection(SectionType sectionType);
 
         /// <summary>
         /// 获取Tag列表

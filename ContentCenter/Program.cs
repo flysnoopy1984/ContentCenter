@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
 using ContentCenter.DBManager;
-using ContentCenter.Model.Users;
+using ContentCenter.Model;
 using ContentCenter.Repository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -46,8 +46,8 @@ namespace ContentCenter
                 bool needDbInit =Convert.ToBoolean(config.GetSection("InitTask")["NeedDbInit"]);
                 if(needDbInit)
                 {
-                   var db = services.GetServices<SqlSugarClient>().FirstOrDefault(a => a.CurrentConnectionConfig.ConfigId == CCDBConfig.BookDbKey);
-                  //   ISqlSugarClient sqlsugarClient = services.GetRequiredService<SqlSugarClient>();
+                    var db = services.GetServices<SqlSugarClient>().FirstOrDefault(a => a.CurrentConnectionConfig.ConfigId == CCDBConfig.MainDbKey);
+                    //   ISqlSugarClient sqlsugarClient = services.GetRequiredService<SqlSugarClient>();
                     DbSeed.InitDb(db);
                 }
             }

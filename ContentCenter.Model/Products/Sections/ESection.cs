@@ -7,7 +7,7 @@ using System.Text;
 namespace ContentCenter.Model
 {
     [SugarTable("SectionInfo")]
-    public class ESection
+    public class ESection: BaseMasterTable
     {
         [SugarColumn(IsIdentity = true)]
         public int Id { get; set; }
@@ -25,9 +25,13 @@ namespace ContentCenter.Model
         public string Title { get; set; }
 
 
+
+
         /// <summary>
         /// 栏目分网站主栏目，分栏目
         /// </summary>   
         public SectionType SectionType { get; set; }
+
+
     }
 }

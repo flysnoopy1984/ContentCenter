@@ -1,14 +1,23 @@
-﻿using System;
+﻿using SqlSugar;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace ContentCenter.Model
 {
-    public class BaseMasterTable
+    public abstract class BaseMasterTable
     {
         
-        public DateTime CreateDate { get; set; }
+        public BaseMasterTable()
+        {
+            CreateDateTime = DateTime.Now;
+            UpdateDateTime = DateTime.Now;
+        }
+        public DateTime CreateDateTime { get; set; }
 
-        public DateTime UpdateDate { get; set; }
+        public DateTime UpdateDateTime { get; set; }
+
+        [SugarColumn(IsNullable = true)]
+        public bool IsDelete { get; set; }
     }
 }
