@@ -26,7 +26,7 @@ namespace ContentCenter.IRepository
         Task<T> GetByKey(object key);
         Task<T> GetByExpSingle(Expression<Func<T, bool>> whereExp);
 
-        Task<int> GetCount(object key);
+        Task<int> GetCount(Expression<Func<T, bool>> whereExp);
 
         Task<List<T>> QueryList(Expression<Func<T,bool>> whereExp, Expression<Func<T, object>> orderByExp,bool desc = true);
 

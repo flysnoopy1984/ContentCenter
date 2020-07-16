@@ -12,7 +12,7 @@ namespace ContentCenter.ServiceSetup
         public const string apiName_ContentCenter = "ccApi";
         public static void ConfigId4Auth(this IServiceCollection services, IConfiguration configuration)
         {
-            var ad4Url = configuration["SiteUrls:Id4Url"];
+            var ad4Url = configuration["Id4Config:Id4Url"];
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", o =>
                 {

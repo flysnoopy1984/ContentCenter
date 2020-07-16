@@ -66,6 +66,7 @@ namespace ContentCenter.Repository
                
             });
             q = q.Where((b, sb) => sb.SectionCode == secCode);
+            q = q.OrderBy((b, sb) => b.CreateDateTime,OrderByType.Desc);
             var r = q.Select((b,sb) => new RBookList
             {
                 Code = b.Code,

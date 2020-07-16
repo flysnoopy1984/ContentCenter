@@ -68,7 +68,6 @@ namespace ContentCenter.Controllers
                 result.ErrorMsg = ex.Message;
             }
             return result;
-
         }
 
         /// <summary>

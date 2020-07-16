@@ -8,9 +8,11 @@ namespace ContentCenter.IServices
 {
     public interface IUserServices:IBaseServices<EUserInfo>
     {
-        EUserInfo Login(LoginUser loginUser);
+        VueUerInfo Login(LoginUser loginUser);
 
-        long Register(RegUser regUser);
+        VueUerInfo Register(RegUser regUser);
+
+        bool HasRegistPhone(string phone);
 
     }
 }

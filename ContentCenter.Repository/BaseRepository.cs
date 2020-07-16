@@ -85,9 +85,9 @@ namespace ContentCenter.Repository
             return await op;
         }
 
-        public async Task<int> GetCount(object key)
+        public async Task<int> GetCount(Expression<Func<T, bool>> whereExp)
         {
-           return await _db.Queryable<T>().CountAsync();
+           return await _db.Queryable<T>().WhereIF(whereExp!=null,whereExp).CountAsync();
         }
 
         public async Task<List<T>> QueryList(Expression<Func<T, bool>> whereExp, Expression<Func<T, object>> orderByExp, bool desc = true)

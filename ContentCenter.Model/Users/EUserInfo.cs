@@ -49,6 +49,18 @@ namespace ContentCenter.Model
 
         public int Sex { get; set; }
 
+        public VueUerInfo ToVueUser()
+        {
+            return new VueUerInfo
+            {
+                HeaderUrl = this.HeaderUrl,
+                NickName = this.NickName,
+                TokenAccount = this.UserAccount,
+                TokenPwd = this.UserPwd,
+                UserId = this.Id,
+            };
+        }
+
 
     }
 }

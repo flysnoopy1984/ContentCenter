@@ -25,15 +25,79 @@ namespace ContentCenter.Controllers
             _configuration = configuration;
             _userServices = userServices;
         }
+
         [HttpPost]
-        public ResultEntity<EUserInfo> Login(LoginUser loginUser)
+        public ResultEntity<ResponseToken> RefreshToken(string refToken)
         {
-            ResultEntity<EUserInfo> result = new ResultEntity<EUserInfo>();
+            ResultEntity<ResponseToken> result = new ResultEntity<ResponseToken>();
+            string url = _configuration["Id4Config:Id4Url"] + "connect/token";
+            requireUserPwdToken upToken = new requireUserPwdToken
+            {
+                grant_type = "refresh_token",
+                client_id = _configuration["Id4Config:client_id"],
+                client_secret = _configuration["Id4Config:client_secret"],
+                refresh_token = refToken,
+            };
+         
+            try
+            {
+                var data = $"grant_type={upToken.grant_type}&client_id={upToken.client_id}&client_secret={upToken.client_secret}&refresh_token={upToken.refresh_token}";
+                var res = HttpUtil.Send(url, HttpUtil.HttpMethod.Post, data, HttpUtil.application_form);
+                result.Entity = JsonConvert.DeserializeObject<ResponseToken>(res);
+
+            }
+            catch (Exception ex)
+            {
+                NLogUtil.cc_ErrorTxt($"【UserController】GetUserPwdToken:{ex.Message}");
+                result.ErrorMsg = CCWebMsg.Token_GetUserPwdToken;
+            }
+
+            return result;
+        } 
+
+        [HttpPost]
+        public ResultEntity<ResponseToken> GetUserPwdToken(requireUserPwdToken upToken)
+        {
+            ResultEntity<ResponseToken> result = new ResultEntity<ResponseToken>();
+            string url = _configuration["Id4Config:Id4Url"] + "connect/token";
+            upToken.grant_type = _configuration["Id4Config:grant_type"];
+            upToken.client_id = _configuration["Id4Config:client_id"];
+            upToken.client_secret = _configuration["Id4Config:client_secret"];
+
+           // string json = JsonConvert.SerializeObject(upToken);
+            try
+            {
+                var data = $"grant_type={upToken.grant_type}&client_id={upToken.client_id}&client_secret={upToken.client_secret}&username={upToken.username}&password={upToken.password}";
+                var res = HttpUtil.Send(url, HttpUtil.HttpMethod.Post, data, HttpUtil.application_form);
+                result.Entity = JsonConvert.DeserializeObject<ResponseToken>(res);
+
+            }
+            catch(Exception ex)
+            {
+                NLogUtil.cc_ErrorTxt($"【UserController】GetUserPwdToken:{ex.Message}");
+                result.ErrorMsg = CCWebMsg.Token_GetUserPwdToken;
+            }
+            
+            return result;
+        }
+
+        [HttpPost]
+        public ResultEntity<VueUerInfo> Login(LoginUser loginUser)
+        {
+            ResultEntity<VueUerInfo> result = new ResultEntity<VueUerInfo>();
             try
             {
                 if (string.IsNullOrEmpty(loginUser.Account))
                     throw new CCException(CCWebMsg.User_Account_Empty);
-                result.Entity = _userServices.Login(loginUser);
+                var ui = _userServices.Login(loginUser);
+                result.Entity = ui;
+                var tokenResult = this.GetUserPwdToken(new requireUserPwdToken
+                {
+                    username = ui.TokenAccount,
+                    password = ui.TokenPwd
+                });
+                if (tokenResult.IsSuccess) result.Entity.Token = tokenResult.Entity;
+
             }
             catch (Exception ex)
             {
@@ -43,9 +107,9 @@ namespace ContentCenter.Controllers
         }
 
         [HttpPost]
-        public ResultNormal Register(RegUser regUser)
+        public ResultEntity<VueUerInfo> Register(RegUser regUser)
         {
-            ResultNormal result = new ResultNormal();
+            ResultEntity<VueUerInfo> result = new ResultEntity<VueUerInfo>();
             try
             {
                 string verifyMsg = VerifyUser(regUser);
@@ -60,33 +124,32 @@ namespace ContentCenter.Controllers
                     ResultEntity<OutSMS> smsResult =  JsonConvert.DeserializeObject<ResultEntity<OutSMS>>(smsJson);
                     if(smsResult.IsSuccess)
                     {
-                        if (smsResult.Entity.SMSVerifyStatus == SMSVerifyStatus.Success)
-                        {
-                            result.ResultCode = Convert.ToInt32(_userServices.Register(regUser));
-                            if (result.ResultCode == -1)
+                        if (smsResult.Entity.SMSVerifyStatus == SMSVerifyStatus.Success){
+                            //注册用户写入数据库
+                            var ui =_userServices.Register(regUser);
+                            result.Entity = ui;
+                            //获取Token
+                            var tokenResult = this.GetUserPwdToken(new requireUserPwdToken
                             {
-                                result.ErrorMsg = CCWebMsg.User_Reg_Exist;
-                            }
+                                username = ui.TokenAccount,
+                                password = ui.TokenPwd
+                            });
+                            if (tokenResult.IsSuccess) result.Entity.Token = tokenResult.Entity;
                         }
-                        else
-                            result.ErrorMsg = smsResult.Entity.Msg;
+                        else result.ErrorMsg = smsResult.Entity.Msg;
                     }
-                    else
-                    {
-                        result.ErrorMsg = CCWebMsg.SMS_Verify_Failure;
-                    }
-
-                 
+                    else result.ErrorMsg = CCWebMsg.SMS_Verify_Failure;
                 }
-                else
-                {
-                    result.ErrorMsg = verifyMsg;
-                }
-
+                else result.ErrorMsg = verifyMsg;              
+            }
+            catch(CCException cex)
+            {
+                result.ErrorMsg = cex.Message;
             }
             catch (Exception ex)
             {
-                result.ErrorMsg = ex.Message;
+                result.ErrorMsg = CCWebMsg.User_Reg_Failure;
+                NLogUtil.cc_ErrorTxt($"User Controller Register Error:{ex.Message}");
             }
             return result;
         }
@@ -94,11 +157,21 @@ namespace ContentCenter.Controllers
 
         private string RequireVerifySMSCode(SMSRequire sms)
         {
-            string url = _configuration["SiteUrls:Id4Url"]+ "sms/SubmitVerifyCode";
+
+            string url = _configuration["Id4Config:Id4Url"] + "sms/SubmitVerifyCode";
             string json = JsonConvert.SerializeObject(sms);
-            string res = HttpUtil.Send(url, HttpUtil.HttpMethod.Post, json, HttpUtil.application_json);
-           // HttpUtil.RequestUrlSendMsg()
-            return "";
+            string res = "";
+            try
+            {
+                 res = HttpUtil.Send(url, HttpUtil.HttpMethod.Post, json, HttpUtil.application_json);
+            }
+            catch(Exception ex)
+            {
+                NLogUtil.cc_ErrorTxt($"【UserController】RequireVerifySMSCode:{ex.Message}");
+                throw new CCException(CCWebMsg.SMS_RequireVerifySMSCode);
+            }
+        
+            return res;
         }
 
         private string VerifyUser(RegUser regUser)
