@@ -125,5 +125,19 @@ namespace ContentCenter.Repository
             var op = _db.Updateable<T>(updateEntity);
             return await op.ExecuteCommandHasChangeAsync();
         }
+
+        public async Task<bool> UpdatePart(Expression<Func<T, T>> colsExp, Expression<Func<T, bool>> whereExp)
+        {
+            var op = _db.Updateable<T>().SetColumns(colsExp).Where(whereExp);
+
+            return await op.ExecuteCommandHasChangeAsync();
+        }
+
+        public async Task<int> SaveMasterData<M>(M saveObj) where M : BaseMasterTable, new()
+        {
+            return await _db.Saveable<M>(saveObj)
+                .UpdateIgnoreColumns(o => new { o.CreateDateTime })
+                .ExecuteCommandAsync();
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using ContentCenter.IRepository;
+﻿using ContentCenter.Common;
+using ContentCenter.IRepository;
 using ContentCenter.IServices;
 using ContentCenter.Model;
 using System;
@@ -47,9 +48,10 @@ namespace ContentCenter.Services
                 throw new CCException(CCWebMsg.User_Reg_Exist_Account);
             if (phone > 0)
                 throw new CCException(CCWebMsg.User_Reg_Exist_Phone);
+
             EUserInfo ui = new EUserInfo
             {
-                Id = Guid.NewGuid().ToString("N"),
+                Id = CodeManager.UserCode(),  //Guid.NewGuid().ToString("N"),
                 UserAccount = regUser.Account,
                 UserPwd = regUser.Pwd,
                 Phone = regUser.Phone,

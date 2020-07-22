@@ -45,5 +45,7 @@ namespace ContentCenter.IServices
         /// <returns></returns>
         ESection GetSection(string secCode);
 
+       
+
     }
 }

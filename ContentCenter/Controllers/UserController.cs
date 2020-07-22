@@ -93,10 +93,11 @@ namespace ContentCenter.Controllers
                 result.Entity = ui;
                 var tokenResult = this.GetUserPwdToken(new requireUserPwdToken
                 {
-                    username = ui.TokenAccount,
+                    username = ui.UserAccount,
                     password = ui.TokenPwd
                 });
                 if (tokenResult.IsSuccess) result.Entity.Token = tokenResult.Entity;
+                else result.ErrorMsg = "没有获取登陆令牌";
 
             }
             catch (Exception ex)
@@ -131,10 +132,11 @@ namespace ContentCenter.Controllers
                             //获取Token
                             var tokenResult = this.GetUserPwdToken(new requireUserPwdToken
                             {
-                                username = ui.TokenAccount,
+                                username = ui.UserAccount,
                                 password = ui.TokenPwd
                             });
                             if (tokenResult.IsSuccess) result.Entity.Token = tokenResult.Entity;
+                            else result.ErrorMsg = "没有获取登陆令牌";
                         }
                         else result.ErrorMsg = smsResult.Entity.Msg;
                     }

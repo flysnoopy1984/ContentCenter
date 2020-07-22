@@ -1,4 +1,5 @@
 ﻿
+using ContentCenter.Model;
 using IQB.Util.Models;
 using SqlSugar;
 using System;
@@ -23,6 +24,8 @@ namespace ContentCenter.IRepository
 
         Task<bool> Update(T updateEntity);
 
+        Task<bool> UpdatePart(Expression<Func<T, T>> colsExp, Expression<Func<T, bool>> whereExp);
+
         Task<T> GetByKey(object key);
         Task<T> GetByExpSingle(Expression<Func<T, bool>> whereExp);
 
@@ -32,5 +35,6 @@ namespace ContentCenter.IRepository
 
         Task<ModelPager<T>> QueryPager(Expression<Func<T, bool>> whereExp, Expression<Func<T, object>> orderByExp, int pageIndex,int pageSize,bool desc = true);
 
+        Task<int> SaveMasterData<M>(M saveObj) where M : BaseMasterTable, new();
     }
 }

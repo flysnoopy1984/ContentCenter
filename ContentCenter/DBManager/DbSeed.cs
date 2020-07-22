@@ -18,7 +18,8 @@ namespace ContentCenter.DBManager
         {
             Console.WriteLine("Start InitDb");
             db.DbMaintenance.CreateDatabase(databaseName: "ContentCenter");
-            db.CodeFirst.InitTables<EUserInfo>();
+            db.CodeFirst.InitTables<EResourceInfo>();
+            db.CodeFirst.InitTables<ECommentInfo>();
             Console.WriteLine("End InitDb");
         }
     }

@@ -27,5 +27,38 @@
             <param name="orderByType"></param>
             <returns></returns>
         </member>
+        <member name="M:ContentCenter.Controllers.BookController.GetResourceByOwner(System.String,System.Boolean)">
+            <summary>
+            Owner直接从Token中的UserAccount获取
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.BookController.SaveResourceInfo(ContentCenter.Model.UploadRes)">
+            <summary>
+            针对外部Url资源
+            </summary>
+            <param name="uploadRes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.BookController.DeleteResource(ContentCenter.Model.DeleteRes)">
+            <summary>
+            删除资源，将oss移到Deleted文件夹下
+            </summary>
+            <param name="deleteRes"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.BookController.Upload(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            上传书本,需要保存到Oss
+            refCode
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.BookController.VerifyUpload(ContentCenter.Model.UploadRes)">
+            <summary>
+            校验上传的资源
+            </summary>
+            <returns></returns>
+        </member>
     </members>
 </doc>

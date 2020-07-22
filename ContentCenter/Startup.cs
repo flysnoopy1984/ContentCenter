@@ -15,6 +15,7 @@ using ContentCenter.Model.Commons;
 using ContentCenter.Repository;
 using ContentCenter.Services;
 using ContentCenter.ServiceSetup;
+using IQB.Util.Models.Oss;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -107,26 +108,38 @@ namespace ContentCenter
             #endregion
 
             #region AOP拦截器
-            builder.RegisterType<CCLogAOP>();
+           // builder.RegisterType<CCLogAOP>();
             #endregion
 
+            #region 实例注入
+            builder.RegisterInstance(new OssConfig
+            {
+                accessKeyId = Configuration["ossConfig:accessKeyId"],
+                accessKeySecret = Configuration["ossConfig:accessKeySecret"],
+                bucketName = Configuration["ossConfig:bucketName"],
+                endpoint = Configuration["ossConfig:endpoint"],
+            }) ;
+            #endregion
             #region 服务注入
             builder.RegisterType<UserServices>()
                 .InstancePerLifetimeScope()
-                .AsImplementedInterfaces()
-                .EnableInterfaceInterceptors()
-                .InterceptedBy(typeof(CCLogAOP));
+                .AsImplementedInterfaces();
+               // .EnableInterfaceInterceptors()
+              //  .InterceptedBy(typeof(CCLogAOP));
 
             builder.RegisterType<AdminServices>()
                .InstancePerLifetimeScope()
                .AsImplementedInterfaces();
 
+            builder.RegisterType<ResourceServices>()
+              .InstancePerLifetimeScope()
+              .AsImplementedInterfaces();
 
             builder.RegisterType<BookServices>()
                .InstancePerLifetimeScope()
-               .AsImplementedInterfaces()
-               .EnableInterfaceInterceptors()
-               .InterceptedBy(typeof(CCLogAOP));
+               .AsImplementedInterfaces();
+               //.EnableInterfaceInterceptors()
+               //.InterceptedBy(typeof(CCLogAOP));
 
             builder.RegisterType<BookRepository>()
                 .InstancePerLifetimeScope()
@@ -140,7 +153,12 @@ namespace ContentCenter
             builder.RegisterType<AdminRepository>()
                .InstancePerLifetimeScope()
                .AsImplementedInterfaces();
-
+            builder.RegisterType<CommentReponsitory>()
+              .InstancePerLifetimeScope()
+              .AsImplementedInterfaces();
+            builder.RegisterType<ResourceReponsitory>()
+              .InstancePerLifetimeScope()
+              .AsImplementedInterfaces();
 
 
             #endregion
@@ -148,6 +166,7 @@ namespace ContentCenter
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+           
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

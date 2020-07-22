@@ -55,7 +55,7 @@ namespace ContentCenter.Model
             {
                 HeaderUrl = this.HeaderUrl,
                 NickName = this.NickName,
-                TokenAccount = this.UserAccount,
+                UserAccount = this.UserAccount,
                 TokenPwd = this.UserPwd,
                 UserId = this.Id,
             };

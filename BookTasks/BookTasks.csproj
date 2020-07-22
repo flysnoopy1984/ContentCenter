@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\IQBLib\IQB.Util\IQB.Util.csproj" />
     <ProjectReference Include="..\ContentCenter.IRepository\ContentCenter.IRepository.csproj" />
     <ProjectReference Include="..\ContentCenter.Model\ContentCenter.Model.csproj" />
     <ProjectReference Include="..\ContentCenter.Repository\ContentCenter.Repository.csproj" />
