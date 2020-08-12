@@ -8,7 +8,7 @@ using System.Text;
 namespace ContentCenter.Model
 {
     [SugarTable("ccResourceInfo")]
-    public class EResourceInfo:BaseMasterTable
+    public class EResourceInfo: BaseMasterTable
     {
         public EResourceInfo(){}
        
@@ -16,7 +16,7 @@ namespace ContentCenter.Model
         [SugarColumn(IsIdentity = true)]
         public long Id { get; set; }
 
-        [SugarColumn(IsPrimaryKey = true,Length = 50, ColumnDataType = "nvarchar")]
+        [SugarColumn(IsPrimaryKey = true,Length = 50, ColumnDataType = "varchar")]
         public string Code { get; set; }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace ContentCenter.Model
         /// <summary>
         /// 资源上传者
         /// </summary>
-        [SugarColumn(Length = 40)]
+        [SugarColumn(Length = 32)]
         public string Owner { get; set; }
 
         /// <summary>
@@ -67,11 +67,14 @@ namespace ContentCenter.Model
         [SugarColumn(Length = 50, IsNullable = true,ColumnDataType = "nvarchar")]
         public string Remark { get; set; }
 
-      
+        [SugarColumn(IsNullable = true, DefaultValue = "0")]
+        public int goodNum { get; set; }
 
-       
-       
-   
+        [SugarColumn(IsNullable = true, DefaultValue = "0")]
+        public int badNum { get; set; }
+
+        //[SugarColumn(IsNullable = true)]
+        //public DateTime praizeDateTime { get; set; }
 
     }
 }

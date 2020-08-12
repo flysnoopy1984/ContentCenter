@@ -7,6 +7,7 @@ using ContentCenter.Model.BaseEnum;
 using IQB.Util;
 using IQB.Util.Models;
 using IQB.Util.Models.Oss;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,6 +20,8 @@ namespace ContentCenter.Services
     {
         private OssConfig _OssConfig;
         private IResourceReponsitory _ResourceReponsitory;
+        private ICommentRepository _commentRepository;
+        private IPraizeRepository _praizeRepository;
         private OssClient _ossClient;
 
         protected OssClient OssClient
@@ -30,19 +33,26 @@ namespace ContentCenter.Services
                 return _ossClient;
             }
         }
-        public ResourceServices(OssConfig ossConfig, IResourceReponsitory resourceReponsitory) : base(resourceReponsitory)
+        public ResourceServices(OssConfig ossConfig, 
+                                IResourceReponsitory resourceReponsitory, 
+                                ICommentRepository commentRepository,
+                                IPraizeRepository praizeRepository) : base(resourceReponsitory)
         {
             _ResourceReponsitory = resourceReponsitory;
+            _commentRepository = commentRepository;
+            _praizeRepository = praizeRepository;
             _OssConfig = ossConfig;
         }
 
-        public List<EResourceInfo> getFilesByOwner(string refCode, string owner, bool ignoreDelete = false)
+        public List<EResourceInfo> getFilesByOwner(string refCode, string owner, bool includeDelete = false)
         {
-            Expression<Func<EResourceInfo, bool>> whereExp = a => a.RefCode == refCode && a.Owner == owner;
-            if (!ignoreDelete)
-                whereExp = a => a.RefCode == refCode && a.Owner == owner && a.IsDelete == false;
+            var exp = Expressionable.Create<EResourceInfo>()
+              .And(a => a.RefCode == refCode)
+              .And(a => a.Owner == owner)
+              .AndIF(!includeDelete, a => a.IsDelete == false).ToExpression();
 
-            return _ResourceReponsitory.QueryList(whereExp, null).Result;
+         
+            return _ResourceReponsitory.QueryList(exp, a=>a.UpdateDateTime).Result;
         }
 
         public bool ossExist(string ossPath)
@@ -58,18 +68,18 @@ namespace ContentCenter.Services
         }
 
 
-        public ResultNormal saveResToDb(EResourceInfo resInfo)
+        public ResultEntity<EResourceInfo> saveResToDb(EResourceInfo resInfo)
         {
-            ResultNormal result = new ResultNormal();
+            ResultEntity<EResourceInfo> result = new ResultEntity<EResourceInfo>();
             try
             {
-                var r = _ResourceReponsitory.SaveMasterData<EResourceInfo>(resInfo).Result;
-                //_ResourceReponsitory.LogicDelete(resInfo.Code);
-
-                // = _ResourceReponsitory.Add(resInfo).Result;
+                var r = _ResourceReponsitory.SaveMasterData(resInfo).Result;
               
-                if (r<=0)  result.ErrorMsg = "没有保存任何数据";
-  
+                if (r<=0)  
+                    result.ErrorMsg = "没有保存任何数据";
+                result.Entity = resInfo;
+
+
             }
             catch(Exception ex)
             {
@@ -126,10 +136,9 @@ namespace ContentCenter.Services
             return  _ResourceReponsitory.LogicDelete(deleteRes.resCode).Result?1:0;
         }
 
-        public bool IsRepeatRes(string refCode, ResType resType, string fileType, bool ignoreDelete = true)
+        public bool IsRepeatRes(string refCode, ResType resType, string fileType, bool includeDelete = false)
         {
-            var c = _ResourceReponsitory.GetCount(a => a.RefCode == refCode && 
-            a.ResType == resType && a.FileType == fileType && (!ignoreDelete || (ignoreDelete && a.IsDelete == true))).Result;
+            var c = _ResourceReponsitory.SameResCount(refCode, resType,fileType, includeDelete).Result;
             return c > 0;
 
         }
@@ -184,5 +193,36 @@ namespace ContentCenter.Services
             return result;
         }
 
+        public EResourceInfo get(string pkCode)
+        {
+            return _ResourceReponsitory.GetByKey(pkCode).Result;
+        }
+
+        public ModelPager<VueResInfo> getResByRefCode(QRes qRes)
+        {
+            if(string.IsNullOrEmpty(qRes.reqUserId))
+                throw new Exception("非法操作！");
+
+            var resList = _ResourceReponsitory.GetResByRefCode(qRes).Result;
+            foreach(var res in resList.datas)
+            {
+                var commList = _commentRepository.GetCommentsByResCodes(new QComment_Res
+                {
+                    pageIndex = 1,
+                    pageSize = qRes.withCommentNum,
+                    resCode = res.resCode,
+                    reqUserId = qRes.reqUserId
+                }).Result;
+                res.commList = commList;
+
+                //var c = _praizeRepository.GetPraize_Res(res.resCode, qRes.reqUserId).Result;
+                //if (c != null)
+                //    res.userPraizeType = c.PraizeType;
+
+            }
+            return resList;
+
+
+        }
     }
 }

@@ -120,47 +120,76 @@ namespace ContentCenter
                 endpoint = Configuration["ossConfig:endpoint"],
             }) ;
             #endregion
+
             #region 服务注入
-            builder.RegisterType<UserServices>()
-                .InstancePerLifetimeScope()
-                .AsImplementedInterfaces();
-               // .EnableInterfaceInterceptors()
-              //  .InterceptedBy(typeof(CCLogAOP));
+            var basePath = Microsoft.DotNet.PlatformAbstractions.ApplicationEnvironment.ApplicationBasePath;
 
-            builder.RegisterType<AdminServices>()
-               .InstancePerLifetimeScope()
-               .AsImplementedInterfaces();
+            var servicesDllFile = Path.Combine(basePath, "ContentCenter.Services.dll");
+            var repositoryDllFile = Path.Combine(basePath, "ContentCenter.Repository.dll");
 
-            builder.RegisterType<ResourceServices>()
-              .InstancePerLifetimeScope()
-              .AsImplementedInterfaces();
+            if (!(File.Exists(servicesDllFile) && File.Exists(repositoryDllFile)))
+            {
+                throw new Exception("Repository.dll和service.dll 丢失，因为项目解耦了，所以需要先F6编译，再F5运行，请检查 bin 文件夹，并拷贝。");
+            }
+            // 获取 Service.dll 程序集服务，并注册
+            var assemblysServices = Assembly.LoadFrom(servicesDllFile);
+            builder.RegisterAssemblyTypes(assemblysServices)
+                      .AsImplementedInterfaces()
+                      .InstancePerDependency();
+                      //.EnableInterfaceInterceptors()//引用Autofac.Extras.DynamicProxy;
+                      //.InterceptedBy(cacheType.ToArray());//允许将拦截器服务的列表分配给注册。
 
-            builder.RegisterType<BookServices>()
-               .InstancePerLifetimeScope()
-               .AsImplementedInterfaces();
+            // 获取 Repository.dll 程序集服务，并注册
+            var assemblysRepository = Assembly.LoadFrom(repositoryDllFile);
+            builder.RegisterAssemblyTypes(assemblysRepository)
+                   .AsImplementedInterfaces()
+                   .InstancePerDependency();
+
+            /*   builder.RegisterType<UserServices>()
+                   .InstancePerLifetimeScope()
+                   .AsImplementedInterfaces();
+                  // .EnableInterfaceInterceptors()
+                 //  .InterceptedBy(typeof(CCLogAOP));
+
+               builder.RegisterType<AdminServices>()
+                  .InstancePerLifetimeScope()
+                  .AsImplementedInterfaces();
+
+               builder.RegisterType<ResourceServices>()
+                 .InstancePerLifetimeScope()
+                 .AsImplementedInterfaces();
+
+               builder.RegisterType<BookServices>()
+                  .InstancePerLifetimeScope()
+                  .AsImplementedInterfaces();
+               builder.RegisterType<SearchServices>()
+                 .InstancePerLifetimeScope()
+                 .AsImplementedInterfaces();
                //.EnableInterfaceInterceptors()
                //.InterceptedBy(typeof(CCLogAOP));
 
-            builder.RegisterType<BookRepository>()
-                .InstancePerLifetimeScope()
-                .AsImplementedInterfaces();
-            builder.RegisterType<SectionRepository>()
-            .InstancePerLifetimeScope()
-            .AsImplementedInterfaces();
-            builder.RegisterType<UserRepository>()
+               builder.RegisterType<BookRepository>()
+                   .InstancePerLifetimeScope()
+                   .AsImplementedInterfaces();
+               builder.RegisterType<SectionRepository>()
                .InstancePerLifetimeScope()
                .AsImplementedInterfaces();
-            builder.RegisterType<AdminRepository>()
+               builder.RegisterType<UserRepository>()
+                  .InstancePerLifetimeScope()
+                  .AsImplementedInterfaces();
+               builder.RegisterType<AdminRepository>()
+                  .InstancePerLifetimeScope()
+                  .AsImplementedInterfaces();
+               builder.RegisterType<CommentRepository>()
+                 .InstancePerLifetimeScope()
+                 .AsImplementedInterfaces();
+               builder.RegisterType<ResourceRepository>()
+                 .InstancePerLifetimeScope()
+                 .AsImplementedInterfaces();
+               builder.RegisterType<SearchRepository>()
                .InstancePerLifetimeScope()
                .AsImplementedInterfaces();
-            builder.RegisterType<CommentReponsitory>()
-              .InstancePerLifetimeScope()
-              .AsImplementedInterfaces();
-            builder.RegisterType<ResourceReponsitory>()
-              .InstancePerLifetimeScope()
-              .AsImplementedInterfaces();
-
-
+               */
             #endregion
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

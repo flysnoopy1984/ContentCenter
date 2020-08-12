@@ -4,8 +4,7 @@ using System.Text;
 
 namespace ContentCenter.Model
 {
-    public class BaseProduct
+    public class VueCommentReply
     {
-        public DateTime CreateDateTime { get; set; }
     }
 }

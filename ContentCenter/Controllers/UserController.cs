@@ -107,6 +107,7 @@ namespace ContentCenter.Controllers
             return result;
         }
 
+        
         [HttpPost]
         public ResultEntity<VueUerInfo> Register(RegUser regUser)
         {
@@ -154,6 +155,33 @@ namespace ContentCenter.Controllers
                 NLogUtil.cc_ErrorTxt($"User Controller Register Error:{ex.Message}");
             }
             return result;
+        }
+
+        [HttpPost]
+        public ResultNormal RegistRebot(string userAccount)
+        {
+            ResultNormal result = new ResultNormal();
+            try
+            {
+                if(string.IsNullOrEmpty(userAccount))
+                    userAccount = DateTime.Now.ToString("yyyy-MM-dd") + StringUtil.GetRnd(2, true, false, false, false);
+                var phone ="199"+ StringUtil.GetRnd(8, true, false, false, false);
+                RegUser regUser = new RegUser
+                {
+                    Account = $"r{userAccount}",
+                    Phone = phone,
+                    Pwd = "111111",
+                   
+                };
+                var ui = _userServices.Register(regUser);
+                result.Message = ui.UserAccount;
+            }
+            catch(Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+          
         }
         #region 私有方法
 

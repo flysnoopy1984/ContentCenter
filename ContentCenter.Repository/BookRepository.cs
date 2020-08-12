@@ -94,7 +94,6 @@ namespace ContentCenter.Repository
             });
 
             return r.Take(defaultTop).ToPageListAsync(pageIndex, pageSize, totalNumber);
-          
         }
 
 
@@ -142,6 +141,24 @@ namespace ContentCenter.Repository
             return null;
             //Db.Ado.GetDataTable("")
             //return "";
+        }
+        public Task<List<RBookList>> searchByNameAndAuthor(SearchReq searchRequest, RefAsync<int> totalNumber)
+        {
+
+            var q = Db.Queryable<EBookInfo>();
+            q = q.Where(b => b.Title.Contains(searchRequest.keyword) || b.AuthorCode.Contains(searchRequest.keyword));
+            var r = q.Select((b) => new RBookList
+            {
+                Code = b.Code,
+                CoverUrl = b.CoverUrl,
+                Name = b.Title,
+                Author = b.AuthorCode,
+                Score = b.Score.ToString(),
+                Summery = b.Summery.Substring(0, 100),
+            });
+         
+            return r.ToPageListAsync(searchRequest.pageIndex, searchRequest.pageSize, totalNumber);
+          
         }
 
     }

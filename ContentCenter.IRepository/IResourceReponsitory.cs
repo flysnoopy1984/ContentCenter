@@ -1,4 +1,6 @@
 ﻿using ContentCenter.Model;
+using ContentCenter.Model.BaseEnum;
+using IQB.Util.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,6 +13,9 @@ namespace ContentCenter.IRepository
 
         Task<bool> LogicDelete(string resCode);
 
+        Task<int> SameResCount(string refCode, ResType resType, string fileType, bool includeDelete = false);
 
+        Task<ModelPager<VueResInfo>> GetResByRefCode(QRes qRes);
+       
     }
 }

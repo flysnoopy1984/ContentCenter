@@ -79,14 +79,29 @@
             简介
             </summary>
         </member>
-        <member name="P:ContentCenter.Model.ECommentInfo.ReplayId">
+        <member name="P:ContentCenter.Model.EComment_Res.replyNum">
             <summary>
-            回复Id
+            回复总数
             </summary>
         </member>
-        <member name="P:ContentCenter.Model.ECommentInfo.parentId">
+        <member name="P:ContentCenter.Model.EPraize_Comment.RefCode">
             <summary>
-            父节点
+            ResCode属于哪本书，用于筛选数据 
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EPraize_Res.RefCode">
+            <summary>
+            ResCode属于哪本书，用于筛选数据 
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitPraize.parentRefCode">
+            <summary>
+            refCode如果是资源，则parent是BookCode
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.VueCommentInfo.goodNum">
+            <summary>
+            点赞数
             </summary>
         </member>
         <member name="P:ContentCenter.Model.EResourceInfo.RefCode">
@@ -128,6 +143,11 @@
              <summary>
             备注
              </summary>
+        </member>
+        <member name="P:ContentCenter.Model.QRes.withCommentNum">
+            <summary>
+            带出评论数量
+            </summary>
         </member>
         <member name="P:ContentCenter.Model.UploadRes.refCode">
             <summary>

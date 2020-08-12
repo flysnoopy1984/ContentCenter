@@ -8,6 +8,8 @@ namespace ContentCenter.Model
     [SugarTable("SectionTag")]
     public class ESectionTag
     {
+        [SugarColumn(IsPrimaryKey =true,IsIdentity =true)]
+        public long Id { get; set; }
 
         [SugarColumn(Length = 50, ColumnDataType = "nvarchar")]
         public string SectionCode { get; set; }

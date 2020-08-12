@@ -32,7 +32,9 @@ namespace ContentCenter.Model
 
         public string remark { get; set; }
 
-        public bool IsReset { get; set; } = false;
+        
+        public bool isReset { get; set; } = false;
+        public string resCode { get; set; }
 
       
 

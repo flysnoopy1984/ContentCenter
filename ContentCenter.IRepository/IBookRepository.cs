@@ -28,6 +28,8 @@ namespace ContentCenter.IRepository
         /// </summary>
         Task<List<RBookList>> GetBookListBySection_HighScroe(int pageIndex, int pageSize, RefAsync<int> totalNumber,int defaultTop);
 
+        Task<List<RBookList>> searchByNameAndAuthor(SearchReq searchRequest, RefAsync<int> totalNumber);
+
         Task<List<ESection>> GetWebSection(SectionType sectionType);
 
         /// <summary>

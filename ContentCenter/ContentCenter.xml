@@ -27,9 +27,15 @@
             <param name="orderByType"></param>
             <returns></returns>
         </member>
+        <member name="M:ContentCenter.Controllers.BookController.GetAllResourcesByRefCode(ContentCenter.Model.QRes)">
+            <summary>
+            获取此书本所有可用资源
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:ContentCenter.Controllers.BookController.GetResourceByOwner(System.String,System.Boolean)">
             <summary>
-            Owner直接从Token中的UserAccount获取
+            获取当前用户对于此书的所有资源
             </summary>
             <returns></returns>
         </member>
@@ -49,8 +55,8 @@
         </member>
         <member name="M:ContentCenter.Controllers.BookController.Upload(Microsoft.AspNetCore.Http.IFormFile)">
             <summary>
-            上传书本,需要保存到Oss
-            refCode
+            上传书本
+            支持重传
             </summary>
             <returns></returns>
         </member>

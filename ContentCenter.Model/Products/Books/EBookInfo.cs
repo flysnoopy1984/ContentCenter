@@ -6,9 +6,9 @@ using System.Text;
 namespace ContentCenter.Model
 {
     [SugarTable("BookInfo")]
-    public class EBookInfo: BaseProduct
+    public class EBookInfo: BaseMasterTable
     {
-        [SugarColumn(IsPrimaryKey = true, Length = 50, ColumnDataType = "nvarchar")]
+        [SugarColumn(IsPrimaryKey = true, Length = 50, ColumnDataType = "varchar")]
         public string Code { get; set; }
 
         [SugarColumn(Length = 100)]
@@ -26,7 +26,7 @@ namespace ContentCenter.Model
         [SugarColumn(Length = 200, IsNullable = true, ColumnDataType = "nvarchar")]
         public string SubTitle { get; set; }
 
-        [SugarColumn(Length = 50)]
+        [SugarColumn(Length = 50, ColumnDataType = "nvarchar")]
         public string AuthorCode { get; set; }
 
         /// <summary>

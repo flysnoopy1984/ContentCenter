@@ -19,7 +19,7 @@ namespace ContentCenter.IServices
         /// <returns></returns>
         ResultNormal uploadBookToOss(string localfilePath,string ossKey,bool isCover = true);
 
-        bool IsRepeatRes(string refCode, ResType resType, string fileType, bool ignoreDelete = true);
+        bool IsRepeatRes(string refCode, ResType resType, string fileType, bool includeDelete = false);
 
         /// <summary>
         /// 检查OSS
@@ -50,10 +50,17 @@ namespace ContentCenter.IServices
         /// </summary>
         /// <param name="ossRes"></param>
         /// <returns></returns>
-        ResultNormal saveResToDb(EResourceInfo resInfo);
+        ResultEntity<EResourceInfo> saveResToDb(EResourceInfo resInfo);
 
-        List<EResourceInfo> getFilesByOwner(string refCode, string owner, bool ignoreDelete = false);
+        List<EResourceInfo> getFilesByOwner(string refCode, string owner, bool includeDelete = false);
 
+        /// <summary>
+        /// 获取某本书的所有资源
+        /// </summary>
+        /// <param name="qRes"></param>
+        /// <returns></returns>
+        ModelPager<VueResInfo> getResByRefCode(QRes qRes);
 
+        EResourceInfo get(string pkCode);
     }
 }

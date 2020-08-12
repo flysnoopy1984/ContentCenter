@@ -25,12 +25,12 @@ namespace ContentCenter.ServiceSetup
                     DbType = (DbType)cfg["DbType"].ObjToInt(),
                     ConfigId = cfg["ConfId"],
                     IsAutoCloseConnection = true,
+                    
+                    IsShardSameThread = true,
                     ConnectionString = cfg["Connection"]
                 };
                 services.AddScoped<ISqlSugarClient>(o =>
                 {
-
-
                     return new SqlSugarClient(cc);
                 });
                 //  ccList.Add(cc);
@@ -57,7 +57,8 @@ namespace ContentCenter.ServiceSetup
                 {
                     DbType = (DbType)cfg["DbType"].ObjToInt(),
                     ConfigId = cfg["ConfId"],
-                    IsAutoCloseConnection = true,
+                    IsAutoCloseConnection =true,
+                    IsShardSameThread = true,
                     ConnectionString = cfg["Connection"],
                     InitKeyType = InitKeyType.Attribute,
                 };

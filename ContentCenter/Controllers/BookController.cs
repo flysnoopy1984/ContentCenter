@@ -128,7 +128,27 @@ namespace ContentCenter.Controllers
         #region 资源相关
 
         /// <summary>
-        /// Owner直接从Token中的UserAccount获取
+        /// 获取此书本所有可用资源
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public ResultPager<VueResInfo> GetAllResourcesByRefCode(QRes qRes)
+        {
+            ResultPager<VueResInfo> result = new ResultPager<VueResInfo>();
+            try
+            {
+                qRes.reqUserId = this.getUserId();
+                result.PageData = _resourceServices.getResByRefCode(qRes);
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+        }
+        /// <summary>
+        /// 获取当前用户对于此书的所有资源
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -138,8 +158,8 @@ namespace ContentCenter.Controllers
             ResultList<EResourceInfo> result = new ResultList<EResourceInfo>();
             try
             {
-                var userAccount = base.getUserAccount();
-                result.List =  _resourceServices.getFilesByOwner(refCode, userAccount);
+                var userId = base.getUserId();
+                result.List =  _resourceServices.getFilesByOwner(refCode, userId);
             }
             catch(Exception ex)
             {
@@ -157,9 +177,9 @@ namespace ContentCenter.Controllers
         /// <returns></returns>
         [HttpPost]
         [Authorize]
-        public ResultNormal SaveResourceInfo(UploadRes uploadRes)
+        public ResultEntity<EResourceInfo> SaveResourceInfo(UploadRes uploadRes)
         {
-            ResultNormal result = new ResultNormal();
+            ResultEntity<EResourceInfo> result = new ResultEntity<EResourceInfo>();
             try
             {
                 var verifyMsg = VerifyUpload(uploadRes);
@@ -168,7 +188,8 @@ namespace ContentCenter.Controllers
                     result.ErrorMsg = verifyMsg;
                     return result;
                 }
-                result =  _resourceServices.saveResToDb(GenerateResource(uploadRes)); 
+                result = _resourceServices.saveResToDb(GenerateResource(uploadRes)); 
+
             }
             catch(Exception ex)
             {
@@ -184,7 +205,7 @@ namespace ContentCenter.Controllers
         /// <param name="deleteRes"></param>
         /// <returns></returns>
         [HttpPost]
-       // [Authorize]
+        [Authorize]
         public ResultNormal DeleteResource(DeleteRes deleteRes)
         {
             ResultNormal result = new ResultNormal();
@@ -201,18 +222,18 @@ namespace ContentCenter.Controllers
         }
 
         /// <summary>
-        /// 上传书本,需要保存到Oss
-        /// refCode
+        /// 上传书本
+        /// 支持重传
         /// </summary>
         /// <returns></returns>
         [HttpPost]
         [Authorize]
         [RequestSizeLimit(52428800)]
-        public ResultNormal Upload([FromForm] IFormFile file)//,
+        public ResultEntity<EResourceInfo> Upload([FromForm] IFormFile file)//,
         {
-            ResultNormal result = new ResultNormal();
-         
-            var path = _webHostEnvironment.ContentRootPath + "\\UploadFiles\\temp\\" + file.FileName;
+            ResultEntity<EResourceInfo> result = new ResultEntity<EResourceInfo>();
+            EResourceInfo origRes = null;
+            var filePath = _webHostEnvironment.ContentRootPath + "\\UploadFiles\\temp\\" + file.FileName;
           
             try
             {
@@ -229,21 +250,27 @@ namespace ContentCenter.Controllers
                     }
                    
                     //写入到磁盘
-                    using (FileStream fs = System.IO.File.Create(path)){
+                    using (FileStream fs = System.IO.File.Create(filePath)){
                         file.CopyTo(fs);//将上传的文件文件流，复制到fs中
                         fs.Flush();//清空文件流
                     }
                     //上传到Oss   
                    
-                    var ossKey = OssKeyManager.BookKey(path, uploadRes.refCode, getUserId());
-
-                    var uploadResult = _resourceServices.uploadBookToOss(path, ossKey);
+                    var ossKey = OssKeyManager.BookKey(filePath, uploadRes.refCode, getUserId());
+                    //如果是重新提交，则需要删除Oss资源
+                    if (uploadRes.isReset){
+                        origRes = _resourceServices.get(uploadRes.resCode);
+                        if(origRes.OssPath != ossKey)
+                            _resourceServices.ossDelete(origRes.OssPath);
+                    }
+                    var uploadResult = _resourceServices.uploadBookToOss(filePath, ossKey);
                     if (uploadResult.IsSuccess)
                     {
                         var resourceInfo = GenerateResource(uploadRes, ossKey);
                         resourceInfo.OrigFileName = file.FileName;
                         //上传信息写入到数据库
                         result = _resourceServices.saveResToDb(resourceInfo);
+                       
                     }
                     else
                     {
@@ -258,8 +285,8 @@ namespace ContentCenter.Controllers
             }
             finally
             {
-                if(System.IO.File.Exists(path))
-                    System.IO.File.Delete(path);
+                if(System.IO.File.Exists(filePath))
+                    System.IO.File.Delete(filePath);
             }
             return result;
         }
@@ -275,10 +302,14 @@ namespace ContentCenter.Controllers
                 resType = resType,
                 fileType = Request.Form["fileType"],
                 refCode = Convert.ToString(Request.Form["refCode"]),
-                owner = getUserAccount(),
+                owner = getUserId(),
                 outerUrl = Convert.ToString(Request.Form["outerUrl"]),
-                remark = Convert.ToString(Request.Form["remark"])
+                remark = Convert.ToString(Request.Form["remark"]),
+                isReset = Convert.ToBoolean(Request.Form["isReset"]),
+
             };
+            if (uploadRes.isReset) 
+                uploadRes.resCode = Convert.ToString(Request.Form["resCode"]);
             return uploadRes;
         }
 
@@ -293,7 +324,6 @@ namespace ContentCenter.Controllers
         {
             EResourceInfo resourceInfo = new EResourceInfo
             {
-              
                 Owner = uploadRes.owner,
                 RefCode = uploadRes.refCode,
                 Remark = uploadRes.remark,
@@ -301,6 +331,9 @@ namespace ContentCenter.Controllers
                 Url = uploadRes.outerUrl,
                 FileType = uploadRes.fileType,
             };
+            if (uploadRes.isReset) 
+                resourceInfo.Code = uploadRes.resCode;
+            else
             resourceInfo.Code = CodeManager.ResCode(
                 resourceInfo.FileType,
                 (int)resourceInfo.ResType,
@@ -339,11 +372,20 @@ namespace ContentCenter.Controllers
                 if (!VerifyUtil.VerifyUrl(url)) return "不是有效的http/https Url";
                 if (!VerifyUtil.VerifyHttp(url)) return "url地址无法访问，请检查是否已失效";
             }
-            if (_resourceServices.IsRepeatRes(uploadRes.refCode, uploadRes.resType, uploadRes.fileType)){
-
-                return uploadRes.resType == ResType.BookOss?"此书已上传同类型文件，请查看页面下方列表": 
-                    $"已上传[{uploadRes.fileType}]文件类型的外部资源，请查看页面下方列表";   
+            if (!uploadRes.isReset){
+                if (_resourceServices.IsRepeatRes(uploadRes.refCode, uploadRes.resType, uploadRes.fileType)){
+                    return uploadRes.resType == ResType.BookOss ? "此书已上传同类型文件，请查看页面下方列表" :
+                        $"已上传[{uploadRes.fileType}]文件类型的外部资源，请查看页面下方列表";
+                }
             }
+            else
+            {
+                if (string.IsNullOrEmpty(uploadRes.resCode))
+                {
+                    return "没有找到重传的资源";
+                }
+            }
+           
             return null;
         }
 

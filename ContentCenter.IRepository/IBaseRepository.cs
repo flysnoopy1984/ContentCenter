@@ -24,7 +24,19 @@ namespace ContentCenter.IRepository
 
         Task<bool> Update(T updateEntity);
 
-        Task<bool> UpdatePart(Expression<Func<T, T>> colsExp, Expression<Func<T, bool>> whereExp);
+        /// <summary>
+        /// 没有对象，根据where来部分更新
+        /// </summary>
+        /// <param name="colsExp"></param>
+        /// <param name="whereExp"></param>
+        /// <returns></returns>
+        Task<bool> UpdatePart_NoObj(Expression<Func<T, T>> colsExp, Expression<Func<T, bool>> whereExp);
+        /// <summary>
+        /// 有对象，根据主键来部分更新
+        /// </summary>
+        /// <param name="colsExp"></param>
+        /// <returns></returns>
+        Task<bool> UpdatePart_WithObj(T entity,Expression<Func<T, T>> colsExp);
 
         Task<T> GetByKey(object key);
         Task<T> GetByExpSingle(Expression<Func<T, bool>> whereExp);

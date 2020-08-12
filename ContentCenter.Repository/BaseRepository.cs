@@ -27,11 +27,12 @@ namespace ContentCenter.Repository
 
             //_db.Aop.OnLogExecuted = (sql, pars) => //SQL执行完事件
             //{
-            //    NLogUtil.cc_InfoTxt($"Before Sql:{sql}");
+            //    NLogUtil.cc_InfoTxt($"OnLogExecuted Sql:{sql}");
             //};
             //_db.Aop.OnLogExecuting = (sql, pars) => //SQL执行前事件
             //{
             //    Console.WriteLine(sql);
+            //    NLogUtil.cc_InfoTxt($"Sql:{sql}");
             //};
             _db.Aop.OnError = (exp) =>//执行SQL 错误事件
             {
@@ -126,10 +127,15 @@ namespace ContentCenter.Repository
             return await op.ExecuteCommandHasChangeAsync();
         }
 
-        public async Task<bool> UpdatePart(Expression<Func<T, T>> colsExp, Expression<Func<T, bool>> whereExp)
+        public async Task<bool> UpdatePart_NoObj(Expression<Func<T, T>> colsExp, Expression<Func<T, bool>> whereExp)
         {
             var op = _db.Updateable<T>().SetColumns(colsExp).Where(whereExp);
 
+            return await op.ExecuteCommandHasChangeAsync();
+        }
+        public async Task<bool> UpdatePart_WithObj(T entity, Expression<Func<T, T>> colsExp)
+        {
+            var op = _db.Updateable<T>(entity).SetColumns(colsExp);
             return await op.ExecuteCommandHasChangeAsync();
         }
 
