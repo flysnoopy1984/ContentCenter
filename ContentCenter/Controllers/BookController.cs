@@ -322,6 +322,7 @@ namespace ContentCenter.Controllers
 
         private EResourceInfo GenerateResource(UploadRes uploadRes)
         {
+            uploadRes.owner = this.getUserId();
             EResourceInfo resourceInfo = new EResourceInfo
             {
                 Owner = uploadRes.owner,

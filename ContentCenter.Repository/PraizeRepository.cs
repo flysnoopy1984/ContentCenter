@@ -18,17 +18,17 @@ namespace ContentCenter.Repository
 
         }
      
-        public Task<long> AddPraize_Comment(EPraize_Comment praize)
+        public long AddPraize_Comment(EPraize_Comment praize)
         {
             var insertable = Db.Insertable(praize);
-            return insertable.ExecuteReturnBigIdentityAsync();
+            return insertable.ExecuteReturnBigIdentity();
         }
 
 
-        public Task<long> AddPraize_CommentReply(EPraize_CommentReply praize)
+        public long AddPraize_CommentReply(EPraize_CommentReply praize)
         {
             var insertable = Db.Insertable(praize);
-            return insertable.ExecuteReturnBigIdentityAsync();
+            return insertable.ExecuteReturnBigIdentity();
         }
 
         public Task<int> HasPraized_Comment_Res(long commentId, string userId)
@@ -38,27 +38,27 @@ namespace ContentCenter.Repository
 
         public Task<int> HasPraized_CommentReply_Res(long commentReplyId, string userId)
         {
-            return Db.Queryable<EPraize_CommentReply>().Where(a => a.commentReplyId == commentReplyId && a.userId == userId).CountAsync();
+            return Db.Queryable<EPraize_CommentReply>().Where(a => a.replyId == commentReplyId && a.userId == userId).CountAsync();
         }
 
         public Task<int> HasPraized_Res(string resCode, string userId)
         {
             return base.GetCount(a => a.ResCode == resCode && a.userId == userId);
         }
-        public Task<bool> UpdatePraized_Res(PraizeType praizeType, string resCode, string userId)
+        public bool UpdatePraized_Res(PraizeType praizeType, string resCode, string userId)
         {
            
 
             var op = Db.Updateable<EPraize_Res>().SetColumns(a => new EPraize_Res() { PraizeType = praizeType });
             op = op.Where(a => a.ResCode == resCode && a.userId == userId);
 
-            return op.ExecuteCommandHasChangeAsync();
+            return op.ExecuteCommandHasChange();
         }
 
-        public Task<bool> DeletePraized_Res(string resCode, string userId)
+        public bool DeletePraized_Res(string resCode, string userId)
         {
         
-            return base.DeleteRangeByExp(a => a.ResCode == resCode && a.userId == userId);
+            return base.DeleteRangeByExp_Sync(a => a.ResCode == resCode && a.userId == userId);
         }
 
         public Task<EPraize_Res> GetPraize_Res(string resCode, string userId)
@@ -66,19 +66,27 @@ namespace ContentCenter.Repository
             return GetByExpSingle(a => a.userId == userId && a.ResCode == resCode);
         }
 
-        public Task<bool> DeletePraized_Comment_Res(long commentId, string userId)
+        public bool DeletePraized_Comment_Res(long commentId, string userId)
         {
-            var op = Db.Deleteable<EPraize_Comment>( a=>a.commentId == commentId && a.userId == userId);
-            return  op.ExecuteCommandHasChangeAsync();
+            var exp = Expressionable.Create<EPraize_Comment>()
+             .And(a => a.commentId == commentId)
+             .AndIF(!string.IsNullOrEmpty(userId), a => a.userId == userId).ToExpression();
+
+            var op = Db.Deleteable(exp);
+            return  op.ExecuteCommandHasChange();
         }
 
-        public Task<bool> DeletePraized_CommentReply_Res(long commentId, string userId)
+        public int DeletePraized_CommentReply_Res(long replyId, string userId)
         {
-            var op = Db.Deleteable<EPraize_CommentReply>(a => a.commentId == commentId && a.userId == userId);
-            return op.ExecuteCommandHasChangeAsync();
+            var exp = Expressionable.Create<EPraize_CommentReply>()
+            .And(a => a.replyId == replyId)
+            .AndIF(!string.IsNullOrEmpty(userId), a => a.userId == userId).ToExpression();
+
+            var op = Db.Deleteable(exp);
+            return op.ExecuteCommand();
         }
 
-        public Task<bool> UpdateResPraizedNum(string resCode, PraizeType praizeType, OperationDirection direction)
+        public bool UpdateResPraizedNum(string resCode, PraizeType praizeType, OperationDirection direction)
         {
 
             var op = Db.Updateable<EResourceInfo>().SetColumns(a => new EResourceInfo() { goodNum = a.goodNum - 1 });
@@ -97,30 +105,35 @@ namespace ContentCenter.Repository
 
             op =op.Where(a=>a.Code == resCode);
 
-            return  op.ExecuteCommandHasChangeAsync();
+            return  op.ExecuteCommandHasChange();
         }
 
-        public Task<bool> UpdateCommentPraized_GoodNum(long commentId, OperationDirection direction)
+        public bool UpdateCommentPraized_GoodNum(long commentId, OperationDirection direction, int num = 1)
         {
-            var op = Db.Updateable<EComment_Res>().SetColumns(a => new EComment_Res() { goodNum = a.goodNum +1 });
+            var op = Db.Updateable<EComment_Res>().SetColumns(a => new EComment_Res() { goodNum = a.goodNum + num });
            if (direction == OperationDirection.minus)
-                op = Db.Updateable<EComment_Res>().SetColumns(a => new EComment_Res() { goodNum = a.goodNum - 1 });
+                op = Db.Updateable<EComment_Res>().SetColumns(a => new EComment_Res() { goodNum = a.goodNum - num });
 
             op = op.Where(a => a.Id == commentId);
-
-            return op.ExecuteCommandHasChangeAsync();
+          
+            return op.ExecuteCommandHasChange();
         }
 
-        public Task<bool> UpdateCommentReplyPraized_GoodNum(long commentReplyId, OperationDirection direction)
+        public bool UpdateCommentReplyPraized_GoodNum(long commentReplyId, OperationDirection direction,int num=1)
         {
-            var op = Db.Updateable<ECommentReply_Res>().SetColumns(a => new ECommentReply_Res() { goodNum = a.goodNum + 1 });
+            var op = Db.Updateable<ECommentReply_Res>().SetColumns(a => new ECommentReply_Res() { goodNum = a.goodNum + num });
             if (direction == OperationDirection.minus)
-                op = Db.Updateable<ECommentReply_Res>().SetColumns(a => new ECommentReply_Res() { goodNum = a.goodNum - 1 });
+                op = Db.Updateable<ECommentReply_Res>().SetColumns(a => new ECommentReply_Res() { goodNum = a.goodNum - num });
 
             op = op.Where(a => a.Id == commentReplyId);
 
-            return op.ExecuteCommandHasChangeAsync();
+            return op.ExecuteCommandHasChange();
         }
 
+        public int DeletePraized_AllReplyBelowComment(long commentId)
+        {
+            var op = Db.Deleteable<EPraize_CommentReply>(a => a.commentId == commentId);
+            return op.ExecuteCommand();
+        }
     }
 }

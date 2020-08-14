@@ -24,7 +24,7 @@ namespace ContentCenter.Model
         {
             get
             {
-                return CreateDateTime.ToString("yyyy-MM-dd hh:MM");
+                return CreateDateTime.ToString("yyyy-MM-dd HH:mm");
             }
             set { _dateTime = value; }
         }

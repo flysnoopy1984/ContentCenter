@@ -12,14 +12,15 @@ namespace ContentCenter.Services
     public class PraizeServices: BaseServices<EPraize_Res>, IPraizeServices
     {
         private IPraizeRepository _praizeRepository;
-        private ISqlSugarClient _transDb;
+      //  private ISqlSugarClient _transDb;
 
-        public PraizeServices(IPraizeRepository praizeRepository, ISqlSugarClient transDb)
+        public PraizeServices(IPraizeRepository praizeRepository)
+            //, ISqlSugarClient transDb)
          : base(praizeRepository)
         {
           
             _praizeRepository = praizeRepository;
-            _transDb = transDb;
+          //  _transDb = transDb;
         }
 
         public long handlePraize(SubmitPraize submitPraize)
@@ -42,6 +43,7 @@ namespace ContentCenter.Services
 
         private long handPraize_CommentReply(SubmitPraize submitPraize)
         {
+            DbResult<bool> transResult = null;
             if (submitPraize.praizeDirection == OperationDirection.plus)
             {
                 if (_praizeRepository.HasPraized_CommentReply_Res(Convert.ToInt64(submitPraize.refCode), submitPraize.userId).Result > 0)
@@ -52,23 +54,34 @@ namespace ContentCenter.Services
                 EPraize_CommentReply praize = new EPraize_CommentReply
                 {
                     praizeDate = DateTime.Now,
-                    PraizeType = submitPraize.praizeType,
-                    commentReplyId = Convert.ToInt64(submitPraize.refCode),
+                    PraizeType = PraizeType.good,
+                    replyId = Convert.ToInt64(submitPraize.refCode),
                     userId = submitPraize.userId,
                     commentId =  Convert.ToInt64(submitPraize.parentRefCode),
                 };
 
-                _transDb.Ado.UseTranAsync(() =>
+                transResult = _praizeRepository.Db.Ado.UseTran(() =>
                 {
                     _praizeRepository.AddPraize_CommentReply(praize);
                     _praizeRepository.UpdateCommentReplyPraized_GoodNum(Convert.ToInt64(submitPraize.refCode), OperationDirection.plus);
                 });
             }
+            else
+            {
+                transResult = _praizeRepository.Db.Ado.UseTran(() =>
+                {
+                    _praizeRepository.DeletePraized_CommentReply_Res(Convert.ToInt64(submitPraize.refCode), submitPraize.userId);
+                    _praizeRepository.UpdateCommentReplyPraized_GoodNum(Convert.ToInt64(submitPraize.refCode), OperationDirection.minus);
+                });
+            }
+            if (transResult != null && !transResult.IsSuccess)
+                throw new Exception(transResult.ErrorMessage);
             return 0;
         }
 
         private long handPraize_Comment(SubmitPraize submitPraize)
         {
+            DbResult<bool> transResult = null;
             if (submitPraize.praizeDirection == OperationDirection.plus)
             {
                 if (_praizeRepository.HasPraized_Comment_Res(Convert.ToInt64(submitPraize.refCode), submitPraize.userId).Result > 0)
@@ -85,20 +98,25 @@ namespace ContentCenter.Services
                     RefCode = submitPraize.parentRefCode,
                 };
 
-                _transDb.Ado.UseTranAsync(() =>
+                transResult = _praizeRepository.Db.Ado.UseTran(() =>
                 {
                     _praizeRepository.AddPraize_Comment(praize);
+                  
                     _praizeRepository.UpdateCommentPraized_GoodNum(Convert.ToInt64(submitPraize.refCode),OperationDirection.plus);
                 });
             }
             else
             {
-                _transDb.Ado.UseTranAsync(() =>
+                transResult = _praizeRepository.Db.Ado.UseTran(() =>
                 {
                     _praizeRepository.DeletePraized_Comment_Res(Convert.ToInt64(submitPraize.refCode), submitPraize.userId);
+                   
                     _praizeRepository.UpdateCommentPraized_GoodNum(Convert.ToInt64(submitPraize.refCode), OperationDirection.minus);
                 });
+              
             }
+            if (transResult != null && !transResult.IsSuccess)
+                throw new Exception(transResult.ErrorMessage);
             return 0;
         }
 
@@ -109,6 +127,7 @@ namespace ContentCenter.Services
         /// <returns></returns>
         private long handlePraize_Res(SubmitPraize submitPraize)
         {
+            DbResult<bool> transResult = null;
             /*！！可能的漏洞
              * 没有对更新的赞和取消的赞做原始赞检查
              */
@@ -128,28 +147,29 @@ namespace ContentCenter.Services
             };
             switch (submitPraize.praizeDirection){
                 case OperationDirection.plus:
-                    _transDb.Ado.UseTranAsync(() =>
+                    transResult = _praizeRepository.Db.Ado.UseTran(() =>
                     {
-                         _praizeRepository.Add(praize);
+                         _praizeRepository.Add_Sync(praize);
                         _praizeRepository.UpdateResPraizedNum(submitPraize.refCode, submitPraize.praizeType, OperationDirection.plus);
                     });
                     break;
                 case OperationDirection.minus:
-                    _transDb.Ado.UseTranAsync(() =>
+                    transResult =_praizeRepository.Db.Ado.UseTran(() =>
                     {
                         _praizeRepository.DeletePraized_Res(submitPraize.refCode, submitPraize.userId);
                         _praizeRepository.UpdateResPraizedNum(submitPraize.refCode, submitPraize.praizeType, OperationDirection.minus);
                     });
                     break;
                 case OperationDirection.update:
-                    _transDb.Ado.UseTranAsync(() =>
+                    transResult =_praizeRepository.Db.Ado.UseTran(() =>
                     {
                         _praizeRepository.UpdatePraized_Res(submitPraize.praizeType,submitPraize.refCode, submitPraize.userId);
                         _praizeRepository.UpdateResPraizedNum(submitPraize.refCode, submitPraize.praizeType, OperationDirection.update);
                     });
                     break;
             }
-         
+            if (transResult != null && !transResult.IsSuccess)
+                throw new Exception(transResult.ErrorMessage);
             return 0;
         }
 

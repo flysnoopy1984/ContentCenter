@@ -69,15 +69,15 @@ namespace ContentCenter.Repository
 
         }
 
-        public Task<bool> UpdateComment_ReplyNum(long commentId, OperationDirection direction)
+        public bool UpdateComment_ReplyNum(long commentId, OperationDirection direction,int num=1)
         {
-            var op = Db.Updateable<EComment_Res>().SetColumns(a => new EComment_Res() { replyNum = a.replyNum+1 });
+            var op = Db.Updateable<EComment_Res>().SetColumns(a => new EComment_Res() { replyNum = a.replyNum+ num });
             if (direction == OperationDirection.minus)
-                op = Db.Updateable<EComment_Res>().SetColumns(a => new EComment_Res() { replyNum = a.replyNum - 1 });
+                op = Db.Updateable<EComment_Res>().SetColumns(a => new EComment_Res() { replyNum = a.replyNum - num });
 
             op = op.Where(a => a.Id == commentId);
 
-            return op.ExecuteCommandHasChangeAsync();
+            return op.ExecuteCommandHasChange();
         }
     }
 

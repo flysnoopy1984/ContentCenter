@@ -11,7 +11,7 @@ namespace ContentCenter.Model
     {
        // public EPraize_CommentReply():base(PraizeTarget.CommentReply) { }
 
-        public long commentReplyId { get; set; }
+        public long replyId { get; set; }
         public long commentId { get; set; }
     }
 }

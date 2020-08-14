@@ -145,5 +145,24 @@ namespace ContentCenter.Repository
                 .UpdateIgnoreColumns(o => new { o.CreateDateTime })
                 .ExecuteCommandAsync();
         }
+        #region  同步
+        public long Add_Sync(T newEntity)
+        {
+            var insertable = _db.Insertable<T>(newEntity);
+            return  insertable.ExecuteReturnBigIdentity();
+        }
+
+        public bool DeleteRangeByExp_Sync(Expression<Func<T, bool>> whereExp)
+        {
+            var op = _db.Deleteable<T>(whereExp);
+            return  op.ExecuteCommandHasChange();
+        }
+
+        public bool DeleteByKey_Sync(long key)
+        {
+            var op = _db.Deleteable<T>(key);
+            return op.ExecuteCommandHasChange();
+        }
+        #endregion
     }
 }

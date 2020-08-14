@@ -4,10 +4,9 @@ using System.Text;
 
 namespace ContentCenter.Model
 {
-    public class QComment_Reply: QueryPager
+    public class DelComment
     {
         public long commentId { get; set; }
-
-        public string reqUserId { get; set; }
+        public long replyId { get; set; }
     }
 }

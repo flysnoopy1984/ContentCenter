@@ -9,16 +9,16 @@ namespace ContentCenter.IRepository
 {
     public interface IPraizeRepository: IBaseRepository<EPraize_Res>
     {
-        Task<long> AddPraize_Comment(EPraize_Comment praize);
+        long AddPraize_Comment(EPraize_Comment praize);
 
-        Task<long> AddPraize_CommentReply(EPraize_CommentReply praize);
+        long AddPraize_CommentReply(EPraize_CommentReply praize);
 
-        Task<bool> DeletePraized_Res(string resCode, string userId);
+        bool DeletePraized_Res(string resCode, string userId);
 
         /// <summary>
         /// 更新点赞表本身，原来好评的便差评（只在资源中）
         /// </summary>
-        Task<bool> UpdatePraized_Res(PraizeType praizeType, string resCode, string userId);
+        bool UpdatePraized_Res(PraizeType praizeType, string resCode, string userId);
 
         Task<EPraize_Res> GetPraize_Res(string resCode, string userId);
 
@@ -26,21 +26,28 @@ namespace ContentCenter.IRepository
         /// 更新资源主表点赞总数量
         /// </summary>
         /// <param name="direction">有差评和好评，所以有更新操作存在</param>
-        Task<bool> UpdateResPraizedNum(string resCode, PraizeType praizeType, OperationDirection direction);
+        bool UpdateResPraizedNum(string resCode, PraizeType praizeType, OperationDirection direction);
 
         /// <summary>
         /// 更新评论表点赞总数量（只统计好评）
         /// </summary>
-        Task<bool> UpdateCommentPraized_GoodNum(long commentId, OperationDirection direction);
+        bool UpdateCommentPraized_GoodNum(long commentId, OperationDirection direction,int num=1);
 
         /// <summary>
         /// 更新评论表点赞总数量（只统计好评）
         /// </summary>
-        Task<bool> UpdateCommentReplyPraized_GoodNum(long commentReplyId, OperationDirection direction);
+        bool UpdateCommentReplyPraized_GoodNum(long commentReplyId, OperationDirection direction,int num=1);
 
-        Task<bool> DeletePraized_Comment_Res(long commentId, string userId);
+        bool DeletePraized_Comment_Res(long commentId, string userId);
 
-        Task<bool> DeletePraized_CommentReply_Res(long commentId, string userId);
+        int DeletePraized_CommentReply_Res(long replyId, string userId);
+
+        /// <summary>
+        /// 删除评论下所有回复的点赞
+        /// </summary>
+        /// <param name="commentId"></param>
+        /// <returns></returns>
+        int DeletePraized_AllReplyBelowComment(long commentId);
 
         Task<int> HasPraized_Res(string resCode,string userId);
 

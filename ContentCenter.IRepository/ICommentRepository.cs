@@ -23,7 +23,7 @@ namespace ContentCenter.IRepository
         /// <param name="commentId"></param>
         /// <param name="direction"></param>
         /// <returns></returns>
-        Task<bool> UpdateComment_ReplyNum(long commentId,OperationDirection direction);
+        bool UpdateComment_ReplyNum(long commentId,OperationDirection direction,int num=1);
 
     }
 }

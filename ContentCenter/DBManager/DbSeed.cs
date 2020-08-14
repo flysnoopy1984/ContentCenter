@@ -19,10 +19,10 @@ namespace ContentCenter.DBManager
             Console.WriteLine("Start InitDb");
             db.DbMaintenance.CreateDatabase(databaseName: "ContentCenter");
             //db.CodeFirst.InitTables<EComment_Res>();
-            db.CodeFirst.InitTables<ECommentReply_Res>();
+            //db.CodeFirst.InitTables<ECommentReply_Res>();
             //db.CodeFirst.InitTables<EPraize_Res>();
-            db.CodeFirst.InitTables<EPraize_Comment>();
-            //db.CodeFirst.InitTables<EPraize_CommentReply>();
+            //db.CodeFirst.InitTables<EPraize_Comment>();
+            db.CodeFirst.InitTables<EPraize_CommentReply>();
             //db.CodeFirst.InitTables<EBookInfo>();
             //db.CodeFirst.InitTables<EResourceInfo>();
             //db.CodeFirst.InitTables<EUserInfo>();

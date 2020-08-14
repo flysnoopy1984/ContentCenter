@@ -45,8 +45,8 @@ namespace ContentCenter.Controllers
             ResultPager<VueCommentInfo> result = new ResultPager<VueCommentInfo>();
             try
             {
-
-                result.PageData = _commentServices.loadMoreComment_Res(query);
+              query.reqUserId = this.getUserId();
+              result.PageData = _commentServices.loadMoreComment_Res(query);
 
             }
             catch (Exception ex)
@@ -55,6 +55,29 @@ namespace ContentCenter.Controllers
             }
             return result;
         }
+
+        /// <summary>
+        /// 删除资源评论
+        /// </summary>
+        /// <param name="delComment"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ResultNormal deleteRes(DelComment delComment)
+        {
+            ResultNormal result = new ResultNormal();
+            try
+            {
+                _commentServices.deleteComment_Res(delComment.commentId);
+
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+        }
+
+      
 
         #endregion
 
@@ -82,8 +105,30 @@ namespace ContentCenter.Controllers
             ResultPager<VueCommentReply> result = new ResultPager<VueCommentReply>();
             try
             {
+                query.reqUserId = this.getUserId();
+                result.PageData = _commentServices.loadMoreComment_Reply(query);
             
-              //  result.ResultId = _commentServices.submitCommentReply(submitReply);
+
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 删除评论回复
+        /// </summary>
+        /// <param name="delComment"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ResultNormal deleteReply(DelComment delComment)
+        {
+            ResultNormal result = new ResultNormal();
+            try
+            {
+                _commentServices.deleteCommentReply(delComment.replyId,delComment.commentId);
 
             }
             catch (Exception ex)

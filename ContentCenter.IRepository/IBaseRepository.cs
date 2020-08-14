@@ -16,6 +16,8 @@ namespace ContentCenter.IRepository
         Task<int> AddNoIdentity(T newEntity);
         Task<long> Add(T newEntity);
 
+     
+
         Task<int> AddRange(List<T> listObj);
 
         Task<bool> DeleteByKey(long key);
@@ -48,5 +50,9 @@ namespace ContentCenter.IRepository
         Task<ModelPager<T>> QueryPager(Expression<Func<T, bool>> whereExp, Expression<Func<T, object>> orderByExp, int pageIndex,int pageSize,bool desc = true);
 
         Task<int> SaveMasterData<M>(M saveObj) where M : BaseMasterTable, new();
+
+        long Add_Sync(T newEntity);
+        bool DeleteByKey_Sync(long key);
+        bool DeleteRangeByExp_Sync(Expression<Func<T, bool>> whereExp);
     }
 }
