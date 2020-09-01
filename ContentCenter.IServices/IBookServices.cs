@@ -15,8 +15,8 @@ namespace ContentCenter.IServices
         /// </summary>
         /// <param name="bookCode"></param>
         /// <returns></returns>
-        EBookInfo Info(string bookCode,bool withCommit=false);
-  
+        RBookInfo Info(string bookCode, string userId);
+
         /// <summary>
         /// 根据Section TagCode 获取书列表
         /// </summary>

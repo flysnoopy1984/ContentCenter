@@ -15,6 +15,8 @@ namespace ContentCenter.Model
 
         public string userId { get; set; }
 
+        public string parentRefCode { get; set; }
+
         /// <summary>
         /// 对于资源的点赞
         /// </summary>

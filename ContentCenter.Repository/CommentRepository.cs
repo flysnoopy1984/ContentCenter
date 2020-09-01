@@ -69,6 +69,34 @@ namespace ContentCenter.Repository
 
         }
 
+        public async Task<ModelPager<VueUserComm>> queryUserComm(QUserComm query)
+        {
+            ModelPager<VueUserComm> result = new ModelPager<VueUserComm>(query.pageIndex, query.pageSize);
+            var mainSql = Db.Queryable<EComment_Res, EResourceInfo, EBookInfo>((c, r, b) => new object[]
+              {
+                JoinType.Inner,c.refCode == r.Code,
+                JoinType.Inner,r.RefCode == b.Code
+
+              })
+            .Where(c => c.authorId == query.userId)
+            .OrderBy(c => c.CreateDateTime,OrderByType.Desc)
+            .Select((c, r, b) => new VueUserComm
+            {
+                 CreateDateTime = c.CreateDateTime,
+                 bookCode = b.Code,
+                 bookName = b.Title,
+                 content = c.content,
+                 resName = r.FileType+"-"+ (r.ResType == ResType.BookOss?"下载文件":"下载地址"),
+                 commentId = c.Id,
+            });
+
+            RefAsync<int> totalNumber = new RefAsync<int>();
+            result.datas = await mainSql.ToPageListAsync(query.pageIndex, query.pageSize, totalNumber);
+            result.totalCount = totalNumber;
+           
+            return result;
+        }
+
         public bool UpdateComment_ReplyNum(long commentId, OperationDirection direction,int num=1)
         {
             var op = Db.Updateable<EComment_Res>().SetColumns(a => new EComment_Res() { replyNum = a.replyNum+ num });

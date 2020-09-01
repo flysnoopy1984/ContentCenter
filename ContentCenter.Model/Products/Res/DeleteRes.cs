@@ -9,6 +9,8 @@ namespace ContentCenter.Model
     {
         public string resCode { get; set; }
 
+        public string bookCode { get; set; }
+
        // public long id { get; set; }
 
         //public string ossPath { get; set; }

@@ -68,5 +68,42 @@ namespace ContentCenter.Repository
             result.totalCount = totalNumber;
             return result;
         }
+
+        public async Task<ModelPager<VueUserCommReply>> queryUserCommReply(QUserCommReply query)
+        {
+            ModelPager<VueUserCommReply> result = new ModelPager<VueUserCommReply>(query.pageIndex, query.pageSize);
+            var mainSql = Db.Queryable<ECommentReply_Res, EComment_Res, EUserInfo, EBookInfo >((r, c,cu,b) => new object[]
+            {
+               
+                JoinType.Inner,r.commentId == c.Id,
+                 JoinType.Inner,r.authorId == cu.Id,
+                JoinType.Inner,c.parentRefCode == b.Code,
+
+            })
+            .Where((r, c, cu, b) => r.authorId == query.userId)
+            .OrderBy(r => r.CreateDateTime, OrderByType.Desc)
+            .Select((r, c, cu, b) => new VueUserCommReply
+            {
+                bookCode = b.Code,
+                bookName = b.Title,
+                bookCoverUrl = b.CoverUrl,
+                commentId = c.Id,
+                commentAuthorId = c.authorId,
+                commentAuthor = cu.NickName,
+                pCommentDateTime = c.CreateDateTime,
+                commentContent = c.content,
+                replyId = r.Id,
+                replyContent = r.content,
+                replyTarget = r.replyName,
+                pReplyDateTime = r.CreateDateTime,
+
+            });
+
+            RefAsync<int> totalNumber = new RefAsync<int>();
+            result.datas = await mainSql.ToPageListAsync(query.pageIndex, query.pageSize, totalNumber);
+            result.totalCount = totalNumber;
+            return result;
+          
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using ContentCenter.Model;
 using ContentCenter.Model.BaseEnum;
+using IQB.Util.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -55,6 +56,25 @@ namespace ContentCenter.IRepository
 
         Task<int> HasPraized_CommentReply_Res(long commentReplyId, string userId);
 
-     
+        /// <summary>
+        /// 我的资源点赞
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        Task<ModelPager<VueUserPraize>> queryUserResPraize(QUserPraize query);
+
+        /// <summary>
+        /// 我的评论点赞
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        Task<ModelPager<VueUserPraize>> queryUserCommentPraize(QUserPraize query);
+
+        /// <summary>
+        /// 我的评论回复点赞
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        Task<ModelPager<VueUserPraize>> queryUserCommentReplyPraize(QUserPraize query);
     }
 }

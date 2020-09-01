@@ -8,7 +8,8 @@ namespace ContentCenter.IRepository
 {
     public interface IUserRepository:IBaseRepository<EUserInfo>
     {
-       // Task<EUserInfo> Login(LoginUser loginUser);
+        VueUC_UserInfo getUC_User(string userId);
+        // Task<EUserInfo> Login(LoginUser loginUser);
 
         //Task<EUserInfo> Login(LoginUser loginUser);
     }

@@ -11,11 +11,25 @@ namespace ContentCenter.IRepository
     public interface IResourceReponsitory: IBaseRepository<EResourceInfo>
     {
 
-        Task<bool> LogicDelete(string resCode);
+        bool LogicDelete(string resCode);
 
-        Task<int> SameResCount(string refCode, ResType resType, string fileType, bool includeDelete = false);
+        Task<int> SameResCount(string userId,string refCode, ResType resType, string fileType, bool includeDelete = false);
 
         Task<ModelPager<VueResInfo>> GetResByRefCode(QRes qRes);
+
+
+        /// <summary>
+        /// 先分组获取用户资源对应的书本
+        /// 获取书本资源列表，再次获取书本对应的资源。整理数据
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        Task<ModelPager<VueUserRes>> queryUserRes_GroupByBook(QUserRes query);
        
+
+        int logRequireRes(string resCode, string requireUserId);
+
+        bool addRequireResNum(string resCode);
+
     }
 }

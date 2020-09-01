@@ -60,6 +60,7 @@ namespace ContentCenter.Services
             {
                 RefAsync<int> totalNumber = new RefAsync<int>();
                 result.PageData.datas = _bookRepository.searchByNameAndAuthor(searchRequest, totalNumber).Result;
+                result.PageData.totalCount = totalNumber;
                 try
                 {
                     if (searchRequest.keyword.Length > 100)

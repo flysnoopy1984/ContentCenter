@@ -69,6 +69,9 @@ namespace ContentCenter.Services
             if (string.IsNullOrEmpty(submitComment.userId))
                 throw new Exception("非法操作！");
 
+            if (string.IsNullOrEmpty(submitComment.parentRefCode))
+                throw new Exception("数据缺少[parentRefCode]");
+
             long result = -1;
 
             EComment_Res comment = new EComment_Res
@@ -76,6 +79,7 @@ namespace ContentCenter.Services
                 authorId = submitComment.userId,
                 content = submitComment.content,
                 refCode = submitComment.refCode,
+                parentRefCode = submitComment.parentRefCode,
             };
 
             result = _commentResRepository.Add(comment).Result;
@@ -88,6 +92,18 @@ namespace ContentCenter.Services
             if (string.IsNullOrEmpty(query.reqUserId))
                 throw new Exception("非法操作！");
             return _commentResRepository.GetCommentsByResCodes(query).Result;
+        }
+
+        /// <summary>
+        /// 用户中心 用户评论
+        /// </summary>
+        /// <param name="qury"></param>
+        /// <returns></returns>
+        public ModelPager<VueUserComm> queryUserComm(QUserComm query)
+        {
+            if (string.IsNullOrEmpty(query.userId))
+                throw new Exception("非法操作！");
+            return _commentResRepository.queryUserComm(query).Result;
         }
         #endregion
 
@@ -153,6 +169,12 @@ namespace ContentCenter.Services
             if (!r.IsSuccess)   throw new Exception(r.ErrorMessage);
         }
 
+        public ModelPager<VueUserCommReply> queryUserCommReply(QUserCommReply query)
+        {
+            if (string.IsNullOrEmpty(query.userId))
+                throw new Exception("非法操作！");
+            return _commentReplyResRepository.queryUserCommReply(query).Result;
+        }
         #endregion
 
     }

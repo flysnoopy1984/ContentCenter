@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using ContentCenter.IServices;
 using ContentCenter.Model;
+using ContentCenter.Model.BaseEnum;
 using IQB.Util;
 using IQB.Util.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +18,7 @@ namespace ContentCenter.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : CCBaseController
     {
         private IUserServices _userServices;
         private IConfiguration _configuration;
@@ -182,6 +184,60 @@ namespace ContentCenter.Controllers
             }
             return result;
           
+        }
+        [HttpPost]
+        [Authorize]
+        public ResultNormal SwitchFavBook(reqUserBook userBook)
+        {
+            ResultNormal result = new ResultNormal();
+            try
+            {
+                userBook.userId = this.getUserId();
+                if(userBook.direction == OperationDirection.plus)
+                    _userServices.AddFavBook(userBook.bookCode, userBook.userId);
+                else
+                    _userServices.DelFavBook(userBook.bookCode, userBook.userId);
+            }
+            catch (Exception ex)
+            {
+                NLogUtil.cc_ErrorTxt("[UserController]-AddFavBook:" + ex.Message);
+                result.ErrorMsg = "操作失败，请之后再尝试";
+            }
+            return result;
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ResultPager<VueUserBook> FavBookList(QUserBook query)
+        {
+            ResultPager<VueUserBook> result = new ResultPager<VueUserBook>();
+            try
+            {
+             //   query.userId = this.getUserId();
+                result.PageData = _userServices.queryUserbookList(query);
+            }
+            catch(Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+        }
+
+        [HttpGet]
+        [Authorize]
+        public ResultEntity<VueUC_UserInfo> GetUCInfo(string userId)
+        {
+            ResultEntity<VueUC_UserInfo> result = new ResultEntity<VueUC_UserInfo>();
+            try
+            {
+                result.Entity = _userServices.getUC_User(userId);
+            }
+            catch(Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+
         }
         #region 私有方法
 

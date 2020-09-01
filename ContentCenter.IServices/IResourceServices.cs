@@ -19,7 +19,18 @@ namespace ContentCenter.IServices
         /// <returns></returns>
         ResultNormal uploadBookToOss(string localfilePath,string ossKey,bool isCover = true);
 
-        bool IsRepeatRes(string refCode, ResType resType, string fileType, bool includeDelete = false);
+        /// <summary>
+        /// 请求Oss资源 ，生成临时Url
+        /// </summary>
+        /// <returns></returns>
+        ResponseRes requireResOss(string ossPath);
+
+        /// <summary>
+        /// 记录下载请求
+        /// </summary>
+        void logRequireRes(string resCode, string requireUserId);
+
+        bool IsRepeatRes(string userId, string refCode, ResType resType, string fileType, bool includeDelete = false);
 
         /// <summary>
         /// 检查OSS
@@ -54,6 +65,7 @@ namespace ContentCenter.IServices
 
         List<EResourceInfo> getFilesByOwner(string refCode, string owner, bool includeDelete = false);
 
+        ModelPager<VueUserRes> queryUserRes(QUserRes query);
         /// <summary>
         /// 获取某本书的所有资源
         /// </summary>
@@ -61,6 +73,6 @@ namespace ContentCenter.IServices
         /// <returns></returns>
         ModelPager<VueResInfo> getResByRefCode(QRes qRes);
 
-        EResourceInfo get(string pkCode);
+        EResourceInfo get(string pkCode, bool includeDelete = false);
     }
 }

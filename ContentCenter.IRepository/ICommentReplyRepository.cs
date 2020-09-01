@@ -12,5 +12,7 @@ namespace ContentCenter.IRepository
         Task<bool> DeleteAllReplyByCommentId(long commentId);
 
         Task<ModelPager<VueCommentReply>> GetReplysByCommentId(QComment_Reply query);
+
+        Task<ModelPager<VueUserCommReply>> queryUserCommReply(QUserCommReply query);
     }
 }

@@ -24,7 +24,8 @@ namespace ContentCenter.Model
         public string authorId { get; set; }
 
         [SugarColumn(IsNullable = true, DefaultValue = "-1")]
-        public long replyId { get; set; }
+        public long replyId { get; set; } = -1;
+
         [SugarColumn(Length = 32, IsNullable = true)]
         public string replyAuthorId { get; set; }
 

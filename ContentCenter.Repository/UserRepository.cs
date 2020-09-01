@@ -17,7 +17,22 @@ namespace ContentCenter.Repository
           
         }
 
-      
+        public VueUC_UserInfo getUC_User(string userId)
+        {
+            var q = Db.Queryable<EUserInfo>()
+               .Where(u => u.Id == userId)
+               .Select(u => new VueUC_UserInfo
+               {
+                   HeaderUrl = u.HeaderUrl,
+                   Id = userId,
+                   NickName = u.NickName
+               });
+            return q.First();
+            
+
+        }
+
+
 
         //public Task<EUserInfo> Login(LoginUser loginUser)
         //{

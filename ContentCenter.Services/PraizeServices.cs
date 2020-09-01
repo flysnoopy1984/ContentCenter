@@ -2,6 +2,7 @@
 using ContentCenter.IServices;
 using ContentCenter.Model;
 using ContentCenter.Model.BaseEnum;
+using IQB.Util.Models;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -173,6 +174,23 @@ namespace ContentCenter.Services
             return 0;
         }
 
-       
+        public ModelPager<VueUserPraize> queryUserPraize(QUserPraize query)
+        {
+            if (string.IsNullOrEmpty(query.userId))
+                throw new Exception("非法操作！");
+            switch (query.praizeTarget)
+            {
+                case PraizeTarget.Resource:
+                    return _praizeRepository.queryUserResPraize(query).Result;
+                case PraizeTarget.Comment:
+                    return _praizeRepository.queryUserCommentPraize(query).Result;
+                case PraizeTarget.CommentReply:
+                    return _praizeRepository.queryUserCommentReplyPraize(query).Result;
+                default:
+                    return new ModelPager<VueUserPraize>();
+            }
+          
+           
+        }
     }
 }

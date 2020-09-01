@@ -15,10 +15,13 @@ namespace ContentCenter.Services
     {
         private IBookRepository _bookDb;
         private ISectionRepository _sectionRepository;
+        private IUserBookRepository _userBookRepository;
        
-        public BookServices(IBookRepository bookRepository, ISectionRepository sectionRepository)
+        public BookServices(IBookRepository bookRepository, ISectionRepository sectionRepository,
+            IUserBookRepository userBookRepository)
           : base(bookRepository)
         {
+            _userBookRepository = userBookRepository;
             _sectionRepository = sectionRepository;
             _bookDb = bookRepository;
          
@@ -113,9 +116,12 @@ namespace ContentCenter.Services
             return result;
         }
 
-        public EBookInfo Info(string bookCode,bool withCommit = false)
+        public RBookInfo Info(string bookCode,string userId)
         {
-            return _bookDb.GetByKey(bookCode).Result;
+            RBookInfo bi = new RBookInfo();
+            bi.bookInfo = _bookDb.GetByKey(bookCode).Result;
+            bi.IsUserFav = _userBookRepository.HasFavBook(bookCode, userId).Result>0?true:false;
+            return bi;
         }
 
       

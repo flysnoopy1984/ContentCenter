@@ -33,6 +33,7 @@ namespace ContentCenter.Repository
                 Author = b.AuthorCode,
                 Score = b.Score.ToString(),
                 Summery = b.Summery.Substring(0, 100),
+                ResourceCount = b.ResoureNum,
 
             });
 
@@ -53,6 +54,7 @@ namespace ContentCenter.Repository
                 Author = b.AuthorCode,
                 Score = b.Score.ToString(),
                 Summery = b.Summery.Substring(0, 100),
+                ResourceCount = b.ResoureNum,
             });
 
             return r.ToPageListAsync(pageIndex, pageSize, totalNumber);
@@ -75,6 +77,7 @@ namespace ContentCenter.Repository
                 Author = b.AuthorCode,
                 Score = b.Score.ToString(),
                 Summery = b.Summery.Substring(0, 100),
+                ResourceCount = b.ResoureNum,
             });
 
             return r.ToPageListAsync(pageIndex, pageSize, totalNumber);
@@ -91,6 +94,7 @@ namespace ContentCenter.Repository
                 Author = b.AuthorCode,
                 Score = b.Score.ToString(),
                 Summery = b.Summery.Substring(0,100),
+                ResourceCount = b.ResoureNum,
             });
 
             return r.Take(defaultTop).ToPageListAsync(pageIndex, pageSize, totalNumber);
@@ -146,7 +150,8 @@ namespace ContentCenter.Repository
         {
 
             var q = Db.Queryable<EBookInfo>();
-            q = q.Where(b => b.Title.Contains(searchRequest.keyword) || b.AuthorCode.Contains(searchRequest.keyword));
+            q = q.Where(b => b.Title.Contains(searchRequest.keyword) || b.AuthorCode.Contains(searchRequest.keyword))
+                .OrderBy(b => b.CreateDateTime, OrderByType.Desc);
             var r = q.Select((b) => new RBookList
             {
                 Code = b.Code,
@@ -155,11 +160,22 @@ namespace ContentCenter.Repository
                 Author = b.AuthorCode,
                 Score = b.Score.ToString(),
                 Summery = b.Summery.Substring(0, 100),
+                ResourceCount = b.ResoureNum,
             });
          
             return r.ToPageListAsync(searchRequest.pageIndex, searchRequest.pageSize, totalNumber);
           
         }
 
+        public bool UpdateBookResNum(string bookCode, OperationDirection direction)
+        {
+            var op = Db.Updateable<EBookInfo>().SetColumns(a => new EBookInfo() { ResoureNum = a.ResoureNum + 1 });
+            if(direction == OperationDirection.minus)
+                op = Db.Updateable<EBookInfo>().SetColumns(a => new EBookInfo() { ResoureNum = a.ResoureNum + 1 });
+
+            op = op.Where(a => a.Code == bookCode);
+
+            return op.ExecuteCommandHasChange();
+        }
     }
 }

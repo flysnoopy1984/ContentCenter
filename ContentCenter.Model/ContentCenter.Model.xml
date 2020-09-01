@@ -4,6 +4,21 @@
         <name>ContentCenter.Model</name>
     </assembly>
     <members>
+        <member name="F:ContentCenter.Model.BaseEnum.FictionType.NotGet">
+            <summary>
+            未标记
+            </summary>
+        </member>
+        <member name="F:ContentCenter.Model.BaseEnum.FictionType.Fiction">
+            <summary>
+            虚构的
+            </summary>
+        </member>
+        <member name="F:ContentCenter.Model.BaseEnum.FictionType.Aside">
+            <summary>
+            非虚构
+            </summary>
+        </member>
         <member name="T:ContentCenter.Model.BaseEnum.WebSection">
              <summary>
             网站主Section.
@@ -79,6 +94,26 @@
             简介
             </summary>
         </member>
+        <member name="P:ContentCenter.Model.EBookInfo.SourceBookId">
+            <summary>
+            抓爬网站BookId
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EBookInfo.Producer">
+            <summary>
+            出品方
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EBookInfo.FictionType">
+            <summary>
+            是否虚构
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.QBookList.Code">
+            <summary>
+            对于Search来说是 Keyword,对于Query 来说是书本Code或栏目Code
+            </summary>
+        </member>
         <member name="P:ContentCenter.Model.EComment_Res.replyNum">
             <summary>
             回复总数
@@ -102,6 +137,11 @@
         <member name="P:ContentCenter.Model.VueCommentInfo.goodNum">
             <summary>
             点赞数
+            </summary>
+        </member>
+        <member name="T:ContentCenter.Model.VueUserComm">
+            <summary>
+            用户用户中心评论展示
             </summary>
         </member>
         <member name="P:ContentCenter.Model.EResourceInfo.RefCode">
@@ -144,6 +184,11 @@
             备注
              </summary>
         </member>
+        <member name="P:ContentCenter.Model.EResourceInfo.requireNum">
+            <summary>
+            资源请求次数
+            </summary>
+        </member>
         <member name="P:ContentCenter.Model.QRes.withCommentNum">
             <summary>
             带出评论数量
@@ -183,6 +228,11 @@
             <summary>
             栏目分网站主栏目，分栏目
             </summary>   
+        </member>
+        <member name="P:ContentCenter.Model.VueUserRes.IsEdit">
+            <summary>
+            用户前端
+            </summary>
         </member>
     </members>
 </doc>

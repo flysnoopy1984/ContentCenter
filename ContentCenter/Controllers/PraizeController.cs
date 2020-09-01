@@ -38,5 +38,24 @@ namespace ContentCenter.Controllers
             }
             return result;
         }
+
+        [HttpPost]
+        public ResultPager<VueUserPraize> UserPraize(QUserPraize query)
+        {
+            ResultPager<VueUserPraize> result = new ResultPager<VueUserPraize>();
+            try
+            {
+
+                result.PageData = _praizeServices.queryUserPraize(query);
+
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+        }
+
+
     }
 }

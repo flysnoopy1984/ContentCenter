@@ -17,18 +17,18 @@ namespace ContentCenter.DBManager
         public static void InitDb(ISqlSugarClient db)
         {
             Console.WriteLine("Start InitDb");
-            db.DbMaintenance.CreateDatabase(databaseName: "ContentCenter");
+            //db.DbMaintenance.CreateDatabase(databaseName: "ContentCenter");
             //db.CodeFirst.InitTables<EComment_Res>();
             //db.CodeFirst.InitTables<ECommentReply_Res>();
             //db.CodeFirst.InitTables<EPraize_Res>();
             //db.CodeFirst.InitTables<EPraize_Comment>();
-            db.CodeFirst.InitTables<EPraize_CommentReply>();
-            //db.CodeFirst.InitTables<EBookInfo>();
+            //db.CodeFirst.InitTables<EPraize_CommentReply>();
+           db.CodeFirst.InitTables<EComment_Res>();
             //db.CodeFirst.InitTables<EResourceInfo>();
             //db.CodeFirst.InitTables<EUserInfo>();
             //db.CodeFirst.InitTables<ESearchKeyLog>();
             //db.CodeFirst.InitTables<EResourceInfo>();
-
+            //db.CodeFirst.InitTables<EResourceRequire_Log>();
             Console.WriteLine("End InitDb");
         }
     }

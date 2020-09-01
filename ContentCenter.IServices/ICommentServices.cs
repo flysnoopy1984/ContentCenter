@@ -40,5 +40,19 @@ namespace ContentCenter.IServices
         /// <param name="query"></param>
         /// <returns></returns>
         ModelPager<VueCommentReply> loadMoreComment_Reply(QComment_Reply query);
+
+        /// <summary>
+        /// 我的评论
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        ModelPager<VueUserComm> queryUserComm(QUserComm query);
+
+        /// <summary>
+        /// 我的回复
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        ModelPager<VueUserCommReply> queryUserCommReply(QUserCommReply query);
     }
 }

@@ -77,8 +77,24 @@ namespace ContentCenter.Controllers
             return result;
         }
 
-      
+        [HttpPost]
+        public ResultPager<VueUserComm> UserComment(QUserComm query)
+        {
+            ResultPager<VueUserComm> result = new ResultPager<VueUserComm>();
+            try
+            {
+              
+                result.PageData = _commentServices.queryUserComm(query);
 
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+        }
+
+      
         #endregion
 
         #region 回复评论
@@ -137,6 +153,24 @@ namespace ContentCenter.Controllers
             }
             return result;
         }
+
+        [HttpPost]
+        public ResultPager<VueUserCommReply> UserCommentReply(QUserCommReply query)
+        {
+            ResultPager<VueUserCommReply> result = new ResultPager<VueUserCommReply>();
+            try
+            {
+
+                result.PageData = _commentServices.queryUserCommReply(query);
+
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+        }
+
         #endregion
     }
 }

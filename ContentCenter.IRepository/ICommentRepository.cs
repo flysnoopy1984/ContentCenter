@@ -25,5 +25,9 @@ namespace ContentCenter.IRepository
         /// <returns></returns>
         bool UpdateComment_ReplyNum(long commentId,OperationDirection direction,int num=1);
 
+        Task<ModelPager<VueUserComm>> queryUserComm(QUserComm query);
+
+      
+
     }
 }

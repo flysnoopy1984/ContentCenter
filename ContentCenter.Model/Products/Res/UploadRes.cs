@@ -34,13 +34,7 @@ namespace ContentCenter.Model
 
         
         public bool isReset { get; set; } = false;
-        public string resCode { get; set; }
-
-      
-
-        
-
-        
+        public string resCode { get; set; }     
 
     }
 }

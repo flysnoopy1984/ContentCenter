@@ -22,6 +22,7 @@ namespace ContentCenter.Services
         private IResourceReponsitory _ResourceReponsitory;
         private ICommentRepository _commentRepository;
         private IPraizeRepository _praizeRepository;
+        private IBookRepository _bookRepository;
         private OssClient _ossClient;
 
         protected OssClient OssClient
@@ -36,11 +37,13 @@ namespace ContentCenter.Services
         public ResourceServices(OssConfig ossConfig, 
                                 IResourceReponsitory resourceReponsitory, 
                                 ICommentRepository commentRepository,
+                                IBookRepository bookRepository,
                                 IPraizeRepository praizeRepository) : base(resourceReponsitory)
         {
             _ResourceReponsitory = resourceReponsitory;
             _commentRepository = commentRepository;
             _praizeRepository = praizeRepository;
+            _bookRepository = bookRepository;
             _OssConfig = ossConfig;
         }
 
@@ -73,11 +76,19 @@ namespace ContentCenter.Services
             ResultEntity<EResourceInfo> result = new ResultEntity<EResourceInfo>();
             try
             {
-                var r = _ResourceReponsitory.SaveMasterData(resInfo).Result;
-              
-                if (r<=0)  
-                    result.ErrorMsg = "没有保存任何数据";
+                var transResult = _ResourceReponsitory.Db.Ado.UseTran(()=>
+                {
+                    
+                    _bookRepository.UpdateBookResNum(resInfo.RefCode, OperationDirection.plus);
+                    _ResourceReponsitory.SaveMasterData_Sync(resInfo);
+                });
+                if (!transResult.IsSuccess) throw new Exception(transResult.ErrorMessage);
                 result.Entity = resInfo;
+                //var r = _ResourceReponsitory.SaveMasterData(resInfo).Result;
+
+                //if (r<=0)  
+                //    result.ErrorMsg = "没有保存任何数据";
+                //result.Entity = resInfo;
 
 
             }
@@ -133,12 +144,23 @@ namespace ContentCenter.Services
         ///
         public int deleteResInDb(DeleteRes deleteRes)
         {
-            return  _ResourceReponsitory.LogicDelete(deleteRes.resCode).Result?1:0;
+            var transResult = _ResourceReponsitory.Db.Ado.UseTran(() =>
+            {
+
+                _bookRepository.UpdateBookResNum(deleteRes.bookCode, OperationDirection.minus);
+                _ResourceReponsitory.LogicDelete(deleteRes.resCode);
+            });
+            if (!transResult.IsSuccess) throw new Exception(transResult.ErrorMessage);
+            return 1;
+          //  return transResult.IsSuccess
+          //  return  _ResourceReponsitory.LogicDelete(deleteRes.resCode)?1:0;
         }
 
-        public bool IsRepeatRes(string refCode, ResType resType, string fileType, bool includeDelete = false)
+        public bool IsRepeatRes(string userId, string refCode, ResType resType, string fileType, bool includeDelete = false)
         {
-            var c = _ResourceReponsitory.SameResCount(refCode, resType,fileType, includeDelete).Result;
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("用户信息获取错误");
+            var c = _ResourceReponsitory.SameResCount(userId,refCode, resType,fileType, includeDelete).Result;
             return c > 0;
 
         }
@@ -176,6 +198,8 @@ namespace ContentCenter.Services
         public ResultNormal deleteResource(DeleteRes deleteRes)
         {
             ResultNormal result = new ResultNormal();
+            if (string.IsNullOrEmpty(deleteRes.resCode) || string.IsNullOrEmpty(deleteRes.bookCode))
+                throw new Exception("没有删除的资源");
             var resInfo = _ResourceReponsitory.GetByKey(deleteRes.resCode).Result;
             if (resInfo != null)
             {
@@ -184,8 +208,10 @@ namespace ContentCenter.Services
                     var toPath = OssKeyManager.BookDeletedKey(resInfo.OssPath);
                     result = ossMove(resInfo.OssPath, toPath);
                 }
-                if(result.IsSuccess)
-                    result.Message = _ResourceReponsitory.LogicDelete(deleteRes.resCode).Result ? "1" : "0";
+                if (result.IsSuccess)
+                    deleteResInDb(deleteRes);
+                
+                  //  result.Message = _ResourceReponsitory.LogicDelete(deleteRes.resCode) ? "1" : "0";
             }
             else
                 result.ErrorMsg = "没有找到删除资源";
@@ -193,9 +219,13 @@ namespace ContentCenter.Services
             return result;
         }
 
-        public EResourceInfo get(string pkCode)
+        public EResourceInfo get(string pkCode, bool includeDelete = false)
         {
-            return _ResourceReponsitory.GetByKey(pkCode).Result;
+            var obj =  _ResourceReponsitory.GetByKey(pkCode).Result;
+            if (!includeDelete && obj.IsDelete)
+                return null;
+            return obj;
+
         }
 
         public ModelPager<VueResInfo> getResByRefCode(QRes qRes)
@@ -213,16 +243,53 @@ namespace ContentCenter.Services
                     resCode = res.resCode,
                     reqUserId = qRes.reqUserId
                 }).Result;
-                res.commList = commList;
-
-                //var c = _praizeRepository.GetPraize_Res(res.resCode, qRes.reqUserId).Result;
-                //if (c != null)
-                //    res.userPraizeType = c.PraizeType;
-
+                res.commList = commList;     
             }
             return resList;
+        }
 
+        public ResponseRes requireResOss(string ossPath)
+        {
+            ResponseRes oss = new ResponseRes();
 
+            if ( string.IsNullOrEmpty(ossPath))
+                throw new Exception("资源请求参数错误！");
+
+            if (OssClient.DoesObjectExist(_OssConfig.bucketName, ossPath))
+            {
+                var req = new GeneratePresignedUriRequest(_OssConfig.bucketName, ossPath, SignHttpMethod.Get);
+                var uri  = _ossClient.GeneratePresignedUri(req);
+                oss.downloadUrl = uri.AbsoluteUri;
+            }
+            else
+                throw new Exception("来晚了。资源失效！");
+            return oss;
+        }
+
+        public void logRequireRes(string resCode,string requireUserId)
+        {
+            if (string.IsNullOrEmpty(resCode) || string.IsNullOrEmpty(requireUserId)){
+                throw new Exception("资源请求参数错误！");
+            }
+
+            DbResult<bool> transResult = null;
+            transResult = _ResourceReponsitory.Db.Ado.UseTran(() =>
+            {
+                _ResourceReponsitory.logRequireRes(resCode, requireUserId);
+                _ResourceReponsitory.addRequireResNum(resCode);
+            });
+
+            if (transResult != null && !transResult.IsSuccess)
+                throw new Exception(transResult.ErrorMessage);
+
+        }
+
+        public ModelPager<VueUserRes> queryUserRes(QUserRes query)
+        {
+            if (string.IsNullOrEmpty(query.userId))
+                throw new Exception("非法操作！");
+
+            return _ResourceReponsitory.queryUserRes_GroupByBook(query).Result;
         }
     }
 }

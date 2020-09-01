@@ -1,6 +1,7 @@
 ﻿using ContentCenter.IRepository;
 using ContentCenter.Model;
 using ContentCenter.Model.BaseEnum;
+using IQB.Util.Models;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -135,5 +136,130 @@ namespace ContentCenter.Repository
             var op = Db.Deleteable<EPraize_CommentReply>(a => a.commentId == commentId);
             return op.ExecuteCommand();
         }
+
+        public async Task<ModelPager<VueUserPraize>> queryUserResPraize(QUserPraize query)
+        {
+            ModelPager<VueUserPraize> result = new ModelPager<VueUserPraize>(query.pageIndex, query.pageSize);
+
+            var prSql = sql_UserResPraize(query);
+            RefAsync<int> totalNumber = new RefAsync<int>();
+            result.datas = await prSql.ToPageListAsync(query.pageIndex, query.pageSize, totalNumber);
+            result.totalCount = totalNumber;
+
+            return result;
+        }
+
+        public async Task<ModelPager<VueUserPraize>> queryUserCommentPraize(QUserPraize query)
+        {
+            ModelPager<VueUserPraize> result = new ModelPager<VueUserPraize>(query.pageIndex, query.pageSize);
+
+            var prSql = sql_UserCommentPraize(query);
+            RefAsync<int> totalNumber = new RefAsync<int>();
+            result.datas = await prSql.ToPageListAsync(query.pageIndex, query.pageSize, totalNumber);
+            result.totalCount = totalNumber;
+
+            return result;
+        }
+
+        public async Task<ModelPager<VueUserPraize>> queryUserCommentReplyPraize(QUserPraize query)
+        {
+            ModelPager<VueUserPraize> result = new ModelPager<VueUserPraize>(query.pageIndex, query.pageSize);
+
+            var prSql = sql_UserCommReplyPraize(query);
+            RefAsync<int> totalNumber = new RefAsync<int>();
+            result.datas = await prSql.ToPageListAsync(query.pageIndex, query.pageSize, totalNumber);
+            result.totalCount = totalNumber;
+
+            return result;
+        }
+
+        #region Sql语句
+        /// <summary>
+        /// 回复的点赞
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        private ISugarQueryable<VueUserPraize> sql_UserCommReplyPraize(QUserPraize query)
+        {
+            ISugarQueryable<VueUserPraize> prSql = Db.Queryable<EPraize_CommentReply, ECommentReply_Res, EComment_Res,EBookInfo >((p, r, c,b) => new object[]
+              {
+                  JoinType.Inner,p.replyId == r.Id,
+                  JoinType.Inner,p.commentId == c.Id,
+                  JoinType.Inner,c.parentRefCode == b.Code
+              })
+            .Where(p => p.userId == query.userId)
+            .OrderBy(p => p.praizeDate, OrderByType.Desc)
+            .Select((p, r, c, b) => new VueUserPraize
+            {
+                CreateDateTime = p.praizeDate,
+                code = c.Id.ToString(),
+                bookCode = b.Code,
+                bookName = b.Title,
+                content =  c.content,
+                bookUrl = b.CoverUrl,
+                refContent = r.content
+            });
+            return prSql;
+        }
+
+        /// <summary>
+        /// 评论获得的赞
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        private ISugarQueryable<VueUserPraize> sql_UserCommentPraize(QUserPraize query)
+        {
+            ISugarQueryable<VueUserPraize> prSql = Db.Queryable<EPraize_Comment,EComment_Res, EBookInfo>((p, c, b) => new object[]
+             {
+
+                JoinType.Inner,p.commentId == c.Id,
+                JoinType.Inner,c.parentRefCode == b.Code
+
+             })
+            .Where(p => p.userId == query.userId)
+            .OrderBy(p => p.praizeDate, OrderByType.Desc)
+            .Select((p, c, b) => new VueUserPraize
+            {
+                CreateDateTime = p.praizeDate,
+                code = c.Id.ToString(),
+                bookCode = b.Code,
+                bookName = b.Title,
+                bookUrl = b.CoverUrl,
+                content = c.content,
+            });
+           
+        
+            return prSql;
+        }
+        /// <summary>
+        /// 资源获得的赞
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        private ISugarQueryable<VueUserPraize> sql_UserResPraize(QUserPraize query)
+        {
+            ISugarQueryable<VueUserPraize> prSql = Db.Queryable<EPraize_Res, EResourceInfo, EBookInfo>((p, r, b) => new object[]
+             {
+
+                JoinType.Inner,p.ResCode == r.Code,
+                JoinType.Inner,p.RefCode == b.Code
+
+             })
+            .Where(p => p.userId == query.userId)
+            .OrderBy(p => p.praizeDate, OrderByType.Desc)
+            .Select((p, r, b) => new VueUserPraize
+            {
+                CreateDateTime = p.praizeDate,
+                code = r.Code,
+                bookCode = b.Code,
+                bookName = b.Title,
+                bookUrl = b.CoverUrl,
+                content = b.Title + "的" + "[" + r.FileType + "资源文件]-" + (r.ResType == ResType.BookOss ? r.OrigFileName : "url地址"),
+            });
+           
+            return prSql;
+        }
+
+        #endregion
     }
 }

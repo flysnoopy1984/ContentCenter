@@ -163,6 +163,18 @@ namespace ContentCenter.Repository
             var op = _db.Deleteable<T>(key);
             return op.ExecuteCommandHasChange();
         }
+        public int SaveMasterData_Sync<M>(M saveObj) where M : BaseMasterTable, new()
+        {
+            return  _db.Saveable<M>(saveObj)
+              .UpdateIgnoreColumns(o => new { o.CreateDateTime })
+              .ExecuteCommand();
+        }
+        public bool UpdatePart_NoObj_Sync(Expression<Func<T, T>> colsExp, Expression<Func<T, bool>> whereExp)
+        {
+            var op = _db.Updateable<T>().SetColumns(colsExp).Where(whereExp);
+
+            return op.ExecuteCommandHasChange();
+        }
         #endregion
     }
 }

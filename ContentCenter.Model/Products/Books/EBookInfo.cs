@@ -1,4 +1,5 @@
-﻿using SqlSugar;
+﻿using ContentCenter.Model.BaseEnum;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -87,10 +88,43 @@ namespace ContentCenter.Model
         [SugarColumn(ColumnDataType = "text", IsNullable = true)]
         public string Summery { get; set; }
 
-        public Double Score { get; set; }
+        public Double Score { get; set; } = 0;
 
         [SugarColumn(Length = 20, IsNullable = true)]
         public string ISBN { get; set; }
+
+        [SugarColumn(Length = 255, IsNullable = true)]
+        public string TranslaterUrl { get; set; }
+
+        /// <summary>
+        /// 抓爬网站BookId
+        /// </summary>
+        [SugarColumn(Length = 20, IsNullable = true)]
+        public string SourceBookId { get; set; }
+
+        /// <summary>
+        /// 出品方
+        /// </summary>
+        [SugarColumn(Length = 50, IsNullable = true, ColumnDataType = "nvarchar")]
+        public string Producer { get; set; }
+
+        [SugarColumn(Length = 255, IsNullable = true)]
+        public string ProducerUrl { get; set; }
+
+        [SugarColumn(Length = 255, IsNullable = true)]
+        public string SeriesUrl { get; set; }
+
+        /// <summary>
+        /// 是否虚构
+        /// </summary>
+        [SugarColumn(IsNullable = true)]
+        public FictionType FictionType { get; set; }
+
+        [SugarColumn(IsNullable = true)]
+        public DataSource DataSource { get; set; }
+
+        [SugarColumn(IsNullable = true,DefaultValue ="0")]
+        public int ResoureNum { get; set; }
 
     }
 }

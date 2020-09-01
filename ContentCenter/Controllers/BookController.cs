@@ -27,10 +27,15 @@ namespace ContentCenter.Controllers
         private  IBookServices _bookServices;
         private IResourceServices _resourceServices;
         private IWebHostEnvironment _webHostEnvironment;
-        public BookController(IBookServices bookServices, IResourceServices resourceServices, IWebHostEnvironment webHostEnvironment)
+        private ISearchServices _searchServices;
+        public BookController(IBookServices bookServices, 
+            IResourceServices resourceServices, 
+            IWebHostEnvironment webHostEnvironment,
+            ISearchServices searchServices)
         {
             _resourceServices = resourceServices;
             _bookServices = bookServices;
+            _searchServices = searchServices;
             _webHostEnvironment = webHostEnvironment;
         }
 
@@ -38,18 +43,38 @@ namespace ContentCenter.Controllers
         public ResultPager<RBookList> getBookListPager(QBookList query)
         {
             ResultPager<RBookList> result = new ResultPager<RBookList>();
+            var st = DateTime.Now;
+            Console.WriteLine($"开始Query{st}");
             try
             {
                
-                var pd = _bookServices.GetBookListPager(query);
-                result.PageData = pd;
-                result.PageData.pageIndex = query.pageIndex;
-                result.PageData.pageSize = query.pageSize;
+                if(query.QueryType == QBookList_Type.Search)
+                {
+                    result = _searchServices.searchBook(new SearchReq
+                    {
+                        keyword = query.Code,
+                        pageIndex = query.pageIndex,
+                        pageSize = query.pageSize,
+                        userId = this.getUserId()
+                    });
+                }
+                else
+                {
+                    ModelPager<RBookList> pd = _bookServices.GetBookListPager(query);
+                    result.PageData = pd;
+                    result.PageData.pageIndex = query.pageIndex;
+                    result.PageData.pageSize = query.pageSize;
+                }
+                   
             }
             catch (Exception ex)
             {
                 result.ErrorMsg = ex.Message;
             }
+
+            var et = DateTime.Now;
+            Console.WriteLine($"结束Query{et}");
+            Console.WriteLine($"时间差{et - st}");
             return result;
             
         }
@@ -66,12 +91,13 @@ namespace ContentCenter.Controllers
 
         [HttpGet]
         [Authorize]
-        public ResultEntity<EBookInfo> Info(string code)
+        public ResultEntity<RBookInfo> Info(string code)
         {
-            ResultEntity<EBookInfo> result = new ResultEntity<EBookInfo>();
+            ResultEntity<RBookInfo> result = new ResultEntity<RBookInfo>();
             try
             {
-                result.Entity = _bookServices.Info(code);
+                string userId = this.getUserId();
+                result.Entity = _bookServices.Info(code, userId);
             }
             catch(Exception ex)
             {
@@ -153,7 +179,7 @@ namespace ContentCenter.Controllers
         /// <returns></returns>
         [HttpGet]
         [Authorize]
-        public ResultList<EResourceInfo> GetResourceByOwner(string refCode,bool ignoreDelete = false)
+        public ResultList<EResourceInfo> GetOneResourceByOwner(string refCode,bool ignoreDelete = false)
         {
             ResultList<EResourceInfo> result = new ResultList<EResourceInfo>();
             try
@@ -165,10 +191,29 @@ namespace ContentCenter.Controllers
             {
                 result.ErrorMsg = ex.Message;
             }
-            return result;
-          
-           
+            return result;     
             
+        }
+        /// <summary>
+        /// 获取用户所有资源
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public ResultPager<VueUserRes> GetAllResourceByOwner(QUserRes query)
+        {
+            ResultPager<VueUserRes> result = new ResultPager<VueUserRes>();
+            try
+            {
+               // query.userId = base.getUserId();
+                result.PageData = _resourceServices.queryUserRes(query);
+                
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
         }
         /// <summary>
         /// 针对外部Url资源
@@ -291,7 +336,40 @@ namespace ContentCenter.Controllers
             return result;
         }
 
-       
+        [HttpPost]
+        [Authorize]
+        public ResultEntity<ResponseRes> RequireRes(RequireRes query)
+        {
+            ResultEntity<ResponseRes> result = new ResultEntity<ResponseRes>();
+            try
+            {
+               
+                query.requireUserId = this.getUserId();
+                EResourceInfo resourceInfo = _resourceServices.get(query.resCode);
+                if(resourceInfo== null)
+                {
+                    result.ErrorMsg = "资源已被删除，请刷新页面";
+                    return result;
+                }
+
+                if (query.resType == ResType.BookOss)
+                    result.Entity = _resourceServices.requireResOss(resourceInfo.OssPath);
+                else{
+                    result.Entity = new ResponseRes
+                    {
+                        downloadUrl = resourceInfo.Url,
+                    };
+                }
+                _resourceServices.logRequireRes(query.resCode,query.requireUserId);
+            }
+            catch(Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+
+        }
+
         private UploadRes RequestToUploadRes()
         {
             ResType resType = ResType.BookOss;
@@ -352,8 +430,8 @@ namespace ContentCenter.Controllers
         private string VerifyUpload(UploadRes uploadRes )
         {
             //校验用户
-            var userCode = base.getUserInfo(CConstants.Id4Claim_UserAccount);
-            if (userCode == null){
+            var userId = base.getUserId();
+            if (string.IsNullOrEmpty(userId)){
                 return "没有获取用户信息，请重新登陆";
             }
             if (string.IsNullOrEmpty(uploadRes.refCode)){
@@ -374,7 +452,7 @@ namespace ContentCenter.Controllers
                 if (!VerifyUtil.VerifyHttp(url)) return "url地址无法访问，请检查是否已失效";
             }
             if (!uploadRes.isReset){
-                if (_resourceServices.IsRepeatRes(uploadRes.refCode, uploadRes.resType, uploadRes.fileType)){
+                if (_resourceServices.IsRepeatRes(userId,uploadRes.refCode, uploadRes.resType, uploadRes.fileType)){
                     return uploadRes.resType == ResType.BookOss ? "此书已上传同类型文件，请查看页面下方列表" :
                         $"已上传[{uploadRes.fileType}]文件类型的外部资源，请查看页面下方列表";
                 }

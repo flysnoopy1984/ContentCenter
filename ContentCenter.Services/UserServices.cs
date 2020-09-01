@@ -2,6 +2,7 @@
 using ContentCenter.IRepository;
 using ContentCenter.IServices;
 using ContentCenter.Model;
+using IQB.Util.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,11 +15,37 @@ namespace ContentCenter.Services
     public class UserServices : BaseServices<EUserInfo>,IUserServices
     {
         private IUserRepository _userDb;
-        public UserServices(IUserRepository userRepository)
+        private IUserBookRepository _userBookRepository;
+        public UserServices(IUserRepository userRepository, IUserBookRepository userBookRepository)
             :base(userRepository)
         {
+            _userBookRepository = userBookRepository;
             _userDb = userRepository;
         }
+
+        /* 用户书本收藏夹 Begin */
+        public long AddFavBook(string bookCode,string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("非法操作！");
+            return _userBookRepository.AddUserBook(bookCode, userId).Result;
+        }
+
+        public bool DelFavBook(string bookCode, string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("非法操作！");
+            return _userBookRepository.DelUserBook(bookCode, userId).Result;
+        }
+
+        public ModelPager<VueUserBook> queryUserbookList(QUserBook query)
+        {
+            if (string.IsNullOrEmpty(query.userId))
+                throw new Exception("非法操作！");
+            return _userBookRepository.queryUserBook(query).Result;
+        }
+
+        /* 用户书本收藏夹 End */
 
         public bool HasRegistPhone(string phone)
         {
@@ -34,6 +61,7 @@ namespace ContentCenter.Services
                 throw new CCException(CCWebMsg.User_Login_WrongUserPwd);
             return result.ToVueUser();
         }
+
 
         /// <summary>
         /// 
@@ -60,6 +88,13 @@ namespace ContentCenter.Services
             var recOp = _userDb.AddNoIdentity(ui).Result;
             return ui.ToVueUser();
 
+        }
+
+        public VueUC_UserInfo getUC_User(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("非法操作！");
+            return _userDb.getUC_User(userId);
         }
     }
 }

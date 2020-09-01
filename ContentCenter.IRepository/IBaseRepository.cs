@@ -51,8 +51,13 @@ namespace ContentCenter.IRepository
 
         Task<int> SaveMasterData<M>(M saveObj) where M : BaseMasterTable, new();
 
+        #region 同步
         long Add_Sync(T newEntity);
         bool DeleteByKey_Sync(long key);
         bool DeleteRangeByExp_Sync(Expression<Func<T, bool>> whereExp);
+
+        int SaveMasterData_Sync<M>(M saveObj) where M : BaseMasterTable, new();
+        bool UpdatePart_NoObj_Sync(Expression<Func<T, T>> colsExp, Expression<Func<T, bool>> whereExp);
+        #endregion
     }
 }

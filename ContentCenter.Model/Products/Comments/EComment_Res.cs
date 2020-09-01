@@ -10,7 +10,12 @@ namespace ContentCenter.Model
     {
         [SugarColumn(IsIdentity = true, IsPrimaryKey = true)]
         public long Id { get; set; }
+
+        [SugarColumn(Length = 50)]
         public string refCode { get; set; }
+
+        [SugarColumn(Length = 50)]
+        public string parentRefCode { get; set; }
 
         [SugarColumn(Length = 400, ColumnDataType = "nvarchar")]
         public string content { get; set; }
@@ -21,7 +26,8 @@ namespace ContentCenter.Model
         /// <summary>
         /// 回复总数
         /// </summary>
-        public int replyNum { get; set; }
+        [SugarColumn(DefaultValue = "0")]
+        public int replyNum { get; set; } = 0;
     }
 }
 

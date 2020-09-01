@@ -17,5 +17,7 @@ namespace ContentCenter.Model
         public string Summery { get; set; }
 
         public string CoverUrl { get; set; }
+
+        public int ResourceCount { get; set; }
     }
 }

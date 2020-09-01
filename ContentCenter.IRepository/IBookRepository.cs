@@ -40,9 +40,15 @@ namespace ContentCenter.IRepository
         /// <returns></returns>
         Task<List<RTag>> GetTagList(int number=0, OrderByType orderByType= OrderByType.Desc);
 
-
-
         Task<string> TestSql();
+
+        /// <summary>
+        /// 更新资源总量
+        /// </summary>
+        /// <param name="bookCode"></param>
+        /// <param name="direction"></param>
+        /// <returns></returns>
+        bool UpdateBookResNum(string bookCode, OperationDirection direction);
 
 
 

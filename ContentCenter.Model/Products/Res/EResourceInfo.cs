@@ -67,14 +67,18 @@ namespace ContentCenter.Model
         [SugarColumn(Length = 50, IsNullable = true,ColumnDataType = "nvarchar")]
         public string Remark { get; set; }
 
-        [SugarColumn(IsNullable = true, DefaultValue = "0")]
-        public int goodNum { get; set; }
+        [SugarColumn(DefaultValue = "0")]
+        public int goodNum { get; set; } = 0;
 
-        [SugarColumn(IsNullable = true, DefaultValue = "0")]
-        public int badNum { get; set; }
+        [SugarColumn(DefaultValue = "0")]
+        public int badNum { get; set; } = 0;
 
-        //[SugarColumn(IsNullable = true)]
-        //public DateTime praizeDateTime { get; set; }
+        /// <summary>
+        /// 资源请求次数
+        /// </summary>
+        [SugarColumn(DefaultValue = "0")]
+        public int requireNum { get; set; } = 0;
+       
 
     }
 }
