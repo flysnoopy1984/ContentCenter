@@ -86,5 +86,19 @@
             <param name="delComment"></param>
             <returns></returns>
         </member>
+        <member name="M:ContentCenter.Controllers.UserController.SwitchFavBook(ContentCenter.Model.reqUserBook)">
+             <summary>
+            收藏/取消喜爱的书
+             </summary>
+             <param name="userBook"></param>
+             <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.UserController.FavBookList(ContentCenter.Model.QUserBook)">
+            <summary>
+            收藏书的列表
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
     </members>
 </doc>

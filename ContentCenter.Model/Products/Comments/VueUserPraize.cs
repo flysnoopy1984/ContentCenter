@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ContentCenter.Model.BaseEnum;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,7 +10,10 @@ namespace ContentCenter.Model
     {
         //public int praizeType { get; set; }
         //public string praizeTypeText { get; set; }
-
+        /// <summary>
+        /// 点赞表ID
+        /// </summary>
+        public long id { get; set; }
         /// <summary>
         /// 资源就是 Code 评论和回复就是Id
         /// </summary>
@@ -33,6 +37,11 @@ namespace ContentCenter.Model
 
         [JsonProperty(IsReference = false)]
         public DateTime CreateDateTime { get; set; }
+
+        /// <summary>
+        /// 仅资源有用，好评或差评
+        /// </summary>
+        public PraizeType resPraizeType { get; set; }
 
         public bool IsEdit { get; set; } = false;
     }

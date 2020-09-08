@@ -7,6 +7,7 @@ namespace ContentCenter.Model
 {
     public class VueUserBook
     {
+        public  long id { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
 

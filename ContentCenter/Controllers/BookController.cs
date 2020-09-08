@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using SqlSugar;
 
 namespace ContentCenter.Controllers
@@ -25,14 +26,17 @@ namespace ContentCenter.Controllers
     public class BookController : CCBaseController
     {
         private  IBookServices _bookServices;
+        private IConfiguration _configuration;
         private IResourceServices _resourceServices;
         private IWebHostEnvironment _webHostEnvironment;
         private ISearchServices _searchServices;
         public BookController(IBookServices bookServices, 
             IResourceServices resourceServices, 
             IWebHostEnvironment webHostEnvironment,
+            IConfiguration configuration,
             ISearchServices searchServices)
         {
+            _configuration = configuration;
             _resourceServices = resourceServices;
             _bookServices = bookServices;
             _searchServices = searchServices;
@@ -278,7 +282,7 @@ namespace ContentCenter.Controllers
         {
             ResultEntity<EResourceInfo> result = new ResultEntity<EResourceInfo>();
             EResourceInfo origRes = null;
-            var filePath = _webHostEnvironment.ContentRootPath + "\\UploadFiles\\temp\\" + file.FileName;
+            string filePath = _webHostEnvironment.ContentRootPath + _configuration["BookSiteConfig:uploadTemp"] + file.FileName;
           
             try
             {
@@ -300,7 +304,6 @@ namespace ContentCenter.Controllers
                         fs.Flush();//清空文件流
                     }
                     //上传到Oss   
-                   
                     var ossKey = OssKeyManager.BookKey(filePath, uploadRes.refCode, getUserId());
                     //如果是重新提交，则需要删除Oss资源
                     if (uploadRes.isReset){
@@ -308,14 +311,13 @@ namespace ContentCenter.Controllers
                         if(origRes.OssPath != ossKey)
                             _resourceServices.ossDelete(origRes.OssPath);
                     }
-                    var uploadResult = _resourceServices.uploadBookToOss(filePath, ossKey);
+                    var uploadResult = _resourceServices.uploadToOss(filePath, ossKey);
                     if (uploadResult.IsSuccess)
                     {
                         var resourceInfo = GenerateResource(uploadRes, ossKey);
                         resourceInfo.OrigFileName = file.FileName;
                         //上传信息写入到数据库
-                        result = _resourceServices.saveResToDb(resourceInfo);
-                       
+                        result = _resourceServices.saveResToDb(resourceInfo); 
                     }
                     else
                     {

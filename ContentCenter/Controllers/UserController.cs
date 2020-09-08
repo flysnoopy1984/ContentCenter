@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ContentCenter.Common;
 using ContentCenter.IServices;
 using ContentCenter.Model;
 using ContentCenter.Model.BaseEnum;
 using IQB.Util;
 using IQB.Util.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -22,10 +25,19 @@ namespace ContentCenter.Controllers
     {
         private IUserServices _userServices;
         private IConfiguration _configuration;
-        public UserController(IUserServices userServices, IConfiguration configuration)
+        private IWebHostEnvironment _webHostEnvironment;
+        private IResourceServices _resourceServices;
+        public UserController(IUserServices userServices,
+                IResourceServices resourceServices,
+                IConfiguration configuration,
+                IWebHostEnvironment webHostEnvironment)
         {
             _configuration = configuration;
+            _webHostEnvironment = webHostEnvironment;
             _userServices = userServices;
+            _resourceServices = resourceServices;
+
+
         }
 
         [HttpPost]
@@ -185,6 +197,11 @@ namespace ContentCenter.Controllers
             return result;
           
         }
+        /// <summary>
+        ///收藏/取消喜爱的书
+        /// </summary>
+        /// <param name="userBook"></param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize]
         public ResultNormal SwitchFavBook(reqUserBook userBook)
@@ -206,6 +223,11 @@ namespace ContentCenter.Controllers
             return result;
         }
 
+        /// <summary>
+        /// 收藏书的列表
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize]
         public ResultPager<VueUserBook> FavBookList(QUserBook query)
@@ -238,6 +260,73 @@ namespace ContentCenter.Controllers
             }
             return result;
 
+        }
+
+        [HttpPost]
+        [Authorize]
+        [RequestSizeLimit(52428800)]
+        public ResultNormal UploadHeander([FromForm] IFormFile file)
+        {
+            ResultNormal result = new ResultNormal();
+            string filePath = null;
+            try
+            {
+                if(file == null)
+                {
+                    result.ErrorMsg = "没有上传图片";
+                    return result;
+                }
+                var userId = this.getUserId();
+                var fn = userId + "_" + file.FileName;
+               
+                filePath = _webHostEnvironment.ContentRootPath + _configuration["BookSiteConfig:uploadTemp"] + fn;
+
+                //写入到磁盘
+                using (FileStream fs = System.IO.File.Create(filePath))
+                {
+                    file.CopyTo(fs);//将上传的文件文件流，复制到fs中
+                    fs.Flush();//清空文件流
+                }
+                var ossKey = OssKeyManager.UserAvatorKey(fn);
+                var uploadResult = _resourceServices.uploadToOss(filePath, ossKey);
+                if (uploadResult.IsSuccess)
+                {
+                    var url = _configuration["ossConfig:userHeaderRoot"] + fn;
+                    url += $"?{StringUtil.GetRnd(5, true, false, false, false)}";
+                    _userServices.updateHeader(userId, url);
+                    result.Message = url;
+                }
+                else
+                    result.IsSuccess = false;
+
+
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            finally
+            {
+                if (filePath!=null && System.IO.File.Exists(filePath))
+                    System.IO.File.Delete(filePath);
+            }
+            return result;
+        }
+        [HttpPost]
+        [Authorize]
+        public ResultNormal UploadInfo(VueSubmitUserInfo submitData)
+        {
+            ResultNormal result = new ResultNormal();
+            try
+            {
+                submitData.userId = this.getUserId();
+                _userServices.updateInfo(submitData);
+            }
+            catch(Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
         }
         #region 私有方法
 

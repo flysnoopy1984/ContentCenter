@@ -99,12 +99,12 @@ namespace ContentCenter.Services
             return result;
         }
 
-        public ResultNormal uploadBookToOss(string localfilePath,string ossKey, bool isCover = true)
+        public ResultNormal uploadToOss(string localfilePath,string ossKey, bool isCover = true)
         {
             ResultNormal result = new ResultNormal();
             try
             {
-
+                var l = ossKey.Length;
                 if(isCover || (!isCover && !ossExist(ossKey)))
                 {
                     OssClient.PutObject(_OssConfig.bucketName, ossKey, localfilePath);

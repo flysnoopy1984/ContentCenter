@@ -144,6 +144,21 @@
             用户用户中心评论展示
             </summary>
         </member>
+        <member name="P:ContentCenter.Model.VueUserPraize.id">
+            <summary>
+            点赞表ID
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.VueUserPraize.code">
+            <summary>
+            资源就是 Code 评论和回复就是Id
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.VueUserPraize.resPraizeType">
+            <summary>
+            仅资源有用，好评或差评
+            </summary>
+        </member>
         <member name="P:ContentCenter.Model.EResourceInfo.RefCode">
             <summary>
             资源关联的Code,如果是Book 就是书资源，

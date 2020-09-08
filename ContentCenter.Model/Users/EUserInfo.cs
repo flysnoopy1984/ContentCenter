@@ -58,6 +58,7 @@ namespace ContentCenter.Model
                 UserAccount = this.UserAccount,
                 TokenPwd = this.UserPwd,
                 UserId = this.Id,
+                Sex = this.Sex,
             };
         }
 

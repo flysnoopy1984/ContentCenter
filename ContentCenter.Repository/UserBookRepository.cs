@@ -49,6 +49,7 @@ namespace ContentCenter.Repository
             .OrderBy(ub=>ub.createdDateTime,OrderByType.Desc)
             .Select((ub, b) => new VueUserBook
             {
+                id = ub.Id,
                 Code = b.Code,
                 CoverUrl = b.CoverUrl,
                 Name = b.Title,

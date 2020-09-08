@@ -21,5 +21,15 @@ namespace ContentCenter.IServices
         ModelPager<VueUserBook> queryUserbookList(QUserBook query);
 
         VueUC_UserInfo getUC_User(string userId);
+
+        /// <summary>
+        /// 更新用户头像
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="headerUrl"></param>
+        /// <returns></returns>
+        void updateHeader(string userId,string headerUrl);
+
+        void updateInfo(VueSubmitUserInfo submitData);
     }
 }

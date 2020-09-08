@@ -17,7 +17,7 @@ namespace ContentCenter.IServices
         /// <param name="owner"></param>
         /// <param name="isCover">是否覆盖原有文件</param>
         /// <returns></returns>
-        ResultNormal uploadBookToOss(string localfilePath,string ossKey,bool isCover = true);
+        ResultNormal uploadToOss(string localfilePath,string ossKey,bool isCover = true);
 
         /// <summary>
         /// 请求Oss资源 ，生成临时Url

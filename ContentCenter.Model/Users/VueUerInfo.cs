@@ -18,6 +18,8 @@ namespace ContentCenter.Model
 
         public string HeaderUrl { get; set; }
 
+        public int Sex { get; set; }
+
         //public string Phone { get; set; }
 
 

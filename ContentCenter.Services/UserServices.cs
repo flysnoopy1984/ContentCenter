@@ -96,5 +96,21 @@ namespace ContentCenter.Services
                 throw new Exception("非法操作！");
             return _userDb.getUC_User(userId);
         }
+
+        public void updateHeader(string userId, string headerUrl)
+        {
+            if (string.IsNullOrEmpty(userId))
+                throw new Exception("非法操作！");
+            _userDb.updateHeader(userId, headerUrl);
+        }
+
+        public void updateInfo(VueSubmitUserInfo submitData)
+        {
+            if (string.IsNullOrEmpty(submitData.userId))
+                throw new Exception("非法操作！");
+            _userDb.updateInfo(submitData);
+           // _userDb.UpdatePart_NoObj()
+        }
+
     }
 }

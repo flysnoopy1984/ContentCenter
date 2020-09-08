@@ -24,6 +24,11 @@ namespace ContentCenter.Common
             return "Books/"+ refCode+"/" + fi.Extension.Remove(0, 1) + "/" + userId + "_" + fn;
         }
 
+        public static string UserAvatorKey(string fileName)
+        {
+            return "Users/Headers/" + fileName;
+        }
+
         public static string BookDeletedKey(string origKey)
         {
             return "Deleted/" + origKey;

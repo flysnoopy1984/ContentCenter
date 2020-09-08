@@ -24,32 +24,35 @@ namespace ContentCenter.Repository
                .Select(u => new VueUC_UserInfo
                {
                    HeaderUrl = u.HeaderUrl,
-                   Id = userId,
-                   NickName = u.NickName
+                   UserId = userId,
+                   NickName = u.NickName,
+                   Sex = u.Sex
+                   
+                   
                });
             return q.First();
             
 
         }
 
+        public Task<bool> updateHeader(string userId, string headerUrl)
+        {
+            return base.UpdatePart_NoObj(a => new EUserInfo { HeaderUrl = headerUrl },a => a.Id == userId);
+        }
+
+        public Task<bool> updateInfo(VueSubmitUserInfo submitData)
+        {
+            return base.UpdatePart_NoObj(a => 
+                 new EUserInfo 
+                 { 
+                     NickName = submitData.nickName,
+                     Sex = Convert.ToInt32(submitData.sex) 
+                 },
+                a => a.Id == submitData.userId);
+        }
 
 
-        //public Task<EUserInfo> Login(LoginUser loginUser)
-        //{
-        //    return GetByKey(loginUser.LoginAccount);
 
-        //}
-
-        //public Task<long> RegisterNew(RegUser regUser)
-        //{
-
-        //    EUserInfo ui = new EUserInfo
-        //    {
-        //        UserAccount = regUser.Account,
-        //        UserPwd = regUser.Pwd,
-        //        Phone = regUser.Phone
-        //    };
-        //    return Add(ui);
-        //}
+       
     }
 }

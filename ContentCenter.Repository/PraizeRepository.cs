@@ -191,8 +191,9 @@ namespace ContentCenter.Repository
             .OrderBy(p => p.praizeDate, OrderByType.Desc)
             .Select((p, r, c, b) => new VueUserPraize
             {
+                id = p.Id,
                 CreateDateTime = p.praizeDate,
-                code = c.Id.ToString(),
+                code = r.Id.ToString(),
                 bookCode = b.Code,
                 bookName = b.Title,
                 content =  c.content,
@@ -220,6 +221,7 @@ namespace ContentCenter.Repository
             .OrderBy(p => p.praizeDate, OrderByType.Desc)
             .Select((p, c, b) => new VueUserPraize
             {
+                id = p.Id,
                 CreateDateTime = p.praizeDate,
                 code = c.Id.ToString(),
                 bookCode = b.Code,
@@ -249,11 +251,13 @@ namespace ContentCenter.Repository
             .OrderBy(p => p.praizeDate, OrderByType.Desc)
             .Select((p, r, b) => new VueUserPraize
             {
+                id = p.Id,
                 CreateDateTime = p.praizeDate,
                 code = r.Code,
                 bookCode = b.Code,
                 bookName = b.Title,
                 bookUrl = b.CoverUrl,
+                resPraizeType = p.PraizeType,
                 content = b.Title + "的" + "[" + r.FileType + "资源文件]-" + (r.ResType == ResType.BookOss ? r.OrigFileName : "url地址"),
             });
            
