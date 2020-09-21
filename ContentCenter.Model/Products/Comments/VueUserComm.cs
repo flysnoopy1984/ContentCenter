@@ -27,7 +27,7 @@ namespace ContentCenter.Model
             }
         }
 
-        [JsonProperty(IsReference = false)]
+        [JsonIgnore()]
         public DateTime CreateDateTime { get; set; }
 
         public bool IsEdit { get; set; } = false;

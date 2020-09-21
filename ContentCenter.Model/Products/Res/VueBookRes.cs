@@ -17,7 +17,7 @@ namespace ContentCenter.Model.Products.Res
 
         public string url { get; set; }
 
-        [JsonProperty(IsReference = false)]
+        [JsonIgnore()]
         public DateTime CreateDateTime { get; set; }
 
         public string uploadDateTime

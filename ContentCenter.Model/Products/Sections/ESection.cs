@@ -32,6 +32,14 @@ namespace ContentCenter.Model
         /// </summary>   
         public SectionType SectionType { get; set; }
 
+        /// <summary>
+        /// 界面排序
+        /// </summary>
+        [SugarColumn(DefaultValue ="0",IsNullable =true)]
+        public int seq { get; set; }
+
+        [SugarColumn(DefaultValue = "0", IsNullable = true)]
+        public DataSource DataSource { get; set; }
 
     }
 }

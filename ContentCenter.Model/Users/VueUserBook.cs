@@ -17,7 +17,7 @@ namespace ContentCenter.Model
 
         public double Score { get; set; }
 
-        [JsonProperty(IsReference = false)]
+        [JsonIgnore()]
         public DateTime CreateDateTime { get; set; }
 
      

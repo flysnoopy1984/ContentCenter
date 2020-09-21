@@ -34,7 +34,7 @@ namespace ContentCenter.Model
 
         public bool IsEditing { get; set; }
 
-        [JsonProperty(IsReference =false)]
+        [JsonIgnore()]
         public DateTime CreateDateTime { get; set; }
 
         public PraizeType userPraizeType { get; set; } = PraizeType.noPraize;

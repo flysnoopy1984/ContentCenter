@@ -27,6 +27,9 @@ namespace ContentCenter.Model.Commons
         public const string Id4Claim_UserId = "UserId";
         public const string Id4Claim_UserNickName = "UserNickName";
 
+        public const string MemoryKey_SysConfig = "mk-sysConfig";
+
+
 
 
 

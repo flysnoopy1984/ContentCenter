@@ -25,17 +25,18 @@ namespace ContentCenter.Repository
                 JoinType.Inner,b.Code == bt.BookCode
             });
             q = q.Where((b, bt) => bt.TagCode == tagCode);
-            var r = q.Select((b, bt) => new RBookList
-            {
-                Code = b.Code,
-                CoverUrl = b.CoverUrl,
-                Name = b.Title,
-                Author = b.AuthorCode,
-                Score = b.Score.ToString(),
-                Summery = b.Summery.Substring(0, 100),
-                ResourceCount = b.ResoureNum,
+            var r = getSelectBookList(q);
+            //var r = q.Select((b, bt) => new RBookList
+            //{
+            //    Code = b.Code,
+            //    CoverUrl = b.CoverUrl,
+            //    Name = b.Title,
+            //    Author = b.AuthorCode,
+            //    Score = b.Score.ToString(),
+            //    Summery = b.Summery.Substring(0, 100),
+            //    ResourceCount = b.ResoureNum,
 
-            });
+            //});
 
             return r.ToPageListAsync(pageIndex, pageSize, totalNumber);
         }
@@ -47,15 +48,16 @@ namespace ContentCenter.Repository
                 JoinType.Inner,bt.TagCode == st.TagCode
             });
             q = q.Where((b, bt, st) =>  st.SectionCode== secCode);
-            var r = q.Select((b,bt,st)=> new RBookList{
-                Code = b.Code,
-                CoverUrl = b.CoverUrl,
-                Name = b.Title,
-                Author = b.AuthorCode,
-                Score = b.Score.ToString(),
-                Summery = b.Summery.Substring(0, 100),
-                ResourceCount = b.ResoureNum,
-            });
+            var r = getSelectBookList(q);
+            //var r = q.Select((b,bt,st)=> new RBookList{
+            //    Code = b.Code,
+            //    CoverUrl = b.CoverUrl,
+            //    Name = b.Title,
+            //    Author = b.AuthorCode,
+            //    Score = b.Score.ToString(),
+            //    Summery = b.Summery.Substring(0, 100),
+            //    ResourceCount = b.ResoureNum,
+            //});
 
             return r.ToPageListAsync(pageIndex, pageSize, totalNumber);
            
@@ -69,16 +71,17 @@ namespace ContentCenter.Repository
             });
             q = q.Where((b, sb) => sb.SectionCode == secCode);
             q = q.OrderBy((b, sb) => b.CreateDateTime,OrderByType.Desc);
-            var r = q.Select((b,sb) => new RBookList
-            {
-                Code = b.Code,
-                CoverUrl = b.CoverUrl,
-                Name = b.Title,
-                Author = b.AuthorCode,
-                Score = b.Score.ToString(),
-                Summery = b.Summery.Substring(0, 100),
-                ResourceCount = b.ResoureNum,
-            });
+            var r = getSelectBookList(q);
+            //var r = q.Select((b,sb) => new RBookList
+            //{
+            //    Code = b.Code,
+            //    CoverUrl = b.CoverUrl,
+            //    Name = b.Title,
+            //    Author = b.AuthorCode,
+            //    Score = b.Score.ToString(),
+            //    Summery = b.Summery.Substring(0, 100),
+            //    ResourceCount = b.ResoureNum,
+            //});
 
             return r.ToPageListAsync(pageIndex, pageSize, totalNumber);
         }
@@ -86,16 +89,17 @@ namespace ContentCenter.Repository
         public Task<List<RBookList>> GetBookListBySection_HighScroe(int pageIndex, int pageSize, RefAsync<int> totalNumber, int defaultTop)
         {
             var q = Db.Queryable<EBookInfo>().OrderBy(a => a.Score, OrderByType.Desc);
-            var r = q.Select(b => new RBookList
-            {
-                Code = b.Code,
-                CoverUrl = b.CoverUrl,
-                Name = b.Title,
-                Author = b.AuthorCode,
-                Score = b.Score.ToString(),
-                Summery = b.Summery.Substring(0,100),
-                ResourceCount = b.ResoureNum,
-            });
+            var r = getSelectBookList(q);
+            //var r = q.Select(b => new RBookList
+            //{
+            //    Code = b.Code,
+            //    CoverUrl = b.CoverUrl,
+            //    Name = b.Title,
+            //    Author = b.AuthorCode,
+            //    Score = b.Score.ToString(),
+            //    Summery = b.Summery.Substring(0,100),
+            //    ResourceCount = b.ResoureNum,
+            //});
 
             return r.Take(defaultTop).ToPageListAsync(pageIndex, pageSize, totalNumber);
         }
@@ -136,6 +140,7 @@ namespace ContentCenter.Repository
             if (sectionType != SectionType.All)
                 q = q.Where(a => a.SectionType == sectionType);
             q = q.OrderBy(a => a.SectionType);
+            q = q.OrderBy(a => a.seq, OrderByType.Desc);
           
             return q.ToListAsync();
         }
@@ -152,7 +157,60 @@ namespace ContentCenter.Repository
             var q = Db.Queryable<EBookInfo>();
             q = q.Where(b => b.Title.Contains(searchRequest.keyword) || b.AuthorCode.Contains(searchRequest.keyword))
                 .OrderBy(b => b.CreateDateTime, OrderByType.Desc);
-            var r = q.Select((b) => new RBookList
+            var r = getSelectBookList(q);
+            //var r = q.Select((b) => new RBookList
+            //{
+            //    Code = b.Code,
+            //    CoverUrl = b.CoverUrl,
+            //    Name = b.Title,
+            //    Author = b.AuthorCode,
+            //    Score = b.Score.ToString(),
+            //    Summery = b.Summery.Substring(0, 100),
+            //    ResourceCount = b.ResoureNum,
+            //});
+         
+            return r.ToPageListAsync(searchRequest.pageIndex, searchRequest.pageSize, totalNumber);
+          
+        }
+
+        public bool UpdateBookResNum(string bookCode, OperationDirection direction)
+        {
+            var op = Db.Updateable<EBookInfo>().SetColumns(a => new EBookInfo() { ResoureNum = a.ResoureNum + 1,UpdateDateTime=DateTime.Now });
+            if(direction == OperationDirection.minus)
+                op = Db.Updateable<EBookInfo>().SetColumns(a => new EBookInfo() { ResoureNum = a.ResoureNum + 1, UpdateDateTime = DateTime.Now });
+
+            op = op.Where(a => a.Code == bookCode);
+
+            return op.ExecuteCommandHasChange();
+        }
+
+        /// <summary>
+        /// 获取有资源文件的书列表
+        /// </summary>
+        public Task<List<RBookList>> GetBookListBySection_Resource(int pageIndex, int pageSize, RefAsync<int> totalNumber)
+        {
+            var q = Db.Queryable<EBookInfo>()
+                .Where(b => b.ResoureNum > 0)
+                .OrderBy(b => b.UpdateDateTime, OrderByType.Desc);
+
+            var r = getSelectBookList(q);
+            //var r = q.Select(b => new RBookList
+            //{
+            //    Code = b.Code,
+            //    CoverUrl = b.CoverUrl,
+            //    Name = b.Title,
+            //    Author = b.AuthorCode,
+            //    Score = b.Score.ToString(),
+            //    Summery = b.Summery.Substring(0, 100),
+            //    ResourceCount = b.ResoureNum,
+            //});
+
+            return r.ToPageListAsync(pageIndex, pageSize, totalNumber);
+        }
+        private ISugarQueryable<RBookList> getSelectBookList(ISugarQueryable<EBookInfo> q)
+        {
+            ISugarQueryable<RBookList> r;
+            r = q.Select(b => new RBookList
             {
                 Code = b.Code,
                 CoverUrl = b.CoverUrl,
@@ -162,20 +220,8 @@ namespace ContentCenter.Repository
                 Summery = b.Summery.Substring(0, 100),
                 ResourceCount = b.ResoureNum,
             });
-         
-            return r.ToPageListAsync(searchRequest.pageIndex, searchRequest.pageSize, totalNumber);
-          
-        }
 
-        public bool UpdateBookResNum(string bookCode, OperationDirection direction)
-        {
-            var op = Db.Updateable<EBookInfo>().SetColumns(a => new EBookInfo() { ResoureNum = a.ResoureNum + 1 });
-            if(direction == OperationDirection.minus)
-                op = Db.Updateable<EBookInfo>().SetColumns(a => new EBookInfo() { ResoureNum = a.ResoureNum + 1 });
-
-            op = op.Where(a => a.Code == bookCode);
-
-            return op.ExecuteCommandHasChange();
+            return r;
         }
     }
 }

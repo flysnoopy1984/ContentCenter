@@ -30,7 +30,7 @@ namespace ContentCenter.Model
             set { _dateTime = value; }
         }
 
-        [JsonProperty(IsReference = false)]
+        [JsonIgnore()]
         public DateTime CreateDateTime { get; set; }
 
         public int goodNum { get; set; }

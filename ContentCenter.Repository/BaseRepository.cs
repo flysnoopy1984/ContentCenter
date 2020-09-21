@@ -151,6 +151,11 @@ namespace ContentCenter.Repository
             var insertable = _db.Insertable<T>(newEntity);
             return  insertable.ExecuteReturnBigIdentity();
         }
+        public int AddNoIdentity_Sync(T newEntity)
+        {
+            var insertable = _db.Insertable<T>(newEntity);
+            return insertable.ExecuteCommand();
+        }
 
         public bool DeleteRangeByExp_Sync(Expression<Func<T, bool>> whereExp)
         {
@@ -175,6 +180,8 @@ namespace ContentCenter.Repository
 
             return op.ExecuteCommandHasChange();
         }
+
+       
         #endregion
     }
 }

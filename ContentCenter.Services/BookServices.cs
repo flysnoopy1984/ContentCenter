@@ -64,7 +64,12 @@ namespace ContentCenter.Services
                             result.totalCount = totalNumber;
                             return result;
                         }
-                           
+                        else if (section.Code == WebSection.ResDownLoad)
+                        {
+                            result.datas = _bookDb.GetBookListBySection_Resource(query.pageIndex, query.pageSize,totalNumber).Result;
+                            result.totalCount = totalNumber;
+                            return result;
+                        }
                         else if (section.Code == WebSection.HighScore)
                         {
                             result.datas = _bookDb.GetBookListBySection_HighScroe(query.pageIndex, query.pageSize, totalNumber,defaultTop:query.HighScoreTop).Result;

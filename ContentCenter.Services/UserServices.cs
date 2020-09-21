@@ -3,6 +3,7 @@ using ContentCenter.IRepository;
 using ContentCenter.IServices;
 using ContentCenter.Model;
 using IQB.Util.Models;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,11 +17,19 @@ namespace ContentCenter.Services
     {
         private IUserRepository _userDb;
         private IUserBookRepository _userBookRepository;
-        public UserServices(IUserRepository userRepository, IUserBookRepository userBookRepository)
+        private IUserFinanceOverViewRepository _userFinanceOverViewRepository;
+        private IUserFinanceRepository _userFinanceRepository;
+
+        public UserServices(IUserRepository userRepository, 
+            IUserBookRepository userBookRepository,
+            IUserFinanceOverViewRepository userFinanceOverViewRepository,
+            IUserFinanceRepository userFinanceRepository)
             :base(userRepository)
         {
             _userBookRepository = userBookRepository;
             _userDb = userRepository;
+            _userFinanceOverViewRepository = userFinanceOverViewRepository;
+            _userFinanceRepository = userFinanceRepository;
         }
 
         /* 用户书本收藏夹 Begin */
@@ -85,7 +94,31 @@ namespace ContentCenter.Services
                 Phone = regUser.Phone,
                 NickName = regUser.Account,
             };
-            var recOp = _userDb.AddNoIdentity(ui).Result;
+            EUserFinanceOverview financeOverview = new EUserFinanceOverview
+            {
+                userId = ui.Id,
+                pointEffectDate = DateTime.Now.AddDays(90),
+                money = 0,
+                chargePoint = 0,
+                fixedPoint = 20,
+            };
+            EUserPointsTrans trans = new EUserPointsTrans
+            {
+                userId = ui.Id,
+                createdDateTime = DateTime.Now,
+                changeType = Model.BaseEnum.PointChangeType.newRegister,
+                point = 20,
+            };
+            DbResult<bool> transResult = null;
+            transResult = _userDb.Db.Ado.UseTran(() =>
+            {
+                _userDb.AddNoIdentity_Sync(ui);
+                _userFinanceOverViewRepository.AddNoIdentity_Sync(financeOverview);
+                _userFinanceRepository.AddPointTrans_Sync(trans);
+            });
+            if(!transResult.IsSuccess)
+                throw new Exception("注册失败");
+            // var recOp = _userDb.AddNoIdentity(ui).Result;
             return ui.ToVueUser();
 
         }
@@ -108,6 +141,8 @@ namespace ContentCenter.Services
         {
             if (string.IsNullOrEmpty(submitData.userId))
                 throw new Exception("非法操作！");
+            if (string.IsNullOrEmpty(submitData.nickName))
+                throw new Exception("昵称不能为空！");
             _userDb.updateInfo(submitData);
            // _userDb.UpdatePart_NoObj()
         }

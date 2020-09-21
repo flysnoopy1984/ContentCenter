@@ -24,21 +24,6 @@ namespace ContentCenter.Model
         [SugarColumn(Length = 10, ColumnDataType = "nvarchar", IsNullable = true)]
         public string RealName { get; set; }
 
-        [SugarColumn(Length = 32, IsNullable = true)]
-        public string wxOpenId { get; set; }
-
-        [SugarColumn(Length = 100, IsNullable = true)]
-        public string wxName { get; set; }
-
-        [SugarColumn(Length = 20, IsNullable = true)]
-        public string wxCity { get; set; }
-
-        [SugarColumn(Length = 20, IsNullable = true)]
-        public string wxProvince { get; set; }
-
-        [SugarColumn(Length = 20, IsNullable = true)]
-        public string wxCountry { get; set; }
-
         [SugarColumn(Length = 256, IsNullable = true)]
         public string HeaderUrl { get; set; }
 
@@ -48,6 +33,15 @@ namespace ContentCenter.Model
         public int Age { get; set; }
 
         public int Sex { get; set; }
+
+        [SugarColumn(Length = 32, IsNullable = true)]
+        public string wxOpenId { get; set; }
+
+        /// <summary>
+        /// 0-10 普通用户 10-100 会员 100-200 vip 200-300 svip
+        /// </summary>
+        [SugarColumn(DefaultValue ="0")]
+        public int vipLevel { get; set; } = 0;
 
         public VueUerInfo ToVueUser()
         {

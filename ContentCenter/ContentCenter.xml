@@ -100,5 +100,47 @@
             <param name="query"></param>
             <returns></returns>
         </member>
+        <member name="M:ContentCenter.Controllers.UserFinanceController.getOverview(System.String)">
+            <summary>
+            用户概况
+            </summary>
+            <param name="userId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.UserFinanceController.getChargeTrans(ContentCenter.Model.QUserTrans)">
+            <summary>
+            充值记录
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.UserFinanceController.getPointTrans(ContentCenter.Model.QUserTrans)">
+            <summary>
+            积分变动明细
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.UserFinanceController.getCommissionTrans(ContentCenter.Model.QUserTrans)">
+            <summary>
+            佣金记录
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.UserFinanceController.getBalanceTrans(ContentCenter.Model.QUserTrans)">
+            <summary>
+            余额明细
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.UserFinanceController.chargeMoney(ContentCenter.Model.VueSubmitUserCharge)">
+            <summary>
+            用户充值
+            </summary>
+            <param name="submitData"></param>
+            <returns></returns>
+        </member>
     </members>
 </doc>

@@ -29,7 +29,7 @@ namespace ContentCenter.Model
             set { _dateTime = value; }
         }
 
-        [JsonProperty(IsReference = false)]
+        [JsonIgnore()]
         public DateTime CreateDateTime { get; set; }
         /// <summary>
         /// 点赞数

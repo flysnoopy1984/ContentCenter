@@ -20,6 +20,9 @@ namespace ContentCenter.Model
 
         public int Sex { get; set; }
 
+        public string levelInfo { get; set; }
+        public int level { get; set; }
+
         //public string Phone { get; set; }
 
 

@@ -244,6 +244,61 @@
             栏目分网站主栏目，分栏目
             </summary>   
         </member>
+        <member name="P:ContentCenter.Model.ESection.seq">
+            <summary>
+            界面排序
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.ESysConfig.sysCode">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.ESysConfig.pointEffectDay_Charge">
+            <summary>
+            充值-积分有效期
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.ESysConfig.pointEffectDay_Register">
+            <summary>
+            注册-积分有效期
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.ESysConfig.pointMoneyRate">
+            <summary>
+            积分和钱的兑换率
+            </summary>
+        </member>
+        <member name="T:ContentCenter.Model.EUserBalanceTrans">
+            <summary>
+            用户余额
+            </summary>
+        </member>
+        <member name="T:ContentCenter.Model.EUserChargeTrans">
+            <summary>
+            充值记录
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EUserChargeTrans.point">
+            <summary>
+            充值可得积分
+            </summary>
+        </member>
+        <member name="T:ContentCenter.Model.EUserCommissionTrans">
+            <summary>
+            用户佣金
+            </summary>
+        </member>
+        <member name="T:ContentCenter.Model.EUserPointsTrans">
+            <summary>
+            用户积分
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EUserInfo.vipLevel">
+            <summary>
+            0-10 普通用户 10-100 会员 100-200 vip 200-300 svip
+            </summary>
+        </member>
         <member name="P:ContentCenter.Model.VueUserRes.IsEdit">
             <summary>
             用户前端

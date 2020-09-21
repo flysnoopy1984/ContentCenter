@@ -28,6 +28,15 @@ namespace ContentCenter.IRepository
         /// </summary>
         Task<List<RBookList>> GetBookListBySection_HighScroe(int pageIndex, int pageSize, RefAsync<int> totalNumber,int defaultTop);
 
+        /// <summary>
+        /// 获取有资源文件的书列表
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="totalNumber"></param>
+        /// <returns></returns>
+        Task<List<RBookList>> GetBookListBySection_Resource(int pageIndex, int pageSize, RefAsync<int> totalNumber);
+
         Task<List<RBookList>> searchByNameAndAuthor(SearchReq searchRequest, RefAsync<int> totalNumber);
 
         Task<List<ESection>> GetWebSection(SectionType sectionType);

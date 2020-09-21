@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
 using ContentCenter.DBManager;
+using ContentCenter.IServices;
 using ContentCenter.Model;
 using ContentCenter.Repository;
 using Microsoft.AspNetCore.Hosting;
@@ -50,6 +51,8 @@ namespace ContentCenter
                     //   ISqlSugarClient sqlsugarClient = services.GetRequiredService<SqlSugarClient>();
                     DbSeed.InitDb(db);
                 }
+               
+
             }
         }
 

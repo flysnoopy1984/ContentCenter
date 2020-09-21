@@ -64,6 +64,8 @@ namespace ContentCenter.Model
         [SugarColumn(Length = 255, IsNullable = true)]
         public string CoverUrl { get; set; }
 
+        [SugarColumn(Length = 255, IsNullable = true)]
+        public string CoverUrl_Big { get; set; }
         /// <summary>
         /// 装帧
         /// </summary>

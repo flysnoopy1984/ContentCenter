@@ -19,5 +19,7 @@ namespace ContentCenter.IServices
         /// (事务方法)保存Section和Tag关系。(删除所有Section下的Tag,批量插入Tag)
         /// </summary>
         bool SaveSectionTag(ESection section, List<ETag> tagList);
+
+       
     }
 }

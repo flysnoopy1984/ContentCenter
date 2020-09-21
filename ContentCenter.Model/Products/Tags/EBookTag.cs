@@ -16,6 +16,6 @@ namespace ContentCenter.Model
         [SugarColumn(Length = 50, ColumnDataType = "nvarchar")]
         public string TagCode { get; set; }
 
-
+        public DateTime CreateDateTime { get; set; }
     }
 }

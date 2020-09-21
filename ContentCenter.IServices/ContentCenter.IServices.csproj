@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\IQBLib\IQB.Util\IQB.Util.csproj" />
     <ProjectReference Include="..\ContentCenter.Model\ContentCenter.Model.csproj" />

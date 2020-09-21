@@ -24,6 +24,7 @@ namespace ContentCenter.Model.BaseEnum
         public const string NewExpress = "NewExpress";
         public const string Popular = "Popular";
         public const string HighScore = "HighScore";
+        public const string ResDownLoad = "ResDownLoad";
 
 
     }

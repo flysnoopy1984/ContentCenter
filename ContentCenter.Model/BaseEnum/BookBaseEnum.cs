@@ -24,6 +24,6 @@ namespace ContentCenter.Model.BaseEnum
 
     public enum DataSource
     {
-        DouBan,
+        DouBan = 0,
     }
 }

@@ -35,7 +35,7 @@ namespace ContentCenter.Model
             }
         }
 
-        [JsonProperty(IsReference = false)]
+        [JsonIgnore()]
         public DateTime CreateDateTime { get; set; }
 
         /// <summary>

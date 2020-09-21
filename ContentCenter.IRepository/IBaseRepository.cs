@@ -53,6 +53,7 @@ namespace ContentCenter.IRepository
 
         #region 同步
         long Add_Sync(T newEntity);
+        int AddNoIdentity_Sync(T newEntity);
         bool DeleteByKey_Sync(long key);
         bool DeleteRangeByExp_Sync(Expression<Func<T, bool>> whereExp);
 

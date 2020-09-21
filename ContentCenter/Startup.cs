@@ -82,6 +82,10 @@ namespace ContentCenter
                 });
             });
             #endregion
+
+            #region MemoryCache
+            services.AddMemoryCache();
+            #endregion
         }
 
         //autoFac

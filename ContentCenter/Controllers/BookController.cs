@@ -68,8 +68,7 @@ namespace ContentCenter.Controllers
                     result.PageData = pd;
                     result.PageData.pageIndex = query.pageIndex;
                     result.PageData.pageSize = query.pageSize;
-                }
-                   
+                }     
             }
             catch (Exception ex)
             {
@@ -119,7 +118,6 @@ namespace ContentCenter.Controllers
         public ResultEntity<Dictionary<string,List<ESection>>> GetSection(SectionType sectionType=  SectionType.All)
         {
             ResultEntity<Dictionary<string, List<ESection>>> result = new ResultEntity<Dictionary<string, List<ESection>>>();
-
             try
             {
                 result.Entity = _bookServices.GetWebSection(sectionType);
