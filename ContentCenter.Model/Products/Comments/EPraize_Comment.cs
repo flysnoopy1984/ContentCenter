@@ -13,7 +13,7 @@ namespace ContentCenter.Model
         public long commentId { get; set; }
 
         /// <summary>
-        /// ResCode属于哪本书，用于筛选数据 
+        /// ResCode
         /// </summary>
         [SugarColumn(Length = 50, IsNullable = true)]
         public string RefCode { get; set; }

@@ -27,7 +27,14 @@ namespace ContentCenter.IRepository
 
         Task<ModelPager<VueUserComm>> queryUserComm(QUserComm query);
 
-      
+        /// <summary>
+        /// 根据Id获取发布者(发消息使用)
+        /// ID headerUrl Name
+        /// </summary>
+        /// <returns></returns>
+        EUserInfo getCommentAutherId(long commentId);
+
+
 
     }
 }

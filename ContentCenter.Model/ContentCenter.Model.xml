@@ -39,6 +39,92 @@
             JWT证书Key 
             </summary>
         </member>
+        <member name="P:ContentCenter.Model.BaseNotification.SendUserId">
+            <summary>
+            xxx 对评论点了赞，xxx回复了评论，xxx对资源做了评论。
+            sendUserId 就是xxx
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.BaseNotification.NotificationStatus">
+            <summary>
+            通知状态，
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.BaseNotification.IsPushToApp">
+            <summary>
+            是否已经推送给App端(暂无)
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EMsgContent_CommentRes.ResCode">
+            <summary>
+            资源Code,
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EMsgContent_Praize.RefId">
+            <summary>
+            针对哪个点赞，资源用Id(而不是主键Code),评论Id，回复Id
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EMsgContent_ReplyRes.CommentId">
+            <summary>
+            OrigContent 存Comment信息
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EMsgContent_ReplyRes.ReplyId">
+            <summary>
+            如果是回复的回复有值，如果是回复则-1；
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EMsgContent_ReplyRes.OrigReplyContent">
+            <summary>
+            如果是恢复的回复，存入回复信息，否则为空
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EMsgInfoOverview.notificationTotal">
+            <summary>
+            通知总数
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EMsgInfoOverview.messageTotal">
+            <summary>
+            消息总数
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EMsgInfo_CommentRes.ReceiveContent">
+            <summary>
+            发起者给出的消息（资源评论内容）
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EMsgInfo_Praize.RefId">
+            <summary>
+            针对哪个点赞，资源用Id(而不是主键Code),评论Id，回复Id
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EMsgInfo_ReplyRes.CommentId">
+            <summary>
+            回复的评论。
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EMsgInfo_ReplyRes.ReplyReplyId">
+            <summary>
+            只有当回复回复时有效
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EMsgInfo_ReplyRes.ReplyId">
+            <summary>
+            当前发送的ReplyId
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.QUserMsg.userId">
+            <summary>
+            谁的消息
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitNotification.atIdList">
+            <summary>
+            暂时不用
+            </summary>
+        </member>
         <member name="P:ContentCenter.Model.EBookInfo.OrigTitle">
             <summary>
             原作书名
@@ -114,6 +200,16 @@
             对于Search来说是 Keyword,对于Query 来说是书本Code或栏目Code
             </summary>
         </member>
+        <member name="P:ContentCenter.Model.EComment_Res.refCode">
+            <summary>
+            资源Code
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EComment_Res.parentRefCode">
+            <summary>
+            BookCode
+            </summary>
+        </member>
         <member name="P:ContentCenter.Model.EComment_Res.replyNum">
             <summary>
             回复总数
@@ -121,17 +217,82 @@
         </member>
         <member name="P:ContentCenter.Model.EPraize_Comment.RefCode">
             <summary>
-            ResCode属于哪本书，用于筛选数据 
+            ResCode
             </summary>
         </member>
-        <member name="P:ContentCenter.Model.EPraize_Res.RefCode">
+        <member name="P:ContentCenter.Model.SubmitComment.refCode">
             <summary>
-            ResCode属于哪本书，用于筛选数据 
+            资源Code
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitComment.userName">
+            <summary>
+            点赞人 nickname(用于发送消息)
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitComment.userHeaderUrl">
+            <summary>
+            点赞人 头像(用于发送消息)
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitComment.parentRefCode">
+            <summary>
+            BookCode 
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitPraize.bookCode">
+            <summary>
+            修改后，其他点赞也要传入bookCode
             </summary>
         </member>
         <member name="P:ContentCenter.Model.SubmitPraize.parentRefCode">
             <summary>
             refCode如果是资源，则parent是BookCode
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitPraize.refCode">
+            <summary>
+            对于资源 refCode就是资源的主键Code
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitPraize.userId">
+            <summary>
+            点赞人
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitPraize.userName">
+            <summary>
+            点赞人 nickname(用于发送消息)
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitPraize.userHeaderUrl">
+            <summary>
+            点赞人 头像(用于发送消息)
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitPraize.resId">
+            <summary>
+            仅当资源点赞有效
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitReply.replyAuthorId">
+            <summary>
+            当是回复的回复时使用，指回复（非评论）人的Id
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitReply.replyAuthorName">
+            <summary>
+            当是回复的回复时使用，指回复（非评论）人的Name
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitReply.userName">
+            <summary>
+            点赞人 nickname(用于发送消息)
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.SubmitReply.userHeaderUrl">
+            <summary>
+            点赞人 头像(用于发送消息)
             </summary>
         </member>
         <member name="P:ContentCenter.Model.VueCommentInfo.goodNum">
@@ -227,6 +388,11 @@
         <member name="P:ContentCenter.Model.UploadRes.resType">
             <summary>
             资源类型
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.VueResInfo.resId">
+            <summary>
+            用于消息通知
             </summary>
         </member>
         <member name="P:ContentCenter.Model.ESection.Code">

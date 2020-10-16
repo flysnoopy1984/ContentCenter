@@ -23,6 +23,24 @@ namespace ContentCenter.Repository
             return base.DeleteRangeByExp(a => a.commentId == commentId);
         }
 
+        public EUserInfo getReplyAutherId(long replyId)
+        {
+
+           var q = Db.Queryable<ECommentReply_Res, EUserInfo>((r, u) => new object[]{
+                JoinType.Inner,r.authorId ==u.Id
+           })
+          .Where((r, u) => r.Id == replyId)
+          .Select((r, u) => new EUserInfo
+          {
+              Id = u.Id,
+              NickName = u.NickName,
+              HeaderUrl = u.HeaderUrl
+          });
+            return q.First();
+
+          
+        }
+
         public async Task<ModelPager<VueCommentReply>> GetReplysByCommentId(QComment_Reply query)
         {
           ModelPager<VueCommentReply> result = new ModelPager<VueCommentReply>(query.pageIndex, query.pageSize);
@@ -43,7 +61,7 @@ namespace ContentCenter.Repository
               headerUrl = u.HeaderUrl,
               replyAuthorId = c.replyAuthorId,
               replyAuthorName = c.replyName,
-             
+              bookCode =c.bookCode,
           });
 
         var mainSql = Db.Queryable(q, qOwn, JoinType.Left, (j1, j2) => j1.replyId == j2.replyId)
@@ -60,7 +78,8 @@ namespace ContentCenter.Repository
                 headerUrl = j1.headerUrl,
                 replyAuthorId = j1.replyAuthorId,
                 replyAuthorName = j1.replyAuthorName,
-                userPraizeType = j2.PraizeType
+                userPraizeType = j2.PraizeType,
+                bookCode = j1.bookCode
             });
 
             RefAsync<int> totalNumber = new RefAsync<int>();

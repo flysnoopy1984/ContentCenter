@@ -13,6 +13,9 @@ namespace ContentCenter.Model
         [SugarColumn(IsIdentity = true,IsPrimaryKey =true)]
         public long Id { get; set; }
 
+        [SugarColumn(Length = 50, IsNullable = true)]
+        public string bookCode { get; set; }
+
         public long commentId { get; set; }
 
         public ReplyType replyType { get; set; }

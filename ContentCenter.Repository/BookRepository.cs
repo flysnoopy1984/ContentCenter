@@ -223,5 +223,20 @@ namespace ContentCenter.Repository
 
             return r;
         }
+
+        public EBookInfo getBookSimple_ByCode(string bookCode)
+        {
+            var r =Db.Queryable<EBookInfo>()
+                .Where(b => b.Code == bookCode)
+                .Select(b => new EBookInfo
+                {
+                    Code = b.Code,
+                    Title = b.Title,
+                    CoverUrl = b.CoverUrl,
+                });
+            return r.First();
+
+            
+        }
     }
 }

@@ -28,23 +28,31 @@ namespace ContentCenter.Services
         {
             if (string.IsNullOrEmpty(submitPraize.userId))
                 throw new Exception("非法操作！");
+            if (string.IsNullOrEmpty(submitPraize.bookCode))
+                throw new Exception("没有书编号，无法操作！");
 
+            long resultId = 0;
             switch (submitPraize.praizeTarget)
             {
                 case PraizeTarget.Resource:
-                    return this.handlePraize_Res(submitPraize);
+                    resultId = this.handlePraize_Res(submitPraize);
+                    break;
                 case PraizeTarget.Comment:
-                    return handPraize_Comment(submitPraize);
+                    resultId = handPraize_Comment(submitPraize);
+                    break;
                 case PraizeTarget.CommentReply:
-                    return handPraize_CommentReply(submitPraize);
+                    resultId =  handPraize_CommentReply(submitPraize);
+                    break;
             }
-            return 0;
+
+            return resultId;
           
         }
 
         private long handPraize_CommentReply(SubmitPraize submitPraize)
         {
             DbResult<bool> transResult = null;
+            long resultId = 0;
             if (submitPraize.praizeDirection == OperationDirection.plus)
             {
                 if (_praizeRepository.HasPraized_CommentReply_Res(Convert.ToInt64(submitPraize.refCode), submitPraize.userId).Result > 0)
@@ -59,11 +67,12 @@ namespace ContentCenter.Services
                     replyId = Convert.ToInt64(submitPraize.refCode),
                     userId = submitPraize.userId,
                     commentId =  Convert.ToInt64(submitPraize.parentRefCode),
+                    bookCode = submitPraize.bookCode,
                 };
 
                 transResult = _praizeRepository.Db.Ado.UseTran(() =>
                 {
-                    _praizeRepository.AddPraize_CommentReply(praize);
+                    resultId = _praizeRepository.AddPraize_CommentReply(praize);
                     _praizeRepository.UpdateCommentReplyPraized_GoodNum(Convert.ToInt64(submitPraize.refCode), OperationDirection.plus);
                 });
             }
@@ -77,12 +86,13 @@ namespace ContentCenter.Services
             }
             if (transResult != null && !transResult.IsSuccess)
                 throw new Exception(transResult.ErrorMessage);
-            return 0;
+            return resultId;
         }
 
         private long handPraize_Comment(SubmitPraize submitPraize)
         {
             DbResult<bool> transResult = null;
+            long resultId = 0;
             if (submitPraize.praizeDirection == OperationDirection.plus)
             {
                 if (_praizeRepository.HasPraized_Comment_Res(Convert.ToInt64(submitPraize.refCode), submitPraize.userId).Result > 0)
@@ -97,11 +107,12 @@ namespace ContentCenter.Services
                     commentId = Convert.ToInt64(submitPraize.refCode),
                     userId = submitPraize.userId,
                     RefCode = submitPraize.parentRefCode,
+                    bookCode = submitPraize.bookCode,
                 };
 
                 transResult = _praizeRepository.Db.Ado.UseTran(() =>
                 {
-                    _praizeRepository.AddPraize_Comment(praize);
+                    resultId = _praizeRepository.AddPraize_Comment(praize);
                   
                     _praizeRepository.UpdateCommentPraized_GoodNum(Convert.ToInt64(submitPraize.refCode),OperationDirection.plus);
                 });
@@ -118,7 +129,7 @@ namespace ContentCenter.Services
             }
             if (transResult != null && !transResult.IsSuccess)
                 throw new Exception(transResult.ErrorMessage);
-            return 0;
+            return resultId;
         }
 
         /// <summary>
@@ -128,6 +139,7 @@ namespace ContentCenter.Services
         /// <returns></returns>
         private long handlePraize_Res(SubmitPraize submitPraize)
         {
+            long resultId = 0;
             DbResult<bool> transResult = null;
             /*！！可能的漏洞
              * 没有对更新的赞和取消的赞做原始赞检查
@@ -143,14 +155,14 @@ namespace ContentCenter.Services
                 PraizeType = submitPraize.praizeType,
                 ResCode = submitPraize.refCode,
                 userId = submitPraize.userId,
-                RefCode = submitPraize.parentRefCode,
+                bookCode = submitPraize.parentRefCode,
                
             };
             switch (submitPraize.praizeDirection){
                 case OperationDirection.plus:
                     transResult = _praizeRepository.Db.Ado.UseTran(() =>
                     {
-                         _praizeRepository.Add_Sync(praize);
+                        resultId = _praizeRepository.Add_Sync(praize);
                         _praizeRepository.UpdateResPraizedNum(submitPraize.refCode, submitPraize.praizeType, OperationDirection.plus);
                     });
                     break;
@@ -171,7 +183,7 @@ namespace ContentCenter.Services
             }
             if (transResult != null && !transResult.IsSuccess)
                 throw new Exception(transResult.ErrorMessage);
-            return 0;
+            return resultId;
         }
 
         public ModelPager<VueUserPraize> queryUserPraize(QUserPraize query)

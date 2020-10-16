@@ -135,11 +135,16 @@ namespace ContentCenter
             {
                 throw new Exception("Repository.dll和service.dll 丢失，因为项目解耦了，所以需要先F6编译，再F5运行，请检查 bin 文件夹，并拷贝。");
             }
+
+            builder.RegisterType<ccMsgAOP>();
             // 获取 Service.dll 程序集服务，并注册
             var assemblysServices = Assembly.LoadFrom(servicesDllFile);
             builder.RegisterAssemblyTypes(assemblysServices)
                       .AsImplementedInterfaces()
                       .InstancePerDependency();
+                    //  .EnableInterfaceInterceptors();
+                     
+                    
                       //.EnableInterfaceInterceptors()//引用Autofac.Extras.DynamicProxy;
                       //.InterceptedBy(cacheType.ToArray());//允许将拦截器服务的列表分配给注册。
 

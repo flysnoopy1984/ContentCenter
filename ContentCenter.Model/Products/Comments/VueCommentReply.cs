@@ -8,6 +8,7 @@ namespace ContentCenter.Model
 {
     public class VueCommentReply
     {
+        public string bookCode { get; set; }
         public long replyId { get; set; }
         public string authorId { get; set; }
         public string authorName { get; set; }

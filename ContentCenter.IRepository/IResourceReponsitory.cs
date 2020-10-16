@@ -31,5 +31,16 @@ namespace ContentCenter.IRepository
 
         bool addRequireResNum(string resCode);
 
+        /// <summary>
+        /// 根据资源获取拥有着信息(发消息使用)
+        /// ID headerUrl Name
+        /// </summary>
+        /// <param name="resCode"></param>
+        /// <returns></returns>
+        EUserInfo getResoureOwnerId(string resCode);
+
+       
+
+
     }
 }

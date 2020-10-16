@@ -8,10 +8,7 @@ namespace ContentCenter.Model
 {
     public abstract class EPraizeDetail
     {
-        //public EPraizeDetail(PraizeTarget praizeTarget)
-        //{
-        //    PraizeTarget = praizeTarget;
-        //}
+       
         [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
         public long Id { get; set; }
 
@@ -21,5 +18,8 @@ namespace ContentCenter.Model
        // public PraizeTarget PraizeTarget { get; set; }
         public PraizeType PraizeType { get; set; }
         public DateTime praizeDate { get; set; }
+
+        [SugarColumn(Length = 50, IsNullable = true)]
+        public string bookCode { get; set; }
     }
 }

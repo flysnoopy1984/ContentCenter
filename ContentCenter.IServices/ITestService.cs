@@ -6,6 +6,7 @@ namespace ContentCenter.IServices
 {
     public interface ITestService
     {
+      
         string Do();
     }
 }

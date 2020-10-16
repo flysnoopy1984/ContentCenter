@@ -19,13 +19,16 @@ namespace ContentCenter.Services
         private IUserBookRepository _userBookRepository;
         private IUserFinanceOverViewRepository _userFinanceOverViewRepository;
         private IUserFinanceRepository _userFinanceRepository;
+        private IMsgInfoOverviewRepository _msgInfoOverviewRepository;
 
         public UserServices(IUserRepository userRepository, 
             IUserBookRepository userBookRepository,
             IUserFinanceOverViewRepository userFinanceOverViewRepository,
-            IUserFinanceRepository userFinanceRepository)
+            IUserFinanceRepository userFinanceRepository,
+            IMsgInfoOverviewRepository msgInfoOverviewRepository)
             :base(userRepository)
         {
+            _msgInfoOverviewRepository = msgInfoOverviewRepository;
             _userBookRepository = userBookRepository;
             _userDb = userRepository;
             _userFinanceOverViewRepository = userFinanceOverViewRepository;
@@ -86,6 +89,7 @@ namespace ContentCenter.Services
             if (phone > 0)
                 throw new CCException(CCWebMsg.User_Reg_Exist_Phone);
 
+            //用户基本信息
             EUserInfo ui = new EUserInfo
             {
                 Id = CodeManager.UserCode(),  //Guid.NewGuid().ToString("N"),
@@ -94,6 +98,7 @@ namespace ContentCenter.Services
                 Phone = regUser.Phone,
                 NickName = regUser.Account,
             };
+            //用户财务概览
             EUserFinanceOverview financeOverview = new EUserFinanceOverview
             {
                 userId = ui.Id,
@@ -102,6 +107,7 @@ namespace ContentCenter.Services
                 chargePoint = 0,
                 fixedPoint = 20,
             };
+            //注册赠送积分
             EUserPointsTrans trans = new EUserPointsTrans
             {
                 userId = ui.Id,
@@ -109,16 +115,19 @@ namespace ContentCenter.Services
                 changeType = Model.BaseEnum.PointChangeType.newRegister,
                 point = 20,
             };
+
             DbResult<bool> transResult = null;
             transResult = _userDb.Db.Ado.UseTran(() =>
             {
                 _userDb.AddNoIdentity_Sync(ui);
                 _userFinanceOverViewRepository.AddNoIdentity_Sync(financeOverview);
                 _userFinanceRepository.AddPointTrans_Sync(trans);
+                //用户消息概览
+                _msgInfoOverviewRepository.InitForNewUser_Sync(ui.Id);
             });
             if(!transResult.IsSuccess)
                 throw new Exception("注册失败");
-            // var recOp = _userDb.AddNoIdentity(ui).Result;
+        
             return ui.ToVueUser();
 
         }
@@ -144,7 +153,7 @@ namespace ContentCenter.Services
             if (string.IsNullOrEmpty(submitData.nickName))
                 throw new Exception("昵称不能为空！");
             _userDb.updateInfo(submitData);
-           // _userDb.UpdatePart_NoObj()
+        
         }
 
     }

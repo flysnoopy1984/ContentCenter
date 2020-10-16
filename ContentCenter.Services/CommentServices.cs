@@ -113,6 +113,8 @@ namespace ContentCenter.Services
         {
             if (string.IsNullOrEmpty(submitReply.userId))
                 throw new Exception("非法操作！");
+            if (string.IsNullOrEmpty(submitReply.bookCode))
+                throw new Exception("书Code没有，无法操作！");
 
             long result = -1;
 
@@ -121,6 +123,7 @@ namespace ContentCenter.Services
                 authorId = submitReply.userId,
                 content = submitReply.content,
                 commentId = submitReply.commentId,
+                bookCode = submitReply.bookCode,
                 replyType = ReplyType.Normal,
             };
             if (submitReply.replyId > 0)
@@ -134,7 +137,8 @@ namespace ContentCenter.Services
                 _commentResRepository.UpdateComment_ReplyNum(submitReply.commentId, OperationDirection.plus);
                 result =_commentReplyResRepository.Add_Sync(reply);
             });
-            if(!transResult.IsSuccess)  throw new Exception(transResult.ErrorMessage);
+            if(!transResult.IsSuccess)  
+                throw new Exception(transResult.ErrorMessage);
             return result;
         }
 

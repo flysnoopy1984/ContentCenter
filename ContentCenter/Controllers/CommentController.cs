@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ContentCenter.IServices;
 using ContentCenter.Model;
+using IQB.Util;
 using IQB.Util.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,8 +18,11 @@ namespace ContentCenter.Controllers
     public class CommentController : CCBaseController
     {
         private ICommentServices _commentServices;
-        public CommentController(ICommentServices commentServices)
+        private IMessageServices _messageServices;
+        public CommentController(ICommentServices commentServices,
+            IMessageServices messageServices)
         {
+            _messageServices = messageServices;
             _commentServices = commentServices;
         }
         #region 评论资源
@@ -28,9 +32,30 @@ namespace ContentCenter.Controllers
             ResultNormal result = new ResultNormal();
             try
             {
-                commentRes.userId = this.getUserId();
+                if (string.IsNullOrEmpty(commentRes.userId)) 
+                    commentRes.userId = this.getUserId();
+                else
+                {
+                    if (commentRes.userId != this.getUserId())
+                        throw new CCException("身份不明确，请登录后再尝试");
+                }
+               
                 result.ResultId = _commentServices.submitResComment(commentRes);
-            
+                try
+                {
+                    _messageServices.CreateNotification_Comment(new MsgSubmitComment
+                    {
+                        SubmitComment = commentRes,
+
+                        CommentId = result.ResultId,
+                    });
+                }
+                catch (Exception msgEx)
+                {
+                    NLogUtil.cc_ErrorTxt("【评论通知】错误:" + msgEx.Message);
+                }
+                  
+
             }
             catch(Exception ex)
             {
@@ -104,8 +129,29 @@ namespace ContentCenter.Controllers
             ResultNormal result = new ResultNormal();
             try
             {
+                if (string.IsNullOrEmpty(submitReply.userId))
+                    submitReply.userId = this.getUserId();
+                else
+                {
+                    if (submitReply.userId != this.getUserId())
+                        throw new CCException("身份不明确，请登录后再尝试");
+                }
                 submitReply.userId = this.getUserId();
                 result.ResultId = _commentServices.submitCommentReply(submitReply);
+                //消息
+                try
+                {
+                    _messageServices.CreateNotification_Reply(new MsgSubmitReply
+                    {
+                        SubmitReply = submitReply,
+                        ReplyId = result.ResultId,
+                    });
+                }
+                catch (Exception msgEx)
+                {
+                    NLogUtil.cc_ErrorTxt("【回复通知】错误:" + msgEx.Message);
+                }
+
 
             }
             catch (Exception ex)

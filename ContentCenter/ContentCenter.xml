@@ -86,6 +86,20 @@
             <param name="delComment"></param>
             <returns></returns>
         </member>
+        <member name="M:ContentCenter.Controllers.PraizeController.submit(ContentCenter.Model.SubmitPraize)">
+            <summary>
+            提交点赞
+            </summary>
+            <param name="submitPraize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.PraizeController.UserPraize(ContentCenter.Model.QUserPraize)">
+            <summary>
+            获取用户点过的赞的资源，评论，回复。
+            </summary>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
         <member name="M:ContentCenter.Controllers.UserController.SwitchFavBook(ContentCenter.Model.reqUserBook)">
              <summary>
             收藏/取消喜爱的书

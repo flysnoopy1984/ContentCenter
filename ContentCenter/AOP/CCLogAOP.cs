@@ -12,6 +12,7 @@ namespace ContentCenter.AOP
         {
             Console.WriteLine($"执行方法:{invocation.Method.Name}");
             invocation.Proceed();
+         
             Console.WriteLine($"执行完成");
         }
     }

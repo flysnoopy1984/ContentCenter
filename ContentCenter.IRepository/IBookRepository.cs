@@ -59,7 +59,13 @@ namespace ContentCenter.IRepository
         /// <returns></returns>
         bool UpdateBookResNum(string bookCode, OperationDirection direction);
 
-
+        /// <summary>
+        /// 获取书本少量信息
+        /// 1.Code 2.Name，3 Cover Url
+        /// </summary>
+        /// <param name="bookCode"></param>
+        /// <returns></returns>
+        EBookInfo getBookSimple_ByCode(string bookCode);
 
     }
 }

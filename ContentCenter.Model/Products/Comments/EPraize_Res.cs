@@ -14,11 +14,11 @@ namespace ContentCenter.Model
         [SugarColumn(Length = 50)]
         public string ResCode { get; set; }
         
-        /// <summary>
-        /// ResCode属于哪本书，用于筛选数据 
-        /// </summary>
-        [SugarColumn(Length = 50,IsNullable =true)]
-        public string RefCode { get; set; }
+        ///// <summary>
+        ///// ResCode属于哪本书，用于筛选数据 
+        ///// </summary>
+        //[SugarColumn(Length = 50,IsNullable =true)]
+        //public string RefCode { get; set; }
        
     }
 }

@@ -8,6 +8,7 @@ namespace ContentCenter.Model
 {
     public class VueCommentInfo
     {
+        public string bookCode { get; set; }
         public long commentId { get; set; }
 
         public string authorId { get; set; }

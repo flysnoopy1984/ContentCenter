@@ -10,7 +10,13 @@ namespace ContentCenter.Model
 {
     public class VueResInfo
     {
+        public string bookCode { get; set; }
         public string resCode { get; set; }
+
+        /// <summary>
+        /// 用于消息通知
+        /// </summary>
+        public long resId { get; set; }
 
         private string _uploadDateTime;
         public string upLoadDateTime {

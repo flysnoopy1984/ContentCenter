@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ContentCenter.IServices;
 using ContentCenter.Model;
+using IQB.Util;
 using IQB.Util.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,20 +18,45 @@ namespace ContentCenter.Controllers
     public class PraizeController : CCBaseController
     {
         private IPraizeServices _praizeServices;
-        public PraizeController(IPraizeServices praizeServices)
+        private IMessageServices _messageServices;
+
+        public PraizeController(IPraizeServices praizeServices, IMessageServices messageServices)
         {
-            _praizeServices = praizeServices;   
+            _praizeServices = praizeServices;
+            _messageServices = messageServices;
         }
 
+        /// <summary>
+        /// 提交点赞
+        /// </summary>
+        /// <param name="submitPraize"></param>
+        /// <returns></returns>
         [HttpPost]
         public ResultNormal submit(SubmitPraize submitPraize)
         {
             ResultNormal result = new ResultNormal();
             try
             {
-                submitPraize.userId = this.getUserId();
+                if(string.IsNullOrEmpty(submitPraize.userId)) submitPraize.userId = this.getUserId();
+                else
+                {
+                    if(submitPraize.userId != this.getUserId())
+                        throw new CCException("身份不明确，请登录后再尝试");
+                }
                 result.ResultId = _praizeServices.handlePraize(submitPraize);
-
+                try
+                {
+                    _messageServices.CreateNotification_Praize(new MsgSubmitPraize
+                    {
+                        SubmitPraize = submitPraize,
+                        PraizeId = result.ResultId,
+                    });
+                }
+                catch(Exception msgEx)
+                {
+                    NLogUtil.cc_ErrorTxt("【点赞通知】错误:" + msgEx.Message);
+                }
+               
             }
             catch (Exception ex)
             {
@@ -39,6 +65,11 @@ namespace ContentCenter.Controllers
             return result;
         }
 
+        /// <summary>
+        /// 获取用户点过的赞的资源，评论，回复。
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns></returns>
         [HttpPost]
         public ResultPager<VueUserPraize> UserPraize(QUserPraize query)
         {

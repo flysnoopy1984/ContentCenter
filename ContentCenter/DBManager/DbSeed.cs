@@ -23,18 +23,30 @@ namespace ContentCenter.DBManager
             //db.CodeFirst.InitTables<EPraize_Res>();
             //db.CodeFirst.InitTables<EPraize_Comment>();
             //db.CodeFirst.InitTables<EPraize_CommentReply>();
+
             //db.CodeFirst.InitTables<EUserInfo>();
             // db.CodeFirst.InitTables<EUserWeixin>();
+
             //db.CodeFirst.InitTables<EResourceInfo>();
             //db.CodeFirst.InitTables<ESearchKeyLog>();
             //db.CodeFirst.InitTables<EResourceInfo>();
             //db.CodeFirst.InitTables<EResourceRequire_Log>();
             //db.CodeFirst.InitTables<ESysConfig>();
-            db.CodeFirst.InitTables<EUserChargeTrans>();
-            db.CodeFirst.InitTables<EUserPointsTrans>();
-            db.CodeFirst.InitTables<EUserCommissionTrans>();
-            db.CodeFirst.InitTables<EUserBalanceTrans>();
+
             //db.CodeFirst.InitTables<EUserChargeTrans>();
+            //db.CodeFirst.InitTables<EUserPointsTrans>();
+            //db.CodeFirst.InitTables<EUserCommissionTrans>();
+            //db.CodeFirst.InitTables<EUserBalanceTrans>();
+            //db.CodeFirst.InitTables<EUserChargeTrans>();
+
+            //db.CodeFirst.InitTables<EMsgContent_Praize>();
+            //db.CodeFirst.InitTables<EMsgContent_CommentRes>();
+            //db.CodeFirst.InitTables<EMsgContent_ReplyRes>();
+
+            //db.CodeFirst.InitTables<EMsgInfo_CommentRes>();
+            //db.CodeFirst.InitTables<EMsgInfo_Praize>();
+            //db.CodeFirst.InitTables<EMsgInfo_ReplyRes>();
+            //db.CodeFirst.InitTables<EMsgInfoOverview>();
 
             Console.WriteLine("End InitDb");
         }

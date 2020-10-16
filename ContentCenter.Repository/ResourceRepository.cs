@@ -45,7 +45,7 @@ namespace ContentCenter.Repository
             ModelPager<VueResInfo> result = new ModelPager<VueResInfo>(qRes.pager.pageIndex, qRes.pager.pageSize);
 
             var qPraize_User = Db.Queryable<EPraize_Res>()
-                .Where(p => p.userId == qRes.reqUserId && qRes.refCode == p.RefCode);
+                .Where(p => p.userId == qRes.reqUserId && qRes.refCode == p.bookCode);
 
 
             var q = base.Db.Queryable<EResourceInfo, EUserInfo>((a, u) => new object[]
@@ -64,6 +64,8 @@ namespace ContentCenter.Repository
                 goodNum = a.goodNum,
                 badNum = a.badNum,
                 resCode = a.Code,
+                resId = a.Id, //用于消息 20201015
+                bookCode = a.RefCode
             });
 
 
@@ -80,7 +82,9 @@ namespace ContentCenter.Repository
                     goodNum = j1.goodNum,
                     badNum = j1.badNum,
                     resCode = j1.resCode,
-                    userPraizeType = j2.PraizeType
+                    resId = j1.resId, //用于消息 20201015
+                    userPraizeType = j2.PraizeType,
+                    bookCode = j1.bookCode,
                 });
 
             RefAsync<int> totalNumber = new RefAsync<int>();
@@ -169,10 +173,25 @@ namespace ContentCenter.Repository
             {
                 ur.resList = vbList.Where(a => a.bookCode == ur.bookCode).ToList();
             }
-
-
-
             return list;
+        }
+
+        public EUserInfo getResoureOwnerId(string resCode)
+        {
+           // var r = Db.Queryable<EResourceInfo>().Where(a => a.Code == resCode)
+            var q = Db.Queryable<EResourceInfo, EUserInfo>((r, u) => new object[]{
+                JoinType.Inner,r.Owner ==u.Id
+            })
+            .Where((r, u) => r.Code == resCode)
+            .Select((r,u)=>new EUserInfo
+            {
+                Id = u.Id,
+                NickName = u.NickName,
+                HeaderUrl = u.HeaderUrl
+            });
+
+            return q.First();
+          
         }
     }
 }

@@ -11,9 +11,15 @@ namespace ContentCenter.Model
         [SugarColumn(IsIdentity = true, IsPrimaryKey = true)]
         public long Id { get; set; }
 
+        /// <summary>
+        /// 资源Code
+        /// </summary>
         [SugarColumn(Length = 50)]
         public string refCode { get; set; }
 
+        /// <summary>
+        /// BookCode
+        /// </summary>
         [SugarColumn(Length = 50)]
         public string parentRefCode { get; set; }
 

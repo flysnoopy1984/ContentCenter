@@ -42,7 +42,8 @@ namespace ContentCenter.Repository
                 content = c.content,
                 goodNum = c.goodNum,
                 headerUrl = u.HeaderUrl,
-                replyNum = c.replyNum
+                replyNum = c.replyNum,
+                bookCode = c.parentRefCode
             });
 
             var mainSql = Db.Queryable(q, qOwn, JoinType.Left, (j1, j2) => j1.commentId == j2.commentId)
@@ -59,7 +60,8 @@ namespace ContentCenter.Repository
                    goodNum = j1.goodNum,
                    headerUrl = j1.headerUrl,
                    replyNum = j1.replyNum,
-                   userPraizeType = j2.PraizeType
+                   userPraizeType = j2.PraizeType,
+                   bookCode = j1.bookCode
                });
 
             RefAsync<int> totalNumber = new RefAsync<int>();
@@ -67,6 +69,21 @@ namespace ContentCenter.Repository
             result.totalCount = totalNumber;
             return result;
 
+        }
+
+        public EUserInfo getCommentAutherId(long commentId)
+        {
+            var q = Db.Queryable<EComment_Res, EUserInfo>((c, u) => new object[]{
+                JoinType.Inner,c.authorId ==u.Id
+            })
+         .Where((c, u) => c.Id == commentId)
+           .Select((c, u) => new EUserInfo
+           {
+               Id = u.Id,
+               NickName = u.NickName,
+               HeaderUrl = u.HeaderUrl
+           });
+            return q.First();
         }
 
         public async Task<ModelPager<VueUserComm>> queryUserComm(QUserComm query)

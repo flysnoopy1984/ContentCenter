@@ -244,7 +244,7 @@ namespace ContentCenter.Repository
              {
 
                 JoinType.Inner,p.ResCode == r.Code,
-                JoinType.Inner,p.RefCode == b.Code
+                JoinType.Inner,p.bookCode == b.Code
 
              })
             .Where(p => p.userId == query.userId)
