@@ -8,10 +8,10 @@ namespace ContentCenter.Model
     [SugarTable("ccMsgInfoOverview")]
     public class EMsgInfoOverview
     {
-        [SugarColumn(IsPrimaryKey = true, IsIdentity = true)]
+        [SugarColumn(IsIdentity = true)]
         public long Id { get; set; }
 
-        [SugarColumn(Length = 32)]
+        [SugarColumn(IsPrimaryKey = true, Length = 32)]
         public string userId { get; set; }
 
         /// <summary>
@@ -28,5 +28,16 @@ namespace ContentCenter.Model
         /// 消息总数
         /// </summary>
         public int messageTotal { get; set; } = 0;
+
+        [SugarColumn(DefaultValue = "0")]
+        public int readPraize { get; set; } = 0;
+
+        [SugarColumn(DefaultValue = "0")]
+        public int readComment { get; set; } = 0;
+
+        [SugarColumn(DefaultValue = "0")]
+        public int readReply { get; set; } = 0;
+
+       
     }
 }

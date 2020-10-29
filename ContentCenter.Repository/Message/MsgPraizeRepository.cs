@@ -18,8 +18,9 @@ namespace ContentCenter.Repository
         {
 
         }
+
         #region Message
-        public bool ExistMsgPraize_Sync(long refId, PraizeTarget praizeTarget, string sendUserId)
+        public bool ExistMsgPraize_Sync(string refId, PraizeTarget praizeTarget, string sendUserId)
         {
             var r = base.GetCount(
                 c => c.RefId == refId &&
@@ -30,12 +31,51 @@ namespace ContentCenter.Repository
 
             return r > 0;
         }
-       
+
+
+        public async Task<ModelPager<VueMsgInfoNotification>> queryUserPraize(QMsgUser query)
+        {
+            ModelPager<VueMsgInfoNotification> result = new ModelPager<VueMsgInfoNotification>(query.pageIndex, query.pageSize);
+            var joinSql = Db.Queryable<EMsgInfo_Praize, EMsgContent_Praize>((m, c) => new object[]
+            {
+                JoinType.Inner,m.RefId == c.RefId &&
+                m.PraizeTarget == c.PraizeTarget,
+            });
+           
+            var mainSql = joinSql.OrderBy((m,c)=>m.CreatedDateTime,OrderByType.Desc)
+            .Where((m,c)=>m.ReceiveUserId== query.userId)
+            .Select((m,c) => new VueMsgInfoNotification
+            {
+                dbDateTime = m.CreatedDateTime,
+                senderHeaderUrl = m.SendHeaderUrl,
+                senderId = m.SendUserId,
+                senderName = m.SendName,
+                bookCode = c.BookCode,
+                bookUrl = c.BookUrl,
+                resCode = c.ResCode,
+                resName = c.ResName,
+                commentId = c.CommentId, //20201029 用于置顶
+                replyId = c.ReplyId,  //20201029 用于置顶
+                origContent =c.OrigContent,
+                receiveContent = "",
+                target = m.PraizeTarget,   
+                
+                NotificationStatus = m.NotificationStatus,
+                msgId = m.Id
+            });
+
+            RefAsync<int> totalNumber = new RefAsync<int>();
+            result.datas = await mainSql.ToPageListAsync(query.pageIndex, query.pageSize, totalNumber);
+            result.totalCount = totalNumber;
+            return result;
+        }
+
+
         #endregion
 
         #region Content
 
-        public EMsgContent_Praize GetContentPraize_Sync(long refId, PraizeTarget praizeTarget)
+        public EMsgContent_Praize GetContentPraize_Sync(string refId, PraizeTarget praizeTarget)
         {
             return Db.Queryable<EMsgContent_Praize>().Where(
                 c => c.RefId == refId &&
@@ -51,18 +91,37 @@ namespace ContentCenter.Repository
             return insertable.ExecuteReturnBigIdentity();
         }
 
-       
+        public int UpdateMsgStatus(SubmitUnReadMsgIdList submitData)
+        {
+          //  Console.WriteLine("DB: updateMsg start");
+            var op = Db.Updateable<EMsgInfo_Praize>()
+              .SetColumns(m => new EMsgInfo_Praize
+              {
+                  NotificationStatus = submitData.targetStatus
+              })
+              .Where(m => m.ReceiveUserId == submitData.userId && submitData.msgIdList.Contains(m.Id) 
+              && m.NotificationStatus != NotificationStatus.read);
+            try
+            {
+                var r = op.ExecuteCommand();
+              //  Console.WriteLine("DB: updateMsg end");
+                return r;
+            }
+            catch(Exception ex)
+            {
+                var m = ex;
+                throw ex;
+            }
+
+            // return 
+        }
+
+
 
         #endregion
 
-        public async Task<ModelPager<VueMsgInfo_Praize>> msgPraizeList(QUserMsg query)
-        {
-            ModelPager<VueMsgInfo_Praize> result = new ModelPager<VueMsgInfo_Praize>(query.pageIndex, query.pageSize);
 
 
-            return result;
-        }
 
-      
     }
 }

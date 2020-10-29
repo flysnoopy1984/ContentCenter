@@ -13,6 +13,7 @@ namespace ContentCenter.Model
         public string bookCode { get; set; }
         public string resCode { get; set; }
 
+       
         /// <summary>
         /// 用于消息通知
         /// </summary>
@@ -31,6 +32,7 @@ namespace ContentCenter.Model
         public string ownerName { get; set; }
 
         public int resType { get; set; }
+        public string resName { get; set; }
 
         public string fileType { get; set; }
 

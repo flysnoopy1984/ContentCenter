@@ -10,11 +10,9 @@ namespace ContentCenter.IRepository
 {
     public interface ICommentRepository: IBaseRepository<EComment_Res>
     {
-        /// <summary>
-        /// 根据资源获取评论页
-        /// </summary>
-        /// <param name="query"></param>
-        /// <returns></returns>
+
+        // 根据资源获取评论页
+        // fixedCommentId 固定的评论
         Task<ModelPager<VueCommentInfo>> GetCommentsByResCodes(QComment_Res query);
 
         /// <summary>
@@ -34,7 +32,6 @@ namespace ContentCenter.IRepository
         /// <returns></returns>
         EUserInfo getCommentAutherId(long commentId);
 
-
-
+   
     }
 }

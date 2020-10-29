@@ -15,14 +15,21 @@ namespace ContentCenter.Model
         public PraizeTarget PraizeTarget { get; set; }
 
         /// <summary>
-        /// 针对哪个点赞，资源用Id(而不是主键Code),评论Id，回复Id
+        /// 针对哪个点赞，资源用Code,评论Id，回复Id
         /// </summary>
-        [SugarColumn(IsPrimaryKey = true)]
-        public long RefId { get; set; }
+        [SugarColumn(IsPrimaryKey = true,Length =50)]
+        public string RefId { get; set; }
 
-       
-     
-       
+
+        [SugarColumn(Length = 200, IsNullable = true)]
+        public string OrigContent { get; set; }
+
+        [SugarColumn(IsNullable = true, DefaultValue = "-1")]
+        public long CommentId { get; set; }
+
+        [SugarColumn(IsNullable = true, DefaultValue = "-1")]
+        public long ReplyId { get; set; }
+
 
     }
 }

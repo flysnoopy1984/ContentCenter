@@ -9,6 +9,8 @@ namespace ContentCenter.Model.Products.Res
     public class VueBookRes
     {
         public string bookCode { get; set; }
+
+        public string resCode { get; set; }
         public ResType resType { get; set; }
 
         public string fileType { get; set; }

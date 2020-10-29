@@ -3,9 +3,12 @@ using ContentCenter.IServices;
 using ContentCenter.Model;
 using ContentCenter.Model.BaseEnum;
 using IQB.Util;
+using IQB.Util.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ContentCenter.Services
 {
@@ -70,22 +73,20 @@ namespace ContentCenter.Services
                 existContent = commentToContent(msgSubmitComment);
                 existContent.Id = _msgCommentResRepository.AddContentCommentRes_Sync(existContent);
             }
-            //检查消息是否发送
-            //bool IsExistMsg = _msgCommentResRepository.ExistMsgCommentRes_Sync(submit.refCode, submit.userId);
-            //if (IsExistMsg) return; //已经发送过就退出
-            //else
-            //{
-
-            //}
+           
             //评论消息不用检查是否发送过...
             EMsgInfo_CommentRes msg = commentToMsg(msgSubmitComment);
             if (msg == null) return;
-            var transResult = _msgCommentResRepository.Db.Ado.UseTran(() =>
+            // //检查发送者和接受者是否同一人
+            if (msg.ReceiveUserId == msg.SendUserId)
+                return;
+
+            var transResult =  _msgCommentResRepository.Db.Ado.UseTran(() =>
             {
                 //新消息
                 _msgCommentResRepository.AddNoIdentity_Sync(msg);
                 //总数
-                _msgInfoOverviewRepository.UpdateNotificationNum(NotificationType.comment, msg.ReceiveUserId);
+                _msgInfoOverviewRepository.UpdateNotificateToUnRead(NotificationType.comment, msg.ReceiveUserId);
             });
             if (!transResult.IsSuccess) throw new Exception(transResult.ErrorMessage);
         }
@@ -96,6 +97,8 @@ namespace ContentCenter.Services
         /// <param name="msgSubmitPraize"></param>
         public void CreateNotification_Praize(MsgSubmitPraize msgSubmitPraize)
         {
+         //  Console.WriteLine("start CreateNotification_Praize");
+          
             var submitPraize = msgSubmitPraize.SubmitPraize;
             //没有新的点赞需要通知的
             if (msgSubmitPraize.PraizeId <= 0)
@@ -106,16 +109,10 @@ namespace ContentCenter.Services
             if (string.IsNullOrEmpty(submitPraize.refCode))
                 throw new CCException("refCode is null");
 
-            long refId = -1;
-            if (submitPraize.praizeTarget == PraizeTarget.Resource)
-                refId = submitPraize.resId;
-            else
-                refId = Convert.ToInt64(submitPraize.refCode); 
-
-            if(refId == 0) throw new Exception("refId不存在");
+         
 
             //检查消息内容
-            EMsgContent_Praize existContent  = _msgPraizeRepository.GetContentPraize_Sync(refId, submitPraize.praizeTarget);
+            EMsgContent_Praize existContent  = _msgPraizeRepository.GetContentPraize_Sync(submitPraize.refCode, submitPraize.praizeTarget);
             if(existContent == null) //不存在
             {
                 //新内容
@@ -123,22 +120,27 @@ namespace ContentCenter.Services
                 existContent.Id = _msgPraizeRepository.AddContentPraize_Sync(existContent);
             }
             //检查消息是否发送
-            bool IsExistMsg = _msgPraizeRepository.ExistMsgPraize_Sync(refId, submitPraize.praizeTarget, msgSubmitPraize.SubmitPraize.userId);
+            bool IsExistMsg = _msgPraizeRepository.ExistMsgPraize_Sync(submitPraize.refCode, submitPraize.praizeTarget, msgSubmitPraize.SubmitPraize.userId);
             if (IsExistMsg) return; //已经发送过就退出
             else
             {
                 EMsgInfo_Praize msg = praizeToMsg(msgSubmitPraize);
                 if (msg == null) return;
-                var transResult = _msgPraizeRepository.Db.Ado.UseTran(() =>
+                // //检查发送者和接受者是否同一人
+                if (msg.ReceiveUserId == msg.SendUserId)
+                    return;
+
+                var transResult =   _msgPraizeRepository.Db.Ado.UseTran(() =>
                 {
                     //新消息
                     msg.RefId = existContent.RefId;
                     _msgPraizeRepository.AddNoIdentity_Sync(msg);
                     //总数
-                    _msgInfoOverviewRepository.UpdateNotificationNum(NotificationType.praize, msg.ReceiveUserId);
+                    _msgInfoOverviewRepository.UpdateNotificateToUnRead(NotificationType.praize, msg.ReceiveUserId);
                 });
                 if (!transResult.IsSuccess) throw new Exception(transResult.ErrorMessage);
-            }    
+            }
+         //   Console.WriteLine("end CreateNotification_Praize");
         }
 
         /// <summary>
@@ -158,26 +160,34 @@ namespace ContentCenter.Services
                 throw new CCException("commentId is null");
 
             //检查消息内容
-            EMsgContent_ReplyRes existContent = _msgReplyRepository.GetContentReplyRes_Sync(submit.commentId,submit.replyId);
+            var res = _resourceReponsitory.getSimpleByCommentId(submit.commentId);
+            if (res == null) throw new Exception("消息服务[CreateNotification_Reply]:没有找到资源");
+
+            EMsgContent_ReplyRes existContent = _msgReplyRepository.GetContentReplyRes_Sync(res.Code);
             if (existContent == null) //不存在
             {
                 //新内容
-                existContent = replyToContent(msgSubmitReply);
+                existContent = replyToContent(msgSubmitReply,res);
                 existContent.Id = _msgReplyRepository.AddContentReplyRes_Sync(existContent);
             }
-            EMsgInfo_ReplyRes msg = replyToMsg(msgSubmitReply);
+            EMsgInfo_ReplyRes msg = replyToMsg(msgSubmitReply,res);
             if (msg == null) return;
 
-            var transResult = _msgReplyRepository.Db.Ado.UseTran(() =>
+            // //检查发送者和接受者是否同一人
+            if (msg.ReceiveUserId == msg.SendUserId)
+                return;
+
+            var transResult =  _msgReplyRepository.Db.Ado.UseTran(() =>
             {
                 //新消息
                 _msgReplyRepository.AddNoIdentity_Sync(msg);
                 //总数
-                _msgInfoOverviewRepository.UpdateNotificationNum(NotificationType.reply, msg.ReceiveUserId);
+                _msgInfoOverviewRepository.UpdateNotificateToUnRead(NotificationType.reply, msg.ReceiveUserId);
             });
             if (!transResult.IsSuccess) throw new Exception(transResult.ErrorMessage);
 
         }
+        
         public void SendNotification(SubmitNotification submitNotification)
         {
             //if (string.IsNullOrEmpty(submitNotification.sendId))
@@ -198,8 +208,115 @@ namespace ContentCenter.Services
 
         }
 
+        public VueMsgInfoOverview GetUserMsgOverview(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+                throw new CCException("非法操作");
+
+            return  _msgInfoOverviewRepository.GetByUserId(userId);
+        }
+
+        public  ModelPager<VueMsgInfoNotification> QueryUserNotifictaion(QMsgUser query)
+        {
+            if (string.IsNullOrEmpty(query.userId))
+                throw new CCException("非法请求");
+            ModelPager<VueMsgInfoNotification> result = null;
+            switch (query.notificationType)
+            {
+                case NotificationType.praize:
+                    result = _msgPraizeRepository.queryUserPraize(query).Result;
+                    break;
+                case NotificationType.comment:
+                    result = _msgCommentResRepository.queryUserComment(query).Result;
+                    break;
+                case NotificationType.reply:
+                    result= _msgReplyRepository.queryUserReply(query).Result;
+                    break;
+            }
+            //异步更新消息数据
+            if (query.updateMsgToRead){
+               Async_MsgToReadAfterQuery(query, result.datas);  
+            }
+          
+            return result == null? new ModelPager<VueMsgInfoNotification>():result;
+
+        }
+        
+        //异步方法 查询后获取未读消息转成已读
+        public void Async_MsgToReadAfterQuery(QMsgUser query,List<VueMsgInfoNotification> queryResult)
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    SubmitUnReadMsgIdList unReadList = new SubmitUnReadMsgIdList();
+                    foreach (var msg in queryResult)
+                    {
+                        if (msg.NotificationStatus != NotificationStatus.read)
+                            unReadList.msgIdList.Add(msg.msgId);
+                    }
+                    if (unReadList.msgIdList.Count > 0)
+                    {
+                        unReadList.notificationType = query.notificationType;
+                        unReadList.targetStatus = NotificationStatus.read;
+                        unReadList.userId = query.userId;
+
+
+                        this.updateMsgToRead(unReadList);
+                    }
+
+                }
+                catch (Exception ex)
+                {
+                    NLogUtil.cc_ErrorTxt("[MessageService]MsgToReadAfterQuery_Async:" + ex.Message);
+                }
+            });
+
+        }
 
         #region 私有方法
+
+        //更新消息到已读
+        private void updateMsgToRead(SubmitUnReadMsgIdList submitData)
+        {
+            //   ResultNormal result = new ResultNormal();
+            if (string.IsNullOrEmpty(submitData.userId))
+                throw new CCException("非法请求");
+
+            var msgList = submitData.msgIdList;
+            if (msgList == null || msgList.Count <= 0)
+                throw new Exception("[MessgeServices] updateMsgToRead:入参没有信息更新");
+
+            var transResult = _msgReplyRepository.Db.Ado.UseTran(() =>
+            {
+                int num = 0;
+                //更新已读消息
+                switch (submitData.notificationType)
+                {
+                    case NotificationType.praize:
+                        num = _msgPraizeRepository.UpdateMsgStatus(submitData);
+                        break;
+                    case NotificationType.comment:
+                        num = _msgCommentResRepository.UpdateMsgStatus(submitData);
+                        break;
+                    case NotificationType.reply:
+                        num = _msgReplyRepository.UpdateMsgStatus(submitData);
+                        break;
+
+                }
+                if (num > 0)
+                    //概况更新为已读
+                    _msgInfoOverviewRepository.UpdateNotificateToRead(submitData.notificationType, submitData.userId, num);
+            });
+
+            if (!transResult.IsSuccess)
+            {
+                throw new Exception(transResult.ErrorMessage);
+                // result.ErrorMsg = transResult.ErrorMessage;
+            }
+
+        }
+
 
         private EMsgInfo_Praize praizeToMsg(MsgSubmitPraize msgSubmitPraize)
         {
@@ -229,7 +346,7 @@ namespace ContentCenter.Services
 
                 PraizeId = msgSubmitPraize.PraizeId,
                 //    RefId = submitPraize.refCode
-                NotificationStatus = NotificationStatus.created,
+                //NotificationStatus = NotificationStatus.created,
                 PraizeTarget = submitPraize.praizeTarget,
                 SendUserId = submitPraize.userId,
                 SendName = submitPraize.userName,
@@ -247,7 +364,7 @@ namespace ContentCenter.Services
         {
             var submitPraize = msgSubmitPraize.SubmitPraize;
             var bi = _bookRepository.getBookSimple_ByCode(submitPraize.bookCode);
-            if(bi == null) throw new Exception("消息服务:没有找到书本Code");
+            if(bi == null) throw new Exception("消息服务[praizeToContent]:没有找到书本Code");
 
             EMsgContent_Praize msgContent = new EMsgContent_Praize
             {
@@ -255,28 +372,38 @@ namespace ContentCenter.Services
                 BookName = bi.Title,
                 BookUrl = bi.CoverUrl,
                 PraizeTarget = submitPraize.praizeTarget,
-            
             };
             string content ="";
+            ResSimple res = null;
             switch (msgContent.PraizeTarget)
             {
                 case PraizeTarget.Resource:
-                    EResourceInfo res = _resourceReponsitory.GetByKey(submitPraize.refCode).Result;
-                    content = res.ResType == ResType.BookOss ?$"[{res.FileType}]{res.OrigFileName}" :$"[URL]-{res.Url}";
-                    msgContent.RefId = res.Id;
+                    res = _resourceReponsitory.getSimpleByCode(submitPraize.refCode);
+                 //   content = res.ResType == ResType.BookOss ?$"[文件]-{res.OrigFileName}" :$"[URL]-{res.Url}";
+                    msgContent.RefId = res.Code;
                     break;
                 case PraizeTarget.Comment:
                     EComment_Res comment = _commentRepository.GetByKey(Convert.ToInt64(submitPraize.refCode)).Result;
                     content = comment.content;
-                    msgContent.RefId = comment.Id;
+                    msgContent.RefId = comment.Id.ToString();
+                    msgContent.CommentId = comment.Id;
+                    msgContent.OrigContent = content;
+                    res = _resourceReponsitory.getSimpleByCode(submitPraize.parentRefCode);
                     break;
                 case PraizeTarget.CommentReply:
                     ECommentReply_Res reply = _commentReplyRepository.GetByKey(Convert.ToInt64(submitPraize.refCode)).Result;
                     content = reply.content;
-                    msgContent.RefId = reply.Id;
+                    msgContent.CommentId = reply.commentId;
+                    msgContent.ReplyId = reply.Id;
+                    msgContent.RefId = reply.Id.ToString();
+                    msgContent.OrigContent = content;
+                    res = _resourceReponsitory.getSimpleByCommentId(Convert.ToInt64(submitPraize.parentRefCode));
                     break;
             }
-            msgContent.OrigContent = content;
+            if(res == null)
+                throw new Exception("消息服务[praizeToContent]:没有找到资源信息");
+            msgContent.ResCode = res.Code;
+            msgContent.ResName = res.ShowName;
             return msgContent;
         }
 
@@ -293,10 +420,9 @@ namespace ContentCenter.Services
             {
                 CreatedDateTime = DateTime.Now,
                 //   CommentId = msgSubmitComment.CommentId,
-                NotificationStatus = NotificationStatus.created,
+                //NotificationStatus = NotificationStatus.created,
                 CommentId = msgSubmitComment.CommentId,
                 resCode = submit.refCode,
-
                 SendUserId = submit.userId,
                 SendName = submit.userName,
                 SendHeaderUrl = submit.userHeaderUrl,
@@ -313,22 +439,25 @@ namespace ContentCenter.Services
             var submit = msgSubmitComment.SubmitComment;
 
             var bi = _bookRepository.getBookSimple_ByCode(submit.parentRefCode);
-            if (bi == null) throw new Exception("消息服务:没有找到书本Code");
+            if (bi == null) throw new Exception("消息服务[commentToContent]:没有找到书本Code");
 
             //Orig Content(针对哪个资源信息做的消息)
-            EResourceInfo res = _resourceReponsitory.GetByKey(submit.refCode).Result;
-            var origContent = res.ResType == ResType.BookOss ? $"[{res.FileType}]{res.OrigFileName}" : $"[URL]-{res.Url}";
-            
+            var res = _resourceReponsitory.getSimpleByCode(submit.refCode);
+            if (res == null) throw new Exception("消息服务[commentToContent]:没有找资源");
+            //EResourceInfo res = _resourceReponsitory.GetByKey(submit.refCode).Result;
+            //var origContent = res.ResType == ResType.BookOss ? $"[{res.FileType}]{res.OrigFileName}" : $"[URL]-{res.Url}";
+
             EMsgContent_CommentRes msgContent = new EMsgContent_CommentRes
             {
                 BookCode = bi.Code,
                 BookName = bi.Title,
                 BookUrl = bi.CoverUrl,
                 ResCode = res.Code,
-                OrigContent = origContent,
-               
+                ResName = res.ShowName,
                 
+             //   OrigContent = submit.content,  
             };
+
 
             return msgContent;
 
@@ -337,35 +466,40 @@ namespace ContentCenter.Services
         /// <summary>
         /// [内容] -- 回复信息
         /// </summary>
-        private EMsgContent_ReplyRes replyToContent(MsgSubmitReply msgSubmitReply)
+        private EMsgContent_ReplyRes replyToContent(MsgSubmitReply msgSubmitReply,ResSimple resSimple)
         {
             var submit = msgSubmitReply.SubmitReply;
 
             var bi = _bookRepository.getBookSimple_ByCode(submit.bookCode);
-            if (bi == null) throw new Exception("消息服务:没有找到书本Code");
+            if (bi == null) throw new Exception("消息服务[replyToContent]:没有找到书本Code");
+           
 
-            EComment_Res comment = _commentRepository.GetByKey(submit.commentId).Result;
-   
+            //评论原始内容
+            //   EComment_Res comment = _commentRepository.GetByKey(submit.commentId).Result;
             EMsgContent_ReplyRes msgContent = new EMsgContent_ReplyRes
             {
                 BookCode = bi.Code,
                 BookName = bi.Title,
                 BookUrl = bi.CoverUrl,
-                CommentId = submit.commentId,
-                OrigContent = comment.content,
-               
-                ReplyId = submit.replyId,    
+                ResCode = resSimple.Code,
+                ResName = resSimple.ShowName
             };
-            if (submit.replyId > 0)
-            {
-                ECommentReply_Res reply = _commentReplyRepository.GetByKey(submit.replyId).Result;
-                msgContent.OrigReplyContent = reply.content;
-            }
+            //资源信息
+            //var res = _resourceReponsitory.getSimpleByCommentId(submit.commentId);
+            //msgContent.ResCode = res.Code;
+            //msgContent.ResName = res.ShowName;
+
+            //if (submit.replyId > 0)
+            //{
+            //    //回复信息
+            //    ECommentReply_Res reply = _commentReplyRepository.GetByKey(submit.replyId).Result;
+            //    msgContent.OrigReplyContent = reply.content
+            //}
 
             return msgContent;
         }
 
-        private EMsgInfo_ReplyRes replyToMsg(MsgSubmitReply msgSubmitReply)
+        private EMsgInfo_ReplyRes replyToMsg(MsgSubmitReply msgSubmitReply, ResSimple resSimple)
         {
             var submit = msgSubmitReply.SubmitReply;
             EUserInfo ownerInfo = null;
@@ -381,11 +515,11 @@ namespace ContentCenter.Services
             {
                 CreatedDateTime = DateTime.Now,
                 //   CommentId = msgSubmitComment.CommentId,
-                NotificationStatus = NotificationStatus.created,
+               // NotificationStatus = NotificationStatus.created,
                 CommentId = submit.commentId,
                 ReplyId = msgSubmitReply.ReplyId,
                 ReplyReplyId = submit.replyId,
-                
+                resCode = resSimple.Code,
                 SendUserId = submit.userId,
                 SendName = submit.userName,
                 SendHeaderUrl = submit.userHeaderUrl,
@@ -395,8 +529,6 @@ namespace ContentCenter.Services
            
             return msg;
         }
-
-     
 
         #endregion
 

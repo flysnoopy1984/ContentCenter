@@ -12,7 +12,7 @@ namespace ContentCenter.Model
         /// 资源Code,
         /// </summary>
         [SugarColumn(Length = 50,IsPrimaryKey =true)]
-        public string ResCode { get; set; }
+        public new string ResCode { get; set; }
 
        
     }

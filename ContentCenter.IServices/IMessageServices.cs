@@ -1,7 +1,9 @@
 ﻿using ContentCenter.Model;
+using IQB.Util.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ContentCenter.IServices
 {
@@ -22,5 +24,18 @@ namespace ContentCenter.IServices
         void CreateNotification_Comment(MsgSubmitComment msgSubmitComment);
 
         void CreateNotification_Reply(MsgSubmitReply msgSubmitReply);
+
+        VueMsgInfoOverview GetUserMsgOverview(string userId);
+
+        ModelPager<VueMsgInfoNotification> QueryUserNotifictaion(QMsgUser query);
+
+        //跟新消息到已读
+       // ResultNormal updateMsgToRead(SubmitUnReadMsgIdList submitData);
+
+        //查询时后异步更新消息到已读
+        void Async_MsgToReadAfterQuery(QMsgUser query, List<VueMsgInfoNotification> queryResult);
+
+
+
     }
 }

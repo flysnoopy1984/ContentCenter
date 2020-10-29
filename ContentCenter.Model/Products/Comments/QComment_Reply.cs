@@ -8,6 +8,8 @@ namespace ContentCenter.Model
     {
         public long commentId { get; set; }
 
+        public long fixedReplyId { get; set; }
+
         public string reqUserId { get; set; }
     }
 }

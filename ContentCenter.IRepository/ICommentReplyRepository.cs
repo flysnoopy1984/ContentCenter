@@ -15,11 +15,15 @@ namespace ContentCenter.IRepository
 
         Task<ModelPager<VueUserCommReply>> queryUserCommReply(QUserCommReply query);
 
+      
+
         /// <summary>
         /// 根据Id获取发布者UserId(发消息使用)
         /// ID headerUrl Name
         /// </summary>
         /// <returns></returns>
         EUserInfo getReplyAutherId(long replyId);
+
+    
     }
 }

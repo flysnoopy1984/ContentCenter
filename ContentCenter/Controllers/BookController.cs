@@ -171,7 +171,8 @@ namespace ContentCenter.Controllers
             }
             catch (Exception ex)
             {
-                result.ErrorMsg = ex.Message;
+                NLogUtil.cc_ErrorTxt("[BookController]GetAllResourcesByRefCode:" + ex.Message);
+                result.ErrorMsg = "查询失败";
             }
             return result;
         }

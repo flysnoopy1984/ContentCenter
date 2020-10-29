@@ -18,6 +18,10 @@ namespace ContentCenter.Model
         /// 资源就是 Code 评论和回复就是Id
         /// </summary>
         public string code { get; set; }
+
+        public string resCode { get; set; }
+
+        public long commentId { get; set; }
         public string bookCode { get; set; }
         public string bookName { get; set; }
         public string bookUrl { get; set; }

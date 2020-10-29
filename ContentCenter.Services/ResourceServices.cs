@@ -241,7 +241,8 @@ namespace ContentCenter.Services
                     pageIndex = 1,
                     pageSize = qRes.withCommentNum,
                     resCode = res.resCode,
-                    reqUserId = qRes.reqUserId
+                    reqUserId = qRes.reqUserId,
+                    fiexedCommentId = qRes.fixedCommentId
                 }).Result;
                 res.commList = commList;     
             }
@@ -284,12 +285,13 @@ namespace ContentCenter.Services
 
         }
 
+       
         public ModelPager<VueUserRes> queryUserRes(QUserRes query)
         {
             if (string.IsNullOrEmpty(query.userId))
                 throw new Exception("非法操作！");
-
-            return _ResourceReponsitory.queryUserRes_GroupByBook(query).Result;
+  
+            return _ResourceReponsitory.queryUserRes_GroupByBook(query);
         }
     }
 }

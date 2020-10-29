@@ -23,6 +23,8 @@ namespace ContentCenter.Model
         public string levelInfo { get; set; }
         public int level { get; set; }
 
+
+
         //public string Phone { get; set; }
 
 

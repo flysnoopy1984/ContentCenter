@@ -10,9 +10,6 @@ namespace ContentCenter.Model
         [SugarColumn(IsIdentity = true)]
         public long Id { get; set; }
 
-        [SugarColumn(Length = 200)]
-        public string OrigContent { get; set; }
-
         [SugarColumn(Length = 50)]
         public string BookCode { get; set; }
 
@@ -21,6 +18,12 @@ namespace ContentCenter.Model
 
         [SugarColumn(Length = 255)]
         public string BookUrl { get; set; }
+
+        [SugarColumn(Length =50)]
+        public string ResCode { get; set; }
+
+        [SugarColumn(Length = 255)]
+        public string ResName { get; set; }
 
     }
 }

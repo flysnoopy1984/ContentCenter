@@ -9,6 +9,8 @@ namespace ContentCenter.Model
     public class VueCommentReply
     {
         public string bookCode { get; set; }
+        //public string resCode { get; set; } //固定Res使用 20201028
+        //public string commentId { get; set; } //固定使用 20201028
         public long replyId { get; set; }
         public string authorId { get; set; }
         public string authorName { get; set; }

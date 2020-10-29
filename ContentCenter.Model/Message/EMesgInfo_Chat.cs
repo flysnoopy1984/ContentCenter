@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ContentCenter.Model
 {
-    public class EMesgInfo_Private
+    public class EMesgInfo_Chat
     {
 
     }

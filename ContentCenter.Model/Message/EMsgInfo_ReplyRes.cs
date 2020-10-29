@@ -24,6 +24,9 @@ namespace ContentCenter.Model
         /// </summary>
         public long ReplyId { get; set; }
 
+        [SugarColumn(Length = 50, ColumnDataType = "varchar")]
+        public string resCode { get; set; }
+
         [SugarColumn(Length = 200)]
         public string ReceiveContent { get; set; }
     }

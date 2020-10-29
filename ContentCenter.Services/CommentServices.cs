@@ -29,7 +29,6 @@ namespace ContentCenter.Services
             _commentResRepository = commentResRepository;
             _commentReplyResRepository = commentReplyResRepository;
             _praizeRepository = praizeRepository;
-       //     _transDb = transDb;
 
         }
 

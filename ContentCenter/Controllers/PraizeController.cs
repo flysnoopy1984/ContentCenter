@@ -32,7 +32,7 @@ namespace ContentCenter.Controllers
         /// <param name="submitPraize"></param>
         /// <returns></returns>
         [HttpPost]
-        public ResultNormal submit(SubmitPraize submitPraize)
+        public  ResultNormal submit(SubmitPraize submitPraize)
         {
             ResultNormal result = new ResultNormal();
             try
@@ -44,19 +44,11 @@ namespace ContentCenter.Controllers
                         throw new CCException("身份不明确，请登录后再尝试");
                 }
                 result.ResultId = _praizeServices.handlePraize(submitPraize);
-                try
-                {
-                    _messageServices.CreateNotification_Praize(new MsgSubmitPraize
-                    {
-                        SubmitPraize = submitPraize,
-                        PraizeId = result.ResultId,
-                    });
-                }
-                catch(Exception msgEx)
-                {
-                    NLogUtil.cc_ErrorTxt("【点赞通知】错误:" + msgEx.Message);
-                }
-               
+
+                //创建通知消息
+                asyncCreateMessage(submitPraize, result.ResultId);
+               // Console.WriteLine("controller return");
+
             }
             catch (Exception ex)
             {
@@ -76,9 +68,7 @@ namespace ContentCenter.Controllers
             ResultPager<VueUserPraize> result = new ResultPager<VueUserPraize>();
             try
             {
-
                 result.PageData = _praizeServices.queryUserPraize(query);
-
             }
             catch (Exception ex)
             {
@@ -87,6 +77,25 @@ namespace ContentCenter.Controllers
             return result;
         }
 
+        private void asyncCreateMessage(SubmitPraize submitPraize,long praizeId)
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    _messageServices.CreateNotification_Praize(new MsgSubmitPraize
+                    {
+                        SubmitPraize = submitPraize,
+                        PraizeId = praizeId,
+                    });
 
+
+                }
+                catch (Exception msgEx)
+                {
+                    NLogUtil.cc_ErrorTxt("【点赞通知】错误:" + msgEx.Message);
+                }
+            });
+        }
     }
 }

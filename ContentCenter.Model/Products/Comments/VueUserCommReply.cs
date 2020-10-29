@@ -9,6 +9,9 @@ namespace ContentCenter.Model
     {
         public string bookCode { get; set; }
         public string bookName { get; set; }
+
+        public string resCode { get; set; }
+
         public string bookCoverUrl { get; set; }
         public long commentId { get; set; }
         public string commentAuthorId { get; set; }

@@ -9,9 +9,9 @@ namespace ContentCenter.IServices
 {
     public interface IUserServices:IBaseServices<EUserInfo>
     {
-        VueUerInfo Login(LoginUser loginUser);
+        VueUserLogin Login(LoginUser loginUser);
 
-        VueUerInfo Register(RegUser regUser);
+        VueUserLogin Register(RegUser regUser);
 
         bool HasRegistPhone(string phone);
 

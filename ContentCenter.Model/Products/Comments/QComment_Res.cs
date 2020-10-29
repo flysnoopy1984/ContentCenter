@@ -10,6 +10,8 @@ namespace ContentCenter.Model
 
         public string reqUserId { get; set; }
 
+        public long fiexedCommentId { get; set; } = -1;
+
 
     }
 }

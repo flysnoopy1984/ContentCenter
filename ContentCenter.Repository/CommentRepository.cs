@@ -20,11 +20,10 @@ namespace ContentCenter.Repository
 
         }
 
-     
-
         public async Task<ModelPager<VueCommentInfo>> GetCommentsByResCodes(QComment_Res query)
         {
 
+        
             ModelPager<VueCommentInfo> result = new ModelPager<VueCommentInfo>(query.pageIndex,query.pageSize);
 
             var qOwn = Db.Queryable<EPraize_Comment>().Where(c => c.RefCode == query.resCode && c.userId == query.reqUserId);
@@ -46,8 +45,14 @@ namespace ContentCenter.Repository
                 bookCode = c.parentRefCode
             });
 
+            // OrderBy 规则
+            var orderByPraize = $"case when j1.goodNum <{ SysRules.OrderByPraizeStartNum} then 0 else j1.goodNum end desc";
+
+            var orderByFixedComment = $"case when j1.commentId = '{query.fiexedCommentId}' then 0 else  j1.commentId end";
+
             var mainSql = Db.Queryable(q, qOwn, JoinType.Left, (j1, j2) => j1.commentId == j2.commentId)
-               .OrderBy(j1 => j1.goodNum, OrderByType.Desc)
+               .OrderByIF(query.fiexedCommentId>0, orderByFixedComment)
+               .OrderBy(orderByPraize)
                .OrderBy(j1 => j1.replyNum, OrderByType.Desc)
                .OrderBy(j1 => j1.CreateDateTime, OrderByType.Desc)
                .Select((j1, j2) => new VueCommentInfo
@@ -103,8 +108,10 @@ namespace ContentCenter.Repository
                  bookCode = b.Code,
                  bookName = b.Title,
                  content = c.content,
+                 resCode = r.Code,
                  resName = r.FileType+"-"+ (r.ResType == ResType.BookOss?"下载文件":"下载地址"),
                  commentId = c.Id,
+                 
             });
 
             RefAsync<int> totalNumber = new RefAsync<int>();
@@ -124,6 +131,10 @@ namespace ContentCenter.Repository
 
             return op.ExecuteCommandHasChange();
         }
+
+
+
+        
     }
 
 }

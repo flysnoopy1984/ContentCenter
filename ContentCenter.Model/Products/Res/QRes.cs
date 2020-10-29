@@ -19,6 +19,13 @@ namespace ContentCenter.Model
         }
 
         /// <summary>
+        /// 如果是固定资源，query时不会筛选出，单独查询这条记录
+        /// </summary>
+        public string fixedResCode { get; set; }
+
+        public long fixedCommentId { get; set; } = -1;
+
+        /// <summary>
         /// 带出评论数量
         /// </summary>
         public int withCommentNum { get; set; } = 2;

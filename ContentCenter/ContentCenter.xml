@@ -73,17 +73,19 @@
             <returns></returns>
         </member>
         <member name="M:ContentCenter.Controllers.CommentController.deleteRes(ContentCenter.Model.DelComment)">
-            <summary>
             删除资源评论
-            </summary>
-            <param name="delComment"></param>
-            <returns></returns>
         </member>
         <member name="M:ContentCenter.Controllers.CommentController.deleteReply(ContentCenter.Model.DelComment)">
             <summary>
             删除评论回复
             </summary>
             <param name="delComment"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.MessageController.UserOverview">
+            <summary>
+            获取用户消息概况
+            </summary>
             <returns></returns>
         </member>
         <member name="M:ContentCenter.Controllers.PraizeController.submit(ContentCenter.Model.SubmitPraize)">

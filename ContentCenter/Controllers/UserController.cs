@@ -96,9 +96,9 @@ namespace ContentCenter.Controllers
         }
 
         [HttpPost]
-        public ResultEntity<VueUerInfo> Login(LoginUser loginUser)
+        public ResultEntity<VueUserLogin> Login(LoginUser loginUser)
         {
-            ResultEntity<VueUerInfo> result = new ResultEntity<VueUerInfo>();
+            ResultEntity<VueUserLogin> result = new ResultEntity<VueUserLogin>();
             try
             {
                 if (string.IsNullOrEmpty(loginUser.Account))
@@ -107,10 +107,10 @@ namespace ContentCenter.Controllers
                 result.Entity = ui;
                 var tokenResult = this.GetUserPwdToken(new requireUserPwdToken
                 {
-                    username = ui.UserAccount,
-                    password = ui.TokenPwd
+                    username = ui.UerInfo.UserAccount,
+                    password = ui.UerInfo.TokenPwd
                 });
-                if (tokenResult.IsSuccess) result.Entity.Token = tokenResult.Entity;
+                if (tokenResult.IsSuccess) result.Entity.UerInfo.Token = tokenResult.Entity;
                 else result.ErrorMsg = "没有获取登陆令牌";
 
             }
@@ -123,9 +123,9 @@ namespace ContentCenter.Controllers
 
         
         [HttpPost]
-        public ResultEntity<VueUerInfo> Register(RegUser regUser)
+        public ResultEntity<VueUserLogin> Register(RegUser regUser)
         {
-            ResultEntity<VueUerInfo> result = new ResultEntity<VueUerInfo>();
+            ResultEntity<VueUserLogin> result = new ResultEntity<VueUserLogin>();
             try
             {
                 string verifyMsg = VerifyUser(regUser);
@@ -144,13 +144,14 @@ namespace ContentCenter.Controllers
                             //注册用户写入数据库
                             var ui =_userServices.Register(regUser);
                             result.Entity = ui;
+
                             //获取Token
                             var tokenResult = this.GetUserPwdToken(new requireUserPwdToken
                             {
-                                username = ui.UserAccount,
-                                password = ui.TokenPwd
+                                username = ui.UerInfo.UserAccount,
+                                password = ui.UerInfo.TokenPwd
                             });
-                            if (tokenResult.IsSuccess) result.Entity.Token = tokenResult.Entity;
+                            if (tokenResult.IsSuccess) result.Entity.UerInfo.Token = tokenResult.Entity;
                             else result.ErrorMsg = "没有获取登陆令牌";
                         }
                         else result.ErrorMsg = smsResult.Entity.Msg;
@@ -188,7 +189,7 @@ namespace ContentCenter.Controllers
                    
                 };
                 var ui = _userServices.Register(regUser);
-                result.Message = ui.UserAccount;
+                result.Message = ui.UerInfo.UserAccount;
             }
             catch(Exception ex)
             {

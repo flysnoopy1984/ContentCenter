@@ -65,13 +65,18 @@ namespace ContentCenter.Services
             return r > 0;
         }
 
-        public VueUerInfo Login(LoginUser loginUser)
+        public VueUserLogin Login(LoginUser loginUser)
         {
-            EUserInfo result = null;
-            result = _userDb.GetByExpSingle(a=>a.UserAccount == loginUser.Account && a.UserPwd == loginUser.Pwd).Result;
-            if (result == null)
+            VueUserLogin result = new VueUserLogin();
+            var ui = _userDb.GetByExpSingle(a=>a.UserAccount == loginUser.Account && a.UserPwd == loginUser.Pwd).Result;
+            if (ui == null)
                 throw new CCException(CCWebMsg.User_Login_WrongUserPwd);
-            return result.ToVueUser();
+
+            result.MsgOverview = _msgInfoOverviewRepository.GetByUserId(ui.Id);
+
+            result.UerInfo = ui.ToVueUser();
+           
+            return result;
         }
 
 
@@ -80,7 +85,7 @@ namespace ContentCenter.Services
         /// </summary>
         /// <param name="regUser"></param>
         /// <returns>-1 已存在,-2手机已使用</returns>
-        public VueUerInfo Register(RegUser regUser)
+        public VueUserLogin Register(RegUser regUser)
         {
             int c = _userDb.GetCount(a=>a.UserAccount == regUser.Account).Result;
             int phone = _userDb.GetCount(a => a.Phone == regUser.Phone).Result;
@@ -127,8 +132,11 @@ namespace ContentCenter.Services
             });
             if(!transResult.IsSuccess)
                 throw new Exception("注册失败");
-        
-            return ui.ToVueUser();
+            VueUserLogin result = new VueUserLogin();
+            result.UerInfo = ui.ToVueUser();
+            result.MsgOverview = new VueMsgInfoOverview();
+            result.MsgOverview.userId = ui.Id;
+            return result;
 
         }
 

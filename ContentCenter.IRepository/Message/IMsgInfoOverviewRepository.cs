@@ -17,9 +17,16 @@ namespace ContentCenter.IRepository
         /// <summary>
         /// 根据类型更新通知数量
         /// </summary>
-        /// <param name="notificationType"></param>
-        /// <param name="num"></param>
+        int UpdateNotificateToUnRead(NotificationType notificationType, string userId,int num=1);
+
+        int UpdateNotificateToRead(NotificationType notificationType,string userId, int num = 1);
+        /// <summary>
+        /// 用户消息概况
+        /// </summary>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        int UpdateNotificationNum(NotificationType notificationType, string userId, int num=1);
+        VueMsgInfoOverview GetByUserId(string userId);
+
+       
     }
 }

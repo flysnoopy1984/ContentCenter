@@ -27,9 +27,9 @@ namespace ContentCenter.Model
         public DateTime CreatedDateTime { get; set; } = DateTime.Now;
 
         /// <summary>
-        /// 通知状态，
+        /// 通知状态，暂时直接发送，不做后台过滤
         /// </summary>
-        public NotificationStatus NotificationStatus { get; set; }= NotificationStatus.created;
+        public NotificationStatus NotificationStatus { get; set; }= NotificationStatus.sent;
 
         /// <summary>
         /// 是否已经推送给App端(暂无)

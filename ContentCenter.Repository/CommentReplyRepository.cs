@@ -1,5 +1,7 @@
-﻿using ContentCenter.IRepository;
+﻿using ContentCenter.Common;
+using ContentCenter.IRepository;
 using ContentCenter.Model;
+using ContentCenter.Model.BaseEnum;
 using IQB.Util.Models;
 using SqlSugar;
 using System;
@@ -43,29 +45,35 @@ namespace ContentCenter.Repository
 
         public async Task<ModelPager<VueCommentReply>> GetReplysByCommentId(QComment_Reply query)
         {
-          ModelPager<VueCommentReply> result = new ModelPager<VueCommentReply>(query.pageIndex, query.pageSize);
-          var qOwn = Db.Queryable<EPraize_CommentReply>().Where(c => c.commentId == query.commentId && c.userId == query.reqUserId);
-          var q = base.Db.Queryable<ECommentReply_Res, EUserInfo>((c, u) => new object[]
-          {
+        
+            ModelPager<VueCommentReply> result = new ModelPager<VueCommentReply>(query.pageIndex, query.pageSize);
+            var qOwn = Db.Queryable<EPraize_CommentReply>().Where(c => c.commentId == query.commentId && c.userId == query.reqUserId);
+            var q = base.Db.Queryable<ECommentReply_Res, EUserInfo>((c, u) => new object[]
+            {
                 JoinType.Inner,c.authorId == u.Id
-          })
-          .Where(c => c.commentId == query.commentId)
-          .Select((c, u) => new VueCommentReply
-          {
-              CreateDateTime = c.CreateDateTime,// c.CreateDateTime.ToString("yyyy-MM-dd hh:MM"),
-              authorId = u.Id,
-              authorName = u.NickName,
-              replyId = c.Id,
-              content = c.content,
-              goodNum = c.goodNum,
-              headerUrl = u.HeaderUrl,
-              replyAuthorId = c.replyAuthorId,
-              replyAuthorName = c.replyName,
-              bookCode =c.bookCode,
-          });
+            })
+            .Where(c => c.commentId == query.commentId)
+            .Select((c, u) => new VueCommentReply
+            {
+                CreateDateTime = c.CreateDateTime,// c.CreateDateTime.ToString("yyyy-MM-dd hh:MM"),
+                authorId = u.Id,
+                authorName = u.NickName,
+                replyId = c.Id,
+                content = c.content,
+                goodNum = c.goodNum,
+                headerUrl = u.HeaderUrl,
+                replyAuthorId = c.replyAuthorId,
+                replyAuthorName = c.replyName,
+                bookCode =c.bookCode,
+            });
 
-        var mainSql = Db.Queryable(q, qOwn, JoinType.Left, (j1, j2) => j1.replyId == j2.replyId)
-            .OrderBy(j1 => j1.goodNum, OrderByType.Desc)
+            var orderByPraize = $"case when j1.goodNum <{ SysRules.OrderByPraizeStartNum} then 0 else j1.goodNum end desc";
+
+            var orderByFixedReply = $"case when j1.replyId = '{query.fixedReplyId}' then 0 else  j1.replyId end";
+
+            var mainSql = Db.Queryable(q, qOwn, JoinType.Left, (j1, j2) => j1.replyId == j2.replyId)
+            .OrderByIF(query.fixedReplyId > 0, orderByFixedReply)
+            .OrderBy(orderByPraize)
             .OrderBy(j1 => j1.CreateDateTime, OrderByType.Desc)
             .Select((j1, j2) => new VueCommentReply
             {
@@ -105,6 +113,7 @@ namespace ContentCenter.Repository
             {
                 bookCode = b.Code,
                 bookName = b.Title,
+                resCode = c.refCode,
                 bookCoverUrl = b.CoverUrl,
                 commentId = c.Id,
                 commentAuthorId = c.authorId,
@@ -124,5 +133,7 @@ namespace ContentCenter.Repository
             return result;
           
         }
+
+       
     }
 }

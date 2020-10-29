@@ -15,6 +15,10 @@ namespace ContentCenter.IRepository
 
         Task<int> SameResCount(string userId,string refCode, ResType resType, string fileType, bool includeDelete = false);
 
+        // praizeUserId 当前用户对于此资源是否点赞，
+        // includeDeleteRes 查询是否包含删除的资源
+        // fixedResCode 固定的资源（页面置顶）
+      
         Task<ModelPager<VueResInfo>> GetResByRefCode(QRes qRes);
 
 
@@ -24,7 +28,7 @@ namespace ContentCenter.IRepository
         /// </summary>
         /// <param name="query"></param>
         /// <returns></returns>
-        Task<ModelPager<VueUserRes>> queryUserRes_GroupByBook(QUserRes query);
+        ModelPager<VueUserRes> queryUserRes_GroupByBook(QUserRes query);
        
 
         int logRequireRes(string resCode, string requireUserId);
@@ -39,8 +43,14 @@ namespace ContentCenter.IRepository
         /// <returns></returns>
         EUserInfo getResoureOwnerId(string resCode);
 
-       
+        /// <summary>
+        /// 获取简单的资源信息ResCode/ResName
+        /// </summary>
+        ResSimple getSimpleByCommentId(long commentId);
 
-
+        /// <summary>
+        /// 获取简单的资源信息ResCode/ResName
+        /// </summary>
+        ResSimple getSimpleByCode(string resCoe);
     }
 }

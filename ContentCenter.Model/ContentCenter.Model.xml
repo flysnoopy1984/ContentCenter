@@ -47,7 +47,7 @@
         </member>
         <member name="P:ContentCenter.Model.BaseNotification.NotificationStatus">
             <summary>
-            通知状态，
+            通知状态，暂时直接发送，不做后台过滤
             </summary>
         </member>
         <member name="P:ContentCenter.Model.BaseNotification.IsPushToApp">
@@ -62,22 +62,12 @@
         </member>
         <member name="P:ContentCenter.Model.EMsgContent_Praize.RefId">
             <summary>
-            针对哪个点赞，资源用Id(而不是主键Code),评论Id，回复Id
+            针对哪个点赞，资源用Code,评论Id，回复Id
             </summary>
         </member>
-        <member name="P:ContentCenter.Model.EMsgContent_ReplyRes.CommentId">
+        <member name="P:ContentCenter.Model.EMsgContent_ReplyRes.ResCode">
             <summary>
-            OrigContent 存Comment信息
-            </summary>
-        </member>
-        <member name="P:ContentCenter.Model.EMsgContent_ReplyRes.ReplyId">
-            <summary>
-            如果是回复的回复有值，如果是回复则-1；
-            </summary>
-        </member>
-        <member name="P:ContentCenter.Model.EMsgContent_ReplyRes.OrigReplyContent">
-            <summary>
-            如果是恢复的回复，存入回复信息，否则为空
+            资源Code,
             </summary>
         </member>
         <member name="P:ContentCenter.Model.EMsgInfoOverview.notificationTotal">
@@ -97,7 +87,7 @@
         </member>
         <member name="P:ContentCenter.Model.EMsgInfo_Praize.RefId">
             <summary>
-            针对哪个点赞，资源用Id(而不是主键Code),评论Id，回复Id
+            针对哪个点赞，资源用Code,评论Id，回复Id
             </summary>
         </member>
         <member name="P:ContentCenter.Model.EMsgInfo_ReplyRes.CommentId">
@@ -115,14 +105,24 @@
             当前发送的ReplyId
             </summary>
         </member>
-        <member name="P:ContentCenter.Model.QUserMsg.userId">
+        <member name="P:ContentCenter.Model.QMsgUser.userId">
             <summary>
-            谁的消息
+            谁的消息 暂时不支持，从Token中使用
             </summary>
         </member>
         <member name="P:ContentCenter.Model.SubmitNotification.atIdList">
             <summary>
             暂时不用
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.VueMsgInfoOverview.messageTotal">
+            <summary>
+            消息总数
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.VueMsgInfoOverview.notificationTotal">
+            <summary>
+            通知总数
             </summary>
         </member>
         <member name="P:ContentCenter.Model.EBookInfo.OrigTitle">
@@ -363,6 +363,11 @@
         <member name="P:ContentCenter.Model.EResourceInfo.requireNum">
             <summary>
             资源请求次数
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.QRes.fixedResCode">
+            <summary>
+            如果是固定资源，query时不会筛选出，单独查询这条记录
             </summary>
         </member>
         <member name="P:ContentCenter.Model.QRes.withCommentNum">

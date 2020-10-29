@@ -39,23 +39,9 @@ namespace ContentCenter.Controllers
                     if (commentRes.userId != this.getUserId())
                         throw new CCException("身份不明确，请登录后再尝试");
                 }
-               
                 result.ResultId = _commentServices.submitResComment(commentRes);
-                try
-                {
-                    _messageServices.CreateNotification_Comment(new MsgSubmitComment
-                    {
-                        SubmitComment = commentRes,
-
-                        CommentId = result.ResultId,
-                    });
-                }
-                catch (Exception msgEx)
-                {
-                    NLogUtil.cc_ErrorTxt("【评论通知】错误:" + msgEx.Message);
-                }
-                  
-
+                //创建通知消息
+                this.async_CreateCommentMessage(commentRes, result.ResultId);
             }
             catch(Exception ex)
             {
@@ -81,11 +67,7 @@ namespace ContentCenter.Controllers
             return result;
         }
 
-        /// <summary>
         /// 删除资源评论
-        /// </summary>
-        /// <param name="delComment"></param>
-        /// <returns></returns>
         [HttpPost]
         public ResultNormal deleteRes(DelComment delComment)
         {
@@ -119,7 +101,22 @@ namespace ContentCenter.Controllers
             return result;
         }
 
-      
+        private void async_CreateCommentMessage(SubmitComment submitComment,long commentId)
+        {
+            Task.Run(() =>
+            {
+                try{
+                    _messageServices.CreateNotification_Comment(new MsgSubmitComment
+                    {
+                        SubmitComment = submitComment,
+                        CommentId = commentId,
+                    });
+                }
+                catch (Exception msgEx){
+                    NLogUtil.cc_ErrorTxt("【评论通知】错误:" + msgEx.Message);
+                }
+            });
+        }
         #endregion
 
         #region 回复评论
@@ -138,27 +135,37 @@ namespace ContentCenter.Controllers
                 }
                 submitReply.userId = this.getUserId();
                 result.ResultId = _commentServices.submitCommentReply(submitReply);
-                //消息
-                try
-                {
-                    _messageServices.CreateNotification_Reply(new MsgSubmitReply
-                    {
-                        SubmitReply = submitReply,
-                        ReplyId = result.ResultId,
-                    });
-                }
-                catch (Exception msgEx)
-                {
-                    NLogUtil.cc_ErrorTxt("【回复通知】错误:" + msgEx.Message);
-                }
-
-
+                
+                //创建通知消息
+                this.async_CreateReplyMessage(submitReply, result.ResultId);
+             
             }
             catch (Exception ex)
             {
                 result.ErrorMsg = ex.Message;
             }
             return result;
+        }
+
+        private void async_CreateReplyMessage(SubmitReply submitReply, long replyId)
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+
+                    _messageServices.CreateNotification_Reply(new MsgSubmitReply
+                    {
+                        SubmitReply = submitReply,
+                        ReplyId = replyId,
+                    });
+                }
+                catch (Exception msgEx)
+                {
+                    NLogUtil.cc_ErrorTxt("【回复通知】错误:" + msgEx.Message);
+                }
+            });
+           
         }
 
         [HttpPost]

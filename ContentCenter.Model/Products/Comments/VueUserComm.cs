@@ -13,6 +13,8 @@ namespace ContentCenter.Model
         public string bookCode { get; set; }
         public string bookName { get; set; }
 
+        public string resCode { get; set; }
+
         public string resName { get; set; }
 
         public string content { get; set; }
