@@ -22,20 +22,21 @@ namespace ContentCenter.IRepository
         /// <returns></returns>
         Task<List<RTag>> GetTagNotinSection(string exclutedSecCode,int number);
 
-     
-
-        /// <summary>
-        /// 删除所有Section中过的Tag
-        /// </summary>
-        /// <param name="secCode"></param>
-        /// <param name="tagList"></param>
-        /// <returns></returns>
-      //  Task<bool> DeleteAllTagInSection(string secCode, List<ETag> tagList);
 
         /// <summary>
         /// 批量添加Tag到Section
         /// </summary>
-        Task<int> AddRangeTagToSection(ESection section, List<ETag> tagList);
-        
+        int AddRangeTagToSection(ESection section, List<ETag> tagList);
+
+        #region 系统公告
+        /// <summary>
+        /// 新增或更新
+        /// </summary>
+        /// <param name="newContent"></param>
+        public void SaveSystemNotification(EMsgContent_System newContent);
+
+        public List<RMsgContent_System> QueryAllSystemNotification();
+        #endregion
+
     }
 }

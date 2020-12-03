@@ -51,7 +51,6 @@ namespace ContentCenter.Controllers
             Console.WriteLine($"开始Query{st}");
             try
             {
-               
                 if(query.QueryType == QBookList_Type.Search)
                 {
                     result = _searchServices.searchBook(new SearchReq

@@ -1,5 +1,6 @@
 ﻿using ContentCenter.IRepository;
 using ContentCenter.Model;
+using ContentCenter.Model.BaseEnum;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,15 @@ namespace ContentCenter.Repository
             return q.First();
             
 
+        }
+
+        public List<UserSimple> queryNotificationGroup(Group_Notification group_Notification)
+        {
+            return Db.Queryable<EUserInfo>().Where(u => u.Group_Notification == group_Notification)
+                .Select(u => new UserSimple
+                {
+                    UserId = u.Id
+                }).ToList();
         }
 
         public Task<bool> updateHeader(string userId, string headerUrl)

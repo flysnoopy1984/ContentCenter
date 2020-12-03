@@ -36,9 +36,6 @@ namespace ContentCenter
         {
             Configuration = configuration;
         }
-
-
-
         public IConfiguration Configuration { get; }
 
       

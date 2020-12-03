@@ -60,8 +60,42 @@ namespace ContentCenter.Controllers
             return result;
         }
 
-    
+        [HttpPost]
+        public ResultPager<VueSystemNotification> QuerySystemNotification(QMsgUser query)
+        {
+            ResultPager<VueSystemNotification> result = new ResultPager<VueSystemNotification>();
+            try
+            {
+               query.userId = this.getUserId();
+               result.PageData = _messageServices.QuerySystemNotifictaion(query);
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+        }
 
-      
+        [HttpPost]
+        public ResultNormal CreateSystemNotificationToGroup(MsgSubmitSystem submitData)
+        {
+            ResultNormal result = new ResultNormal();
+            try
+            {
+                var userId= this.getUserId();
+                if (string.IsNullOrEmpty(userId)  || this.getUserAccount() != "jacky")
+                {
+                        result.ErrorMsg = "非法发送系统通知";
+                }
+                else
+                    _messageServices.CreateNotification_System(submitData);
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+        }
+
     }
 }

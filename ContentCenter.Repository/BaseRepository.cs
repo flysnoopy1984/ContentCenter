@@ -53,12 +53,12 @@ namespace ContentCenter.Repository
             var insertable = _db.Insertable<T>(newEntity);
             return await insertable.ExecuteReturnBigIdentityAsync();
         }
-        public async Task<int> AddRange(List<T> listObj)
+        public int AddRange(List<T> listObj)
         {
             if (listObj == null || listObj.Count == 0) return -1;
 
             var insertable = _db.Insertable<T>(listObj);
-            return await insertable.ExecuteCommandAsync();
+            return  insertable.ExecuteCommand();
         }
 
         public async Task<bool> DeleteByKey(long key)

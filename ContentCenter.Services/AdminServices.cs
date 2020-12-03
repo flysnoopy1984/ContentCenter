@@ -12,6 +12,7 @@ namespace ContentCenter.Services
     {
         private IAdminRepository _adminDb;
         private IBookRepository _bookDb;
+       
 
         public AdminServices(IAdminRepository adminRepository, IBookRepository bookRepository)
          : base(adminRepository)
@@ -19,6 +20,9 @@ namespace ContentCenter.Services
             _bookDb = bookRepository;
             _adminDb = adminRepository;
         }
+
+       
+
         /// <summary>
         /// 获取Section下有多少个Tag和多少个未使用的Tag
         /// </summary>
@@ -33,6 +37,17 @@ namespace ContentCenter.Services
             return result;
         }
 
+        public List<RMsgContent_System> QueryAllSystemNotification()
+        {
+            return _adminDb.QueryAllSystemNotification();
+        }
+
+        public void SaveSystemNotification(EMsgContent_System newContent)
+        {
+            _adminDb.SaveSystemNotification(newContent);
+
+        }
+
         public bool SaveSectionTag(ESection section, List<ETag> tagList)
         {
           
@@ -42,7 +57,7 @@ namespace ContentCenter.Services
                var r = _adminDb.DeleteRangeByExp(s => s.SectionCode == section.Code);
                r.Wait();
                var r2 =_adminDb.AddRangeTagToSection(section, tagList);
-               r2.Wait();
+             
                
             });
           

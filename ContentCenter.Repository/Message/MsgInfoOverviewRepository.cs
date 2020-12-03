@@ -29,13 +29,13 @@ namespace ContentCenter.Repository
                     notificationTotal = m.notificationTotal,
                     nPraize = m.nPraize,
                     nReply = m.nReply,
+                    nSystem = m.nSystem,
                     userId = m.userId,
-
                 });
             return r.First();
         }
 
-        public void InitForNewUser_Sync(string userId)
+        public void InitForNewUser_Sync(string userId,bool hasWelComeMsg=true)
         {
            
             try
@@ -44,6 +44,11 @@ namespace ContentCenter.Repository
                 {
                     userId = userId,
                 };
+                if (hasWelComeMsg)
+                {
+                    msgInfoOverview.nSystem = 1;
+                    msgInfoOverview.notificationTotal = 1;
+                }
                 base.AddNoIdentity_Sync(msgInfoOverview);
             }
             catch (Exception ex)
@@ -81,6 +86,12 @@ namespace ContentCenter.Repository
                      notificationTotal = m.notificationTotal - num,
                      readReply = m.readReply+num,
                  })
+                .SetColumnsIF(notificationType == NotificationType.system,
+                 m => new EMsgInfoOverview
+                 {
+                     nSystem = m.nSystem - num,
+                     notificationTotal = m.notificationTotal - num,
+                 })
 
                 .SetColumnsIF(notificationType == NotificationType.message,
                   m => new EMsgInfoOverview
@@ -102,7 +113,7 @@ namespace ContentCenter.Repository
         public int UpdateNotificateToUnRead(NotificationType notificationType, string userId, int num = 1)
         {
             if (num <= 0) return 0;
-          
+
             var op = Db.Updateable<EMsgInfoOverview>()
                 .SetColumnsIF(notificationType == NotificationType.praize,
                 m => new EMsgInfoOverview { nPraize = m.nPraize + num, notificationTotal = m.notificationTotal + num })
@@ -113,6 +124,9 @@ namespace ContentCenter.Repository
                 .SetColumnsIF(notificationType == NotificationType.reply,
                  m => new EMsgInfoOverview { nReply = m.nReply + num, notificationTotal = m.notificationTotal + num })
 
+                 .SetColumnsIF(notificationType == NotificationType.system,
+                 m => new EMsgInfoOverview { nSystem = m.nSystem + num, notificationTotal = m.notificationTotal + num })
+
                 .SetColumnsIF(notificationType == NotificationType.message,
                   m => new EMsgInfoOverview { messageTotal = m.messageTotal + num })
                 .Where(m => m.userId == userId);
@@ -122,8 +136,19 @@ namespace ContentCenter.Repository
             return r;
         }
 
-      
+        public int UpdateGroupToUnRead(Group_Notification group, int num = 1)
+        {
+            if (num <= 0) return 0;
 
-       
+            var op = Db.Updateable<EMsgInfoOverview>()
+              .SetColumns(m => new EMsgInfoOverview { nSystem = m.nSystem + num, notificationTotal = m.notificationTotal + num })
+              .Where(m => m.userId == SqlFunc.Subqueryable<EUserInfo>()
+                                    .Where(u => u.Id == m.userId && u.Group_Notification == group)
+                                    .Select(u => u.Id)
+             );
+            var r = op.ExecuteCommand();
+
+            return r;
+        }
     }
 }

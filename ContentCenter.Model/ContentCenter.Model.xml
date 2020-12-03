@@ -70,6 +70,11 @@
             资源Code,
             </summary>
         </member>
+        <member name="T:ContentCenter.Model.EMsgContent_System">
+            <summary>
+            系统通知
+            </summary>
+        </member>
         <member name="P:ContentCenter.Model.EMsgInfoOverview.notificationTotal">
             <summary>
             通知总数
@@ -103,6 +108,21 @@
         <member name="P:ContentCenter.Model.EMsgInfo_ReplyRes.ReplyId">
             <summary>
             当前发送的ReplyId
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EMsgInfo_System.NotificationStatus">
+            <summary>
+            通知状态，暂时直接发送，不做后台过滤
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.EMsgInfo_System.IsPushToApp">
+            <summary>
+            是否已经推送给App端(暂无)
+            </summary>
+        </member>
+        <member name="P:ContentCenter.Model.MsgSubmitSystem.systemNoteTarget">
+            <summary>
+            发送个人还是组
             </summary>
         </member>
         <member name="P:ContentCenter.Model.QMsgUser.userId">

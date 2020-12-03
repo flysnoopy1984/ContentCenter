@@ -25,15 +25,22 @@ namespace ContentCenter.IServices
 
         void CreateNotification_Reply(MsgSubmitReply msgSubmitReply);
 
+        void CreateNotification_System(MsgSubmitSystem submitSystem);
+
         VueMsgInfoOverview GetUserMsgOverview(string userId);
 
         ModelPager<VueMsgInfoNotification> QueryUserNotifictaion(QMsgUser query);
 
+        ModelPager<VueSystemNotification> QuerySystemNotifictaion(QMsgUser query);
+
         //跟新消息到已读
-       // ResultNormal updateMsgToRead(SubmitUnReadMsgIdList submitData);
+        // ResultNormal updateMsgToRead(SubmitUnReadMsgIdList submitData);
 
         //查询时后异步更新消息到已读
-        void Async_MsgToReadAfterQuery(QMsgUser query, List<VueMsgInfoNotification> queryResult);
+        void Async_MsgToReadAfterQuery(QMsgUser query,
+            List<VueMsgInfoNotification> queryResult = null,
+            List<VueSystemNotification> systemResult = null  //由于系统消息对象不同，暂时只能这样写。。。
+            );
 
 
 

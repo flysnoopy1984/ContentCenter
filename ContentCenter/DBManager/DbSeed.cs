@@ -1,6 +1,7 @@
 ﻿using Autofac.Extras.DynamicProxy;
 using ContentCenter.AOP;
 using ContentCenter.Model;
+using ContentCenter.Model.ThirdPart.Baidu;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace ContentCenter.DBManager
         public static void InitDb(ISqlSugarClient db)
         {
             Console.WriteLine("Start InitDb");
-        //    db.CodeFirst.InitTables<EBookInfo>();
+            //    db.CodeFirst.InitTables<EBookInfo>();
             //db.DbMaintenance.CreateDatabase(databaseName: "ContentCenter");
             //db.CodeFirst.InitTables<EComment_Res>();
             //db.CodeFirst.InitTables<ECommentReply_Res>();
@@ -40,15 +41,18 @@ namespace ContentCenter.DBManager
             //db.CodeFirst.InitTables<EUserBalanceTrans>();
             //db.CodeFirst.InitTables<EUserChargeTrans>();
 
-            db.CodeFirst.InitTables<EMsgContent_Praize>();
+            //  db.CodeFirst.InitTables<EMsgContent_Praize>();
             //db.CodeFirst.InitTables<EMsgContent_CommentRes>();
             //db.CodeFirst.InitTables<EMsgContent_ReplyRes>();
 
             //db.CodeFirst.InitTables<EMsgInfo_CommentRes>();
-            db.CodeFirst.InitTables<EMsgInfo_Praize>();
+            // db.CodeFirst.InitTables<EMsgInfo_Praize>();
             //db.CodeFirst.InitTables<EMsgInfo_ReplyRes>();
             //db.CodeFirst.InitTables<EMsgInfoOverview>();
-
+            //db.CodeFirst.InitTables<EMsgInfo_System>();
+            //  db.CodeFirst.InitTables<EMsgContent_System>();
+            db.CodeFirst.InitTables<panBookInfo>();
+            db.CodeFirst.InitTables<panAccessToken>();
             Console.WriteLine("End InitDb");
         }
     }

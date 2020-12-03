@@ -20,6 +20,10 @@ namespace ContentCenter.IServices
         /// </summary>
         bool SaveSectionTag(ESection section, List<ETag> tagList);
 
+        public void SaveSystemNotification(EMsgContent_System newContent);
+
+        public List<RMsgContent_System> QueryAllSystemNotification();
+
        
     }
 }

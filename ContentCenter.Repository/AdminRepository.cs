@@ -17,7 +17,7 @@ namespace ContentCenter.Repository
 
         }
 
-        public Task<int> AddRangeTagToSection(ESection section, List<ETag> tagList)
+        public int AddRangeTagToSection(ESection section, List<ETag> tagList)
         {
            List<ESectionTag> objList = new List<ESectionTag>();
            foreach(var tag in tagList)
@@ -34,12 +34,6 @@ namespace ContentCenter.Repository
              return base.AddRange(objList);
         }
 
-        //public Task<bool> AddRangeTagToSection(string secCode, List<ETag> tagList)
-        //{
-        //    return base.DeleteRangeByExp(a => a.SectionCode == secCode);
-        //}
-
-      
 
         public Task<List<RSectionTag>> GetSectionTag(string secCode, int number)
         { 
@@ -109,6 +103,26 @@ namespace ContentCenter.Repository
                 return q.ToListAsync();
         }
 
-      
+        public List<RMsgContent_System> QueryAllSystemNotification()
+        {
+            List<RMsgContent_System> result = Db.Queryable<EMsgContent_System>().
+               OrderBy(a => a.CreateDateTime, OrderByType.Desc).
+               Select(a=>new RMsgContent_System
+               {
+                   CreateDateTime = a.CreateDateTime,
+                   htmlContent = a.htmlContent,
+                   htmlTitle = a.htmlTitle,
+                   Id = a.Id
+                   
+               }).
+               ToList();
+
+            return result;
+        }
+
+        public void SaveSystemNotification(EMsgContent_System newContent)
+        {
+            Db.Saveable(newContent).ExecuteCommand();
+        }
     }
 }

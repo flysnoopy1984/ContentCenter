@@ -103,12 +103,13 @@ namespace ContentCenter.Controllers
             {
                 if (string.IsNullOrEmpty(loginUser.Account))
                     throw new CCException(CCWebMsg.User_Account_Empty);
+
                 var ui = _userServices.Login(loginUser);
                 result.Entity = ui;
                 var tokenResult = this.GetUserPwdToken(new requireUserPwdToken
                 {
-                    username = ui.UerInfo.UserAccount,
-                    password = ui.UerInfo.TokenPwd
+                    username = loginUser.Account,
+                    password = loginUser.Pwd,
                 });
                 if (tokenResult.IsSuccess) result.Entity.UerInfo.Token = tokenResult.Entity;
                 else result.ErrorMsg = "没有获取登陆令牌";
@@ -148,8 +149,8 @@ namespace ContentCenter.Controllers
                             //获取Token
                             var tokenResult = this.GetUserPwdToken(new requireUserPwdToken
                             {
-                                username = ui.UerInfo.UserAccount,
-                                password = ui.UerInfo.TokenPwd
+                                username = regUser.Account,
+                                password = regUser.Pwd
                             });
                             if (tokenResult.IsSuccess) result.Entity.UerInfo.Token = tokenResult.Entity;
                             else result.ErrorMsg = "没有获取登陆令牌";

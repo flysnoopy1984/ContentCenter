@@ -17,10 +17,11 @@ namespace ContentCenter.ServiceSetup
                 .AddJwtBearer("Bearer", o =>
                 {
                     o.Authority = ad4Url;
+                    o.TokenValidationParameters.ClockSkew = TimeSpan.FromSeconds(30);
                     o.RequireHttpsMetadata = false;
                     o.Audience = apiName_ContentCenter;
-                   
                 });
+               
         }
     }
 }

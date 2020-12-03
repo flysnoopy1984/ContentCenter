@@ -1,4 +1,5 @@
-﻿using ContentCenter.Model.BaseModel;
+﻿using ContentCenter.Model.BaseEnum;
+using ContentCenter.Model.BaseModel;
 using SqlSugar;
 using System;
 using System.Collections.Generic;
@@ -43,6 +44,12 @@ namespace ContentCenter.Model
         [SugarColumn(DefaultValue ="0")]
         public int vipLevel { get; set; } = 0;
 
+        [SugarColumn(IsNullable = true)]
+        public ccRole Role { get; set; } = ccRole.user;
+
+        [SugarColumn(IsNullable = true)]
+        public Group_Notification Group_Notification { get; set; } = Group_Notification.normal ;
+
         public VueUerInfo ToVueUser()
         {
             return new VueUerInfo
@@ -50,9 +57,10 @@ namespace ContentCenter.Model
                 HeaderUrl = this.HeaderUrl,
                 NickName = this.NickName,
                 UserAccount = this.UserAccount,
-                TokenPwd = this.UserPwd,
+                //TokenPwd = this.UserPwd,
                 UserId = this.Id,
                 Sex = this.Sex,
+                role = this.Role,
             };
         }
 

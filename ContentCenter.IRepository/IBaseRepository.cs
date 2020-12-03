@@ -18,7 +18,7 @@ namespace ContentCenter.IRepository
 
      
 
-        Task<int> AddRange(List<T> listObj);
+        int AddRange(List<T> listObj);
 
         Task<bool> DeleteByKey(long key);
 

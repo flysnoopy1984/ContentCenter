@@ -22,7 +22,8 @@ namespace ContentCenter.Model
 
         public int nReply { get; set; } = 0;
 
-       
+        //系统通知
+        public int nSystem { get; set; } = 0;
 
 
 

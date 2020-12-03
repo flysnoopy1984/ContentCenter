@@ -67,6 +67,7 @@ namespace ContentCenter.Model
 
         public NotificationStatus NotificationStatus { get; set; }
 
+        //更新消息状态使用
         public long msgId { get; set; }
     }
 }

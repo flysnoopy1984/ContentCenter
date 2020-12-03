@@ -2,6 +2,7 @@
 using ContentCenter.IRepository;
 using ContentCenter.IServices;
 using ContentCenter.Model;
+using ContentCenter.Model.BaseEnum;
 using IQB.Util.Models;
 using SqlSugar;
 using System;
@@ -20,12 +21,14 @@ namespace ContentCenter.Services
         private IUserFinanceOverViewRepository _userFinanceOverViewRepository;
         private IUserFinanceRepository _userFinanceRepository;
         private IMsgInfoOverviewRepository _msgInfoOverviewRepository;
+        private IMsgSystemRepository _msgSystemRepository;
 
         public UserServices(IUserRepository userRepository, 
             IUserBookRepository userBookRepository,
             IUserFinanceOverViewRepository userFinanceOverViewRepository,
             IUserFinanceRepository userFinanceRepository,
-            IMsgInfoOverviewRepository msgInfoOverviewRepository)
+            IMsgInfoOverviewRepository msgInfoOverviewRepository,
+            IMsgSystemRepository msgSystemRepository)
             :base(userRepository)
         {
             _msgInfoOverviewRepository = msgInfoOverviewRepository;
@@ -33,6 +36,7 @@ namespace ContentCenter.Services
             _userDb = userRepository;
             _userFinanceOverViewRepository = userFinanceOverViewRepository;
             _userFinanceRepository = userFinanceRepository;
+            _msgSystemRepository = msgSystemRepository;
         }
 
         /* 用户书本收藏夹 Begin */
@@ -79,6 +83,14 @@ namespace ContentCenter.Services
             return result;
         }
 
+        public VueUerInfo GetAndVerifyUserForId4(string userAccount, string userPwd)
+        {
+            var ui = _userDb.GetByExpSingle(a => a.UserAccount == userAccount && a.UserPwd == userPwd).Result;
+            if (ui == null)
+                throw new CCException(CCWebMsg.User_Login_WrongUserPwd);
+            return ui.ToVueUser();
+        }
+
 
         /// <summary>
         /// 
@@ -102,6 +114,7 @@ namespace ContentCenter.Services
                 UserPwd = regUser.Pwd,
                 Phone = regUser.Phone,
                 NickName = regUser.Account,
+                Group_Notification = Model.BaseEnum.Group_Notification.normal,
             };
             //用户财务概览
             EUserFinanceOverview financeOverview = new EUserFinanceOverview
@@ -120,18 +133,28 @@ namespace ContentCenter.Services
                 changeType = Model.BaseEnum.PointChangeType.newRegister,
                 point = 20,
             };
-
+            //消息通知（欢迎新用户）
+            EMsgInfo_System msg = new EMsgInfo_System
+            {
+                ContentId = 10000,
+                NotificationStatus = NotificationStatus.sent,
+                ReceiveUserId = ui.Id,
+            };
             DbResult<bool> transResult = null;
             transResult = _userDb.Db.Ado.UseTran(() =>
             {
                 _userDb.AddNoIdentity_Sync(ui);
                 _userFinanceOverViewRepository.AddNoIdentity_Sync(financeOverview);
                 _userFinanceRepository.AddPointTrans_Sync(trans);
+                //消息通知（欢迎新用户）
+                _msgSystemRepository.AddNoIdentity_Sync(msg);
                 //用户消息概览
                 _msgInfoOverviewRepository.InitForNewUser_Sync(ui.Id);
+               
             });
             if(!transResult.IsSuccess)
                 throw new Exception("注册失败");
+
             VueUserLogin result = new VueUserLogin();
             result.UerInfo = ui.ToVueUser();
             result.MsgOverview = new VueMsgInfoOverview();
@@ -164,5 +187,9 @@ namespace ContentCenter.Services
         
         }
 
+        public List<UserSimple> queryNotificationGroup(Group_Notification group_Notification)
+        {
+            return _userDb.queryNotificationGroup(group_Notification);
+        }
     }
 }

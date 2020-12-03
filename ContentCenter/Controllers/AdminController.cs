@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ContentCenter.IServices;
 using ContentCenter.Model;
 using IQB.Util.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +13,7 @@ namespace ContentCenter.Controllers
 {
     [Route("[controller]/[action]")]
     [ApiController]
+    [Authorize(Roles = "admin")]
     public class AdminController : CCBaseController
     {
         private IAdminServices _adminServices;
@@ -29,7 +31,7 @@ namespace ContentCenter.Controllers
         /// <param name="tagCount"></param>
         /// <returns></returns>
         [HttpGet]
-        public ResultEntity<RCSectionTagRelation> GetSectionTagRelation(string secCode,int tagCount)
+        public ResultEntity<RCSectionTagRelation> GetSectionTagRelation(string secCode, int tagCount)
         {
             ResultEntity<RCSectionTagRelation> result = new ResultEntity<RCSectionTagRelation>();
             try
@@ -49,9 +51,40 @@ namespace ContentCenter.Controllers
             ResultNormal result = new ResultNormal();
             try
             {
-               var section =  _bookServices.GetSection(inData.secCode);
+                var section = _bookServices.GetSection(inData.secCode);
                 if (section != null)
                     _adminServices.SaveSectionTag(section, inData.tagList);
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+        }
+
+        [HttpPost]
+        public ResultNormal SaveSystemNotification(EMsgContent_System newContent)
+        {
+            ResultNormal result = new ResultNormal();
+            try
+            {
+                _adminServices.SaveSystemNotification(newContent);
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+        }
+
+        [HttpPost]
+        public ResultNormal QuerySystemNotification()
+        {
+            ResultList<RMsgContent_System> result = new ResultList<RMsgContent_System>();
+            try
+            {
+                result.List = _adminServices.QueryAllSystemNotification();
+               
             }
             catch (Exception ex)
             {

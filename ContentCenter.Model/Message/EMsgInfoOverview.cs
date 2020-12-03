@@ -24,6 +24,9 @@ namespace ContentCenter.Model
 
         public int nReply { get; set; } = 0;
 
+        [SugarColumn(IsNullable = true)]
+        public int nSystem { get; set; } = 0;
+
         /// <summary>
         /// 消息总数
         /// </summary>

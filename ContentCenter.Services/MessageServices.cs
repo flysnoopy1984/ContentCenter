@@ -4,6 +4,7 @@ using ContentCenter.Model;
 using ContentCenter.Model.BaseEnum;
 using IQB.Util;
 using IQB.Util.Models;
+using SqlSugar;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,21 +20,25 @@ namespace ContentCenter.Services
         private IMsgPraizeRepository _msgPraizeRepository;
         private IMsgCommentResRepository _msgCommentResRepository;
         private IMsgReplyResRepository _msgReplyRepository;
+        private IMsgSystemRepository _msgSystemRepository;
 
         private IBookRepository _bookRepository;
         private IResourceReponsitory _resourceReponsitory;
         private ICommentRepository _commentRepository;
         private ICommentReplyRepository _commentReplyRepository;
+        private IUserRepository _userRepository;
 
         public MessageServices(IMsgPraizeRepository msgPraizeRepository,
             IMsgCommentResRepository msgCommentResRepository,
             IMsgReplyResRepository msgReplyRepository,
+            IMsgSystemRepository msgSystemRepository,
 
             IResourceReponsitory resourceReponsitory,
             ICommentRepository commentRepository,
             ICommentReplyRepository commentReplyRepository,
             IMsgInfoOverviewRepository msgInfoOverviewRepository,
-            
+
+            IUserRepository userRepository,
             IBookRepository bookRepository)
          : base(msgPraizeRepository)
         {
@@ -42,12 +47,14 @@ namespace ContentCenter.Services
             _commentRepository = commentRepository;
             _resourceReponsitory = resourceReponsitory;
 
+            _msgSystemRepository = msgSystemRepository;
             _msgPraizeRepository = msgPraizeRepository;
             _msgCommentResRepository = msgCommentResRepository;
             _msgReplyRepository = msgReplyRepository;
             _msgInfoOverviewRepository = msgInfoOverviewRepository;
 
             _bookRepository = bookRepository;
+            _userRepository = userRepository;
         }
 
         /// <summary>
@@ -187,7 +194,24 @@ namespace ContentCenter.Services
             if (!transResult.IsSuccess) throw new Exception(transResult.ErrorMessage);
 
         }
-        
+
+        public void CreateNotification_System(MsgSubmitSystem submitSystem)
+        {
+            EMsgContent_System existContent = _msgSystemRepository.GetContentSystem_Sync(submitSystem.contentId);
+            if (existContent ==null)
+            {
+                existContent = new EMsgContent_System()
+                {
+                    htmlContent = submitSystem.htmlContent,
+                    htmlTitle = submitSystem.htmlTitle,
+                    Id = submitSystem.contentId
+                };
+                _msgSystemRepository.AddContentSystem(existContent);
+            }
+            this.CreateSystemNoteMessage(submitSystem);
+            //EMsgInfo_System msg = new EMsgInfo_System(); 
+        }
+
         public void SendNotification(SubmitNotification submitNotification)
         {
             //if (string.IsNullOrEmpty(submitNotification.sendId))
@@ -241,20 +265,45 @@ namespace ContentCenter.Services
             return result == null? new ModelPager<VueMsgInfoNotification>():result;
 
         }
-        
+        public ModelPager<VueSystemNotification> QuerySystemNotifictaion(QMsgUser query)
+        {
+            if (string.IsNullOrEmpty(query.userId))
+                throw new CCException("非法请求");
+            ModelPager<VueSystemNotification> result = _msgSystemRepository.querySystemNotification(query);
+            if (query.updateMsgToRead)
+            {
+                Async_MsgToReadAfterQuery(query,null,result.datas);
+            }
+            return result;
+        }
         //异步方法 查询后获取未读消息转成已读
-        public void Async_MsgToReadAfterQuery(QMsgUser query,List<VueMsgInfoNotification> queryResult)
+        public void Async_MsgToReadAfterQuery(QMsgUser query,
+            List<VueMsgInfoNotification> queryResult =null,
+            List<VueSystemNotification> systemResult = null  //由于系统消息对象不同，暂时只能这样写。。。
+            )
         {
             Task.Run(() =>
             {
                 try
                 {
                     SubmitUnReadMsgIdList unReadList = new SubmitUnReadMsgIdList();
-                    foreach (var msg in queryResult)
+                    if(query.notificationType == NotificationType.system)
                     {
-                        if (msg.NotificationStatus != NotificationStatus.read)
-                            unReadList.msgIdList.Add(msg.msgId);
+                        foreach (var msg in systemResult)
+                        {
+                            if (msg.NotificationStatus != NotificationStatus.read)
+                                unReadList.msgIdList.Add(msg.msgId);
+                        }
                     }
+                    else
+                    {
+                        foreach (var msg in queryResult)
+                        {
+                            if (msg.NotificationStatus != NotificationStatus.read)
+                                unReadList.msgIdList.Add(msg.msgId);
+                        }
+                    }
+                   
                     if (unReadList.msgIdList.Count > 0)
                     {
                         unReadList.notificationType = query.notificationType;
@@ -301,6 +350,9 @@ namespace ContentCenter.Services
                         break;
                     case NotificationType.reply:
                         num = _msgReplyRepository.UpdateMsgStatus(submitData);
+                        break;
+                    case NotificationType.system:
+                        num = _msgSystemRepository.UpdateMsgStatus(submitData);
                         break;
 
                 }
@@ -529,6 +581,60 @@ namespace ContentCenter.Services
            
             return msg;
         }
+
+        private void CreateSystemNoteMessage(MsgSubmitSystem submitSystem)
+        {
+            DbResult<bool> transResult = null;
+
+             if (submitSystem.systemNoteTarget == SystemNoteTarget.Single)
+            {
+                EMsgInfo_System msg = new EMsgInfo_System
+                {
+                    CreatedDateTime = DateTime.Now,
+                    ContentId = submitSystem.contentId,
+                    ReceiveUserId = submitSystem.receiveUserId,
+                };
+                transResult = _msgReplyRepository.Db.Ado.UseTran(() =>
+                {
+                    //新消息
+                    _msgSystemRepository.AddNoIdentity_Sync(msg);
+                    //总数
+                    _msgInfoOverviewRepository.UpdateNotificateToUnRead(NotificationType.system, msg.ReceiveUserId);
+                });
+            }
+            else
+            {
+                List<UserSimple> userList = _userRepository.queryNotificationGroup(submitSystem.receiveGroupId);
+                List<EMsgInfo_System> msgList = new List<EMsgInfo_System>();
+               
+                foreach (var u in userList)
+                {
+                    EMsgInfo_System msg = new EMsgInfo_System
+                    {
+                        CreatedDateTime = DateTime.Now,
+                        ContentId = submitSystem.contentId,
+                        ReceiveUserId = u.UserId,
+                    };
+                    msgList.Add(msg);
+
+
+                }
+                transResult = _msgReplyRepository.Db.Ado.UseTran(() =>
+                {
+                    //新消息
+                    _msgSystemRepository.AddRange(msgList);
+                    //总数
+                    _msgInfoOverviewRepository.UpdateGroupToUnRead(submitSystem.receiveGroupId);
+                });
+            }
+
+            if (transResult !=null && !transResult.IsSuccess) 
+                throw new Exception(transResult.ErrorMessage);
+
+
+        }
+
+       
 
         #endregion
 

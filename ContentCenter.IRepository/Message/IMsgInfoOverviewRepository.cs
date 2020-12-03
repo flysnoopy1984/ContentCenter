@@ -11,13 +11,18 @@ namespace ContentCenter.IRepository
         /// <summary>
         /// 初始化用户
         /// </summary>
-        /// <param name="userId"></param>
-        void InitForNewUser_Sync(string userId);
+        ///hasWelComeMsg 新用户注册包含欢迎公告
+        void InitForNewUser_Sync(string userId, bool hasWelComeMsg = true);
 
         /// <summary>
         /// 根据类型更新通知数量
         /// </summary>
         int UpdateNotificateToUnRead(NotificationType notificationType, string userId,int num=1);
+
+        /// <summary>
+        /// 更具通知组更新所有用户的通知消息
+        /// </summary>
+        int UpdateGroupToUnRead(Group_Notification group, int num = 1);
 
         int UpdateNotificateToRead(NotificationType notificationType,string userId, int num = 1);
         /// <summary>

@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <Folder Include="UploadFiles\temp\" />
+    <Folder Include="UploadFiles\baidu\" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

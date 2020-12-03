@@ -18,6 +18,7 @@
     <ProjectReference Include="..\ContentCenter.IRepository\ContentCenter.IRepository.csproj" />
     <ProjectReference Include="..\ContentCenter.Model\ContentCenter.Model.csproj" />
     <ProjectReference Include="..\ContentCenter.Repository\ContentCenter.Repository.csproj" />
+    <ProjectReference Include="..\Tools.BookReader\Tools.BookReader.csproj" />
   </ItemGroup>
 
 </Project>

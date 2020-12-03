@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Configuration;
 using System.IO;
+using Tools.BookReader;
 
 namespace BookTasks
 {
@@ -21,10 +22,10 @@ namespace BookTasks
             //   Console.WriteLine($"VerifyUrl:{result}");
             try
             {
-                InitSystem();
-
-                var bookTask = _ServiceProvider.GetService<BookTasks>();
-                bookTask.ChangeBookCover();
+                //   InitSystem();
+                Test();
+              //  ccEpubReader ccEpubReader = new ccEpubReader();
+              // ccEpubReader.Analy();
             }
             catch(Exception ex)
             {
@@ -33,6 +34,12 @@ namespace BookTasks
             Console.ReadLine();
          
             // _ServiceProvider.
+        }
+
+        private static void Test()
+        {
+            string at = "121.ce7809e541f0a6d850a66f0301b12459.YnTZ1kEcU4WMzSUogItL_PKqhtarjGpc84oVZl-.v1bOuA";
+            Console.WriteLine(at.Length);
         }
 
         private static void InitSystem()
