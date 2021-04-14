@@ -3,6 +3,7 @@ using IQB.Util;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using Tools.BookReader;
@@ -38,8 +39,31 @@ namespace BookTasks
 
         private static void Test()
         {
-            string at = "121.ce7809e541f0a6d850a66f0301b12459.YnTZ1kEcU4WMzSUogItL_PKqhtarjGpc84oVZl-.v1bOuA";
-            Console.WriteLine(at.Length);
+            //  string at = "121.ce7809e541f0a6d850a66f0301b12459.YnTZ1kEcU4WMzSUogItL_PKqhtarjGpc84oVZl-.v1bOuA";
+            //  Console.WriteLine(at.Length);
+            // DateTime dt1 = DateTime.Parse("2020-12-03 10:49:58");
+            // DateTime dt2 = DateTime.Parse("2020-12-01");
+            //var r = dt1 - dt2;
+            // Console.WriteLine(r.Days.ToString());
+
+            //string path = "/Book/TaoBao购买";
+            //int foundPos = path.LastIndexOf("/");
+            //string result =  path.Substring(0, foundPos);
+            //if (foundPos == 0 && result == "")
+            //    result = "/";
+            //string dlink = "杀死骑士团长第一部.epub";
+            //int pos = dlink.LastIndexOf(".");
+            //var result = dlink.Substring(pos+1);
+
+            var _suportFileType = new List<string>();
+            _suportFileType.Add("epub");
+            _suportFileType.Add("mobi");
+            _suportFileType.Add("txt");
+            _suportFileType.Add("pdf");
+            _suportFileType.Add("azw3");
+
+            var result = _suportFileType.Contains("epub");
+            Console.WriteLine(result);
         }
 
         private static void InitSystem()

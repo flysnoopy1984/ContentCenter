@@ -93,13 +93,13 @@ namespace ContentCenter.Controllers
 
         [HttpGet]
         [Authorize]
-        public ResultEntity<RBookInfo> Info(string code)
+        public ResultEntity<RBookInfo> Info(string code,bool needNextPrev = true)
         {
             ResultEntity<RBookInfo> result = new ResultEntity<RBookInfo>();
             try
             {
                 string userId = this.getUserId();
-                result.Entity = _bookServices.Info(code, userId);
+                result.Entity = _bookServices.Info(code, userId,needNextPrev);
             }
             catch(Exception ex)
             {

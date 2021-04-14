@@ -1,4 +1,4 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using ContentCenter.IServices;
+using ContentCenter.Model.BaseEnum;
 using ContentCenter.Model.ThirdPart.Baidu;
 using IQB.Util;
 using IQB.Util.Models;
@@ -30,18 +31,18 @@ namespace ContentCenter.Controllers
          )
         {
             _configuration = configuration;
-          
             _webHostEnvironment = webHostEnvironment;
             _baiduPanService = baiduPanService;
         }
 
+        //获取Token
         [HttpPost]
-        public ResultEntity<panAccessToken> getAvaliableAccessToken()
+        public ResultEntity<RpanAccessToken> getAvaliableAccessToken()
         {
-            ResultEntity<panAccessToken> result = new ResultEntity<panAccessToken>();
+            ResultEntity<RpanAccessToken> result = new ResultEntity<RpanAccessToken>();
             try
             {
-                    _baiduPanService.getAvaliableAccessToken();
+                result.Entity =  _baiduPanService.getAvaliableAccessToken();
             }
             catch (Exception ex)
             {
@@ -51,7 +52,7 @@ namespace ContentCenter.Controllers
         }
 
         
-
+        //百度盘API 回掉
         [HttpGet]
         public ResultEntity<panAccessToken> panCallback()
         {
@@ -69,7 +70,6 @@ namespace ContentCenter.Controllers
                     panAccessToken accessToken = HttpUtil.Get<panAccessToken>(url);
                     result.Entity = accessToken;
 
-                 
                     _baiduPanService.SaveAccessToken(accessToken);
 
                 }
@@ -96,6 +96,93 @@ namespace ContentCenter.Controllers
 
             return this.filemetaList(query);
         }
+       
+        /// <summary>
+        /// 百度云盘文件 创建到数据库中
+        /// </summary>
+        /// <param name="submitData"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ResultNormal saveToTempDb(submitSaveBooks submitData)
+        {
+            ResultNormal result = new ResultNormal();
+            try
+            { 
+                _baiduPanService.SaveToTempDb(submitData);
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+                return result;
+        }
+
+
+
+        /// <summary>
+        /// 针对云盘临时文件，0进行名字的更新等操作,10 绑定DouBanCode,-1 删除
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ResultNormal updateTempFile(submitUpdateBook submitUpdateBook)
+        {
+            ResultNormal result = new ResultNormal();
+            try
+            {
+                _baiduPanService.updateTempFile(submitUpdateBook);
+            }
+            catch (Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+           
+        }
+
+        [HttpPost]
+        public ResultList<RpanBookInfo> queryPanBookList(panQueryFile query)
+        {
+            ResultList<RpanBookInfo> result = new ResultList<RpanBookInfo>();
+            try
+            {
+                if (query.queryOnlyFromDB){
+                    result.List = _baiduPanService.queryPanBookByPath(query);              
+                }
+                else
+                {
+                    var panList = _baiduPanService.requireFileList(query.rootPath, query.accessToken);
+                    var dbBookList = _baiduPanService.queryPanBookByPath(query);
+
+                    result.List = new List<RpanBookInfo>();
+                    foreach (var panFile in panList.list)
+                    {
+                        RpanBookInfo rBook = this.getbookInDb(panFile, dbBookList);
+                        if (rBook == null){
+                            var dbBook = panFile.toPanBook(query.rootPath);
+                            rBook = new RpanBookInfo
+                            {
+                                panBookInfo = dbBook
+                            };
+                        }
+                        result.List.Add(rBook);
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                result.ErrorMsg = ex.Message;
+            }
+            return result;
+        }
+
+        private RpanBookInfo getbookInDb(panFileList_item panFile,List<RpanBookInfo> rBookList)
+        {
+            foreach(RpanBookInfo book in rBookList)
+            {
+                if (book.panBookInfo.fsId == panFile.fs_id) return book;
+            }
+            return null;
+        }
 
         [HttpPost]
         public ResultEntity<panFileList> fileList(panQueryFile query)
@@ -105,6 +192,7 @@ namespace ContentCenter.Controllers
             {              
                 string url = $"https://pan.baidu.com/rest/2.0/xpan/multimedia?method=listall&path={query.rootPath}&access_token={query.accessToken}";
                 var list = HttpUtil.Get<panFileList>(url);
+          
                 result.Entity = list; 
             }
             catch (Exception ex)
@@ -113,6 +201,7 @@ namespace ContentCenter.Controllers
             }
             return result;
         }
+      
         [HttpPost] 
         public ResultEntity<panFilemetaList> filemetaList(panQueryFile query)
         {
@@ -120,8 +209,7 @@ namespace ContentCenter.Controllers
             try
             {
                 string fsids = string.Join(",",query.fsIds);
-                string url = @$"https://pan.baidu.com/rest/2.0/xpan/multimedia?method=filemetas&
-path={query.rootPath}&fsids=[{fsids}]&dlink=1&access_token={query.accessToken}";
+                string url = @$"https://pan.baidu.com/rest/2.0/xpan/multimedia?method=filemetas&path={query.rootPath}&fsids=[{fsids}]&dlink=1&access_token={query.accessToken}";
                 var list = HttpUtil.Get<panFilemetaList>(url);
                 result.Entity = list;
             }
@@ -154,7 +242,6 @@ path={query.rootPath}&fsids=[{fsids}]&dlink=1&access_token={query.accessToken}";
                         fs.Close();
                     }
                 }
-             
             }
           
             catch (Exception ex)
@@ -166,9 +253,7 @@ path={query.rootPath}&fsids=[{fsids}]&dlink=1&access_token={query.accessToken}";
           
         }
 
-    
-
-
+       
 
     }
 }

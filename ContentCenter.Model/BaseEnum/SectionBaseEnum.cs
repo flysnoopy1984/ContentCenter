@@ -6,8 +6,10 @@ namespace ContentCenter.Model.BaseEnum
 {
     public enum SectionType
     {
-        Book = 0,
-        Column = 2,
+        Book = 0, //书本和Section直接对应
+        FixTop =1, //头部3个栏目
+        Column = 2, //书本和Section对应后再找到对应的Tag
+        
         All = 99,
     }
     public enum TagType
@@ -18,7 +20,7 @@ namespace ContentCenter.Model.BaseEnum
     /// <summary>
     ///网站主Section.
     /// </summary>
-    public class WebSection
+    public class WebSectionCode
     {
 
         public const string NewExpress = "NewExpress";

@@ -29,6 +29,7 @@ namespace ContentCenter.Model.Commons
 
         public const string MemoryKey_SysConfig = "mk-sysConfig";
 
+        public const string MemoryKey_BaiduPanAccessToken = "mk-baiduPanAccessToken";
 
 
 

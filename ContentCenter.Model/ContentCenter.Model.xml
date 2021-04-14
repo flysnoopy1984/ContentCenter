@@ -19,7 +19,14 @@
             非虚构
             </summary>
         </member>
-        <member name="T:ContentCenter.Model.BaseEnum.WebSection">
+        <member name="T:ContentCenter.Model.BaseEnum.panConvertStatus">
+            <summary>
+            网盘转换成ccBook 状态。
+            2. 找到对应的DouBan Code
+            100.转换到数据库中。 
+            </summary>
+        </member>
+        <member name="T:ContentCenter.Model.BaseEnum.WebSectionCode">
              <summary>
             网站主Section.
              </summary>
@@ -435,7 +442,7 @@
             栏目分网站主栏目，分栏目
             </summary>   
         </member>
-        <member name="P:ContentCenter.Model.ESection.seq">
+        <member name="P:ContentCenter.Model.ESection.orderBySeq">
             <summary>
             界面排序
             </summary>

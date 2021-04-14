@@ -13,6 +13,7 @@ namespace ContentCenter.IRepository
         public Task<long> AddUserBook(string bookCode,string userId);
         public Task<bool> DelUserBook(string bookCode, string userId);
 
+        public BookSimple GetNextOrPrevBook(long curBookId,int direction);
         public Task<ModelPager<VueUserBook>> queryUserBook(QUserBook query);
     }
 }

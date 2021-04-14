@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using IQB.Util.Models;
 
 namespace ContentCenter.Model
 {
-    public class QUserComm:QueryPager
+   public  class BookSimple
     {
-        public string userId { get; set; }
+        public string Code { get; set; }
 
+        public string Name { get; set; }
     }
 }

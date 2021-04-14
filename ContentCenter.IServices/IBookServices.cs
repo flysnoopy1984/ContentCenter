@@ -15,7 +15,7 @@ namespace ContentCenter.IServices
         /// </summary>
         /// <param name="bookCode"></param>
         /// <returns></returns>
-        RBookInfo Info(string bookCode, string userId);
+        RBookInfo Info(string bookCode, string userId, bool needNextPrev = false);
 
         /// <summary>
         /// 根据Section TagCode 获取书列表
@@ -45,7 +45,11 @@ namespace ContentCenter.IServices
         /// <returns></returns>
         ESection GetSection(string secCode);
 
-       
+        /// <summary>
+        /// 获取当前书前一本和后一本
+        /// </summary>
+        /// <returns></returns>
+        RBookNextPrev GetPrevAndNextBook(long bookId, string bookCode);
 
     }
 }

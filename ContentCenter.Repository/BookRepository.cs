@@ -140,7 +140,7 @@ namespace ContentCenter.Repository
             if (sectionType != SectionType.All)
                 q = q.Where(a => a.SectionType == sectionType);
             q = q.OrderBy(a => a.SectionType);
-            q = q.OrderBy(a => a.seq, OrderByType.Desc);
+            q = q.OrderBy(a => a.orderBySeq, OrderByType.Desc);
           
             return q.ToListAsync();
         }
@@ -220,7 +220,6 @@ namespace ContentCenter.Repository
                 Summery = b.Summery.Substring(0, 100),
                 ResourceCount = b.ResoureNum,
             });
-
             return r;
         }
 

@@ -18,7 +18,7 @@ namespace ContentCenter.DBManager
         public static void InitDb(ISqlSugarClient db)
         {
             Console.WriteLine("Start InitDb");
-            //    db.CodeFirst.InitTables<EBookInfo>();
+              db.CodeFirst.InitTables<EBookInfo>();
             //db.DbMaintenance.CreateDatabase(databaseName: "ContentCenter");
             //db.CodeFirst.InitTables<EComment_Res>();
             //db.CodeFirst.InitTables<ECommentReply_Res>();
@@ -51,8 +51,9 @@ namespace ContentCenter.DBManager
             //db.CodeFirst.InitTables<EMsgInfoOverview>();
             //db.CodeFirst.InitTables<EMsgInfo_System>();
             //  db.CodeFirst.InitTables<EMsgContent_System>();
-            db.CodeFirst.InitTables<panBookInfo>();
-            db.CodeFirst.InitTables<panAccessToken>();
+         //   db.CodeFirst.InitTables<panBookInfo>();
+         //   db.CodeFirst.InitTables<ESection>();
+        //    db.CodeFirst.InitTables<panBook_DouBan_Relation>();
             Console.WriteLine("End InitDb");
         }
     }

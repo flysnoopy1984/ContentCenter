@@ -180,8 +180,8 @@ namespace ContentCenter.Controllers
             try
             {
                 if(string.IsNullOrEmpty(userAccount))
-                    userAccount = DateTime.Now.ToString("yyyy-MM-dd") + StringUtil.GetRnd(2, true, false, false, false);
-                var phone ="199"+ StringUtil.GetRnd(8, true, false, false, false);
+                    userAccount = DateTime.Now.ToString("yyyy-MM-dd") + ToolUtil.GetRnd(2, true, false, false, false);
+                var phone ="199"+ ToolUtil.GetRnd(8, true, false, false, false);
                 RegUser regUser = new RegUser
                 {
                     Account = $"r{userAccount}",
@@ -294,7 +294,7 @@ namespace ContentCenter.Controllers
                 if (uploadResult.IsSuccess)
                 {
                     var url = _configuration["ossConfig:userHeaderRoot"] + fn;
-                    url += $"?{StringUtil.GetRnd(5, true, false, false, false)}";
+                    url += $"?{ToolUtil.GetRnd(5, true, false, false, false)}";
                     _userServices.updateHeader(userId, url);
                     result.Message = url;
                 }

@@ -2,6 +2,7 @@
 using ContentCenter.IServices;
 using ContentCenter.Model;
 using ContentCenter.Model.BaseEnum;
+
 using IQB.Util;
 using IQB.Util.Models;
 using SqlSugar;
@@ -58,19 +59,19 @@ namespace ContentCenter.Services
                     }
                     else
                     {
-                        if (section.Code == WebSection.NewExpress)
+                        if (section.Code == WebSectionCode.NewExpress)
                         {
                             result.datas = _bookDb.GetBookListBySection_DT(query.pageIndex, query.pageSize, query.Code, totalNumber).Result;
                             result.totalCount = totalNumber;
                             return result;
                         }
-                        else if (section.Code == WebSection.ResDownLoad)
+                        else if (section.Code == WebSectionCode.ResDownLoad)
                         {
                             result.datas = _bookDb.GetBookListBySection_Resource(query.pageIndex, query.pageSize,totalNumber).Result;
                             result.totalCount = totalNumber;
                             return result;
                         }
-                        else if (section.Code == WebSection.HighScore)
+                        else if (section.Code == WebSectionCode.HighScore)
                         {
                             result.datas = _bookDb.GetBookListBySection_HighScroe(query.pageIndex, query.pageSize, totalNumber,defaultTop:query.HighScoreTop).Result;
                             if (totalNumber > query.HighScoreTop)
@@ -98,8 +99,15 @@ namespace ContentCenter.Services
         {
             var list =  _bookDb.GetWebSection(sectionType).Result;
             var result = new Dictionary<string, List<ESection>>();
-            result["Book"] = new List<ESection>();
-            result["Column"] = new List<ESection>();
+            //  Enum.GetNames()
+            string[] secNames = Enum.GetNames(typeof(SectionType));
+            foreach(var sec in secNames)
+            {
+                if(sec != "All")
+                    result[sec] = new List<ESection>();
+            }
+          
+       //     result["Column"] = new List<ESection>();
             if(list.Count>0)
             {
                 if (sectionType == SectionType.All)
@@ -121,14 +129,25 @@ namespace ContentCenter.Services
             return result;
         }
 
-        public RBookInfo Info(string bookCode,string userId)
+        public RBookInfo Info(string bookCode,string userId,bool needNextPrev = false)
         {
             RBookInfo bi = new RBookInfo();
             bi.bookInfo = _bookDb.GetByKey(bookCode).Result;
             bi.IsUserFav = _userBookRepository.HasFavBook(bookCode, userId).Result>0?true:false;
+            if (needNextPrev)
+                bi.bookNextPrev = GetPrevAndNextBook(bi.bookInfo.Id, bi.bookInfo.Code);
             return bi;
         }
 
-      
+        public RBookNextPrev GetPrevAndNextBook(long bookId,string bookCode)
+        {
+            RBookNextPrev result = new RBookNextPrev();
+            result.CurCode = bookCode;
+            result.nextBook = _userBookRepository.GetNextOrPrevBook(bookId, 1);
+            result.prevBook = _userBookRepository.GetNextOrPrevBook(bookId, -1);
+            return result;
+        }
+
+
     }
 }

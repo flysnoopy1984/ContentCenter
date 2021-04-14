@@ -8,5 +8,7 @@ namespace ContentCenter.Model
     {
         public EBookInfo bookInfo { get; set; }
         public bool IsUserFav { get; set; }
+
+        public RBookNextPrev bookNextPrev { get; set; }
     }
 }

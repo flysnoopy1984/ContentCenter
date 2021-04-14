@@ -31,6 +31,8 @@ namespace ContentCenter.Model
         /// </summary>
         public int pointMoneyRate { get; set; } = 10;
 
+        public int baiduPanTokenExpiredDay { get; set; } = 28;
+
         
     }
 }

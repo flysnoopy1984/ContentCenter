@@ -7,7 +7,7 @@ using System.Text;
 namespace ContentCenter.Model
 {
     [SugarTable("TagInfo")]
-    public class ETag
+    public class ETag: BaseMasterTable
     {
         [SugarColumn(IsIdentity = true)]
         public int Id { get; set; }

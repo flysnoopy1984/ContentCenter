@@ -9,6 +9,9 @@ namespace ContentCenter.Model
     [SugarTable("BookInfo")]
     public class EBookInfo: BaseMasterTable
     {
+       [SugarColumn(IsIdentity =true)]
+        public long Id { get; set; }
+
         [SugarColumn(IsPrimaryKey = true, Length = 50, ColumnDataType = "varchar")]
         public string Code { get; set; }
 

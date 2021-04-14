@@ -33,6 +33,21 @@ namespace ContentCenter.Repository
             return base.DeleteRangeByExp(b => b.userId == userId && b.bookCode == bookCode);
         }
 
+        public BookSimple GetNextOrPrevBook(long curBookId, int direction)
+        {
+            BookSimple result = null;
+            result = Db.Queryable<EBookInfo>()
+                    .WhereIF(direction > 0, b => b.Id > curBookId)
+                     .WhereIF(direction < 0, b => b.Id < curBookId)
+                    .Take(1)
+                    .Select(b => new BookSimple
+                    {
+                        Code = b.Code,
+                        Name = b.Title
+                    }).First();
+            return result;
+        }
+
         public Task<int> HasFavBook(string bookCode, string userId)
         {
             return base.GetCount(a => a.bookCode == bookCode && a.userId == userId);

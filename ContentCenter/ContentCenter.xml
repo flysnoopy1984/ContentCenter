@@ -12,6 +12,19 @@
             <param name="tagCount"></param>
             <returns></returns>
         </member>
+        <member name="M:ContentCenter.Controllers.BaiduController.saveToTempDb(ContentCenter.Model.ThirdPart.Baidu.submitSaveBooks)">
+            <summary>
+            百度云盘文件 创建到数据库中
+            </summary>
+            <param name="submitData"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ContentCenter.Controllers.BaiduController.updateTempFile(ContentCenter.Model.ThirdPart.Baidu.submitUpdateBook)">
+            <summary>
+            针对云盘临时文件，0进行名字的更新等操作,10 绑定DouBanCode,-1 删除
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:ContentCenter.Controllers.BookController.GetSection(ContentCenter.Model.BaseEnum.SectionType)">
             <summary>
             获取网站的Section

@@ -1,4 +1,5 @@
-﻿using ContentCenter.Model.ThirdPart.Baidu;
+﻿using ContentCenter.Model.BaseEnum;
+using ContentCenter.Model.ThirdPart.Baidu;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,6 +15,16 @@ namespace ContentCenter.IServices
         /// <summary>
         ///  如果已过期，返回null
         /// </summary>
-        panAccessToken getAvaliableAccessToken();
+        RpanAccessToken getAvaliableAccessToken();
+
+        void SaveToTempDb(submitSaveBooks submitData);
+
+        void updateTempFile(submitUpdateBook submitUpdate);
+      
+        List<RpanBookInfo> queryPanBookByPath(panQueryFile query);
+
+        panFileList requireFileList(string rootPath, string accessToken);
+
+        panFilemetaList requireFileMateList(string rootPath, string accessToken, List<string> fsIds);
     }
 }

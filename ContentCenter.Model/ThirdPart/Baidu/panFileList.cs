@@ -12,5 +12,9 @@ namespace ContentCenter.Model.ThirdPart.Baidu
 
         public List<panFileList_item> list { get; set; }
 
+     
+
+       
+
     }
 }

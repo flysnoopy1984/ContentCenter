@@ -18,6 +18,7 @@
   <ItemGroup>
     <Compile Remove="Products\Comments\ECommentInfo.cs" />
     <Compile Remove="Products\Comments\EPraizeInfo.cs" />
+    <Compile Remove="ThirdPart\DouBan\QSearchDouBan.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,5 +29,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\IQBLib\IQB.Util\IQB.Util.csproj" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /Y &quot;$(TargetDir)$(ProjectName).dll&quot; &quot;D:\Project\SourceCode\DataCrawler\RefDll\&quot;" />
+  </Target>
 
 </Project>
